@@ -1,0 +1,59 @@
+{
+  "name": "kubernetes-tool",
+  "version": "1.0.0",
+  "description": "A Kubernetes tool.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "npm run build:clean && npm run build:svg && npm run build:template && npm run build:static && node ./build/buildTool.js kubernetes-tool",
+    "build:clean": "node ./build/cleanDist.js",
+    "build:svg": "node ./build/buildSVGs.js",
+    "build:template": "node ./build/fetchTemplate.js",
+    "build:static": "copyfiles --up 2 ./src/static/{*,**/*} dist",
+    "dev:prep": "npm run build:svg && npm run build:template && npm run dev:static",
+    "dev:static": "copyfiles --up 2 ./src/static/{*,**/*} dev",
+    "dev": "npm run dev:prep && parcel ./src/kubernetes-tool/index.html --out-dir ./dev/kubernetes-tool --port 8000",
+    "test": "npm run test:ts-vue && npm run test:scss",
+    "test:ts-vue": "tsc && eslint './src/**/*.{vue,ts}'",
+    "test:scss": "sass-lint ./src/**/*.scss --verbose --no-exit --config .sasslintrc",
+    "test:ts-vue:fix": "tsc && eslint './src/**/*.{vue,ts}' --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/do-community/kubernetes-tool.git"
+  },
+  "keywords": [
+    "kubernetes"
+  ],
+  "author": "DigitalOcean",
+  "bugs": {
+    "url": "https://github.com/do-community/kubernetes-tool/issues"
+  },
+  "homepage": "https://github.com/do-community/kubernetes-tool#readme",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "abortcontroller-polyfill": "^1.3.0",
+    "babel-polyfill": "^6.26.0",
+    "bulma": "^0.7.5",
+    "parcel-bundler": "1.12.3",
+    "vue": "^2.6.10",
+    "vue-hot-reload-api": "^2.3.3",
+    "vue-tippy": "^4.0.0-beta.4"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "@vue/component-compiler-utils": "^3.0.0",
+    "copyfiles": "^2.1.1",
+    "eslint": "^6.2.2",
+    "eslint-plugin-vue": "5.2.3",
+    "jsdom": "^15.1.1",
+    "node-fetch": "^2.6.0",
+    "posthtml": "^0.11.4",
+    "posthtml-extend": "^0.3.0",
+    "sass": "^1.22.9",
+    "sass-lint": "^1.13.1",
+    "typescript": "^3.5.3",
+    "vue-template-compiler": "^2.6.10"
+  }
+}
