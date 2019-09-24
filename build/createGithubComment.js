@@ -20,7 +20,7 @@ const { readdirSync } = require('fs')
 
 const main = async () => {
 
-    const baseURL = `https://${process.env.SPACES_BUCKET}.${process.env.SPACES_REGION}.digitaloceanspaces.com/${process.env.COMMIT_SHA}`
+    const baseURL = `https://${process.env.SPACES_BUCKET}.${process.env.SPACES_REGION}.digitaloceanspaces.com/${process.env.COMMIT_SHA}/index.html`
 
     const comment = `This commit has been deployed to DigitalOcean Spaces [here](${baseURL}) for easy viewing.`
 
