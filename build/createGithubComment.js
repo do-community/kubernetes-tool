@@ -25,7 +25,8 @@ const main = async () => {
     const comment = `This commit has been deployed to DigitalOcean Spaces [here](${baseURL}) for easy viewing.`
 
     const res = await fetch(
-        `https://api.github.com/repos/do-community/dns-tool/commits/${process.env.COMMIT_SHA}/comments`,
+        // TODO: Change this repo when moved!
+        `https://api.github.com/repos/jakemakesstuff/kubernetes-tool/commits/${process.env.COMMIT_SHA}/comments`,
         {
             method: 'POST',
             body: JSON.stringify({
