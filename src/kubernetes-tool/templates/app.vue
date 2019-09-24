@@ -17,7 +17,7 @@ limitations under the License.
 <template>
     <div>
         <h1>{{ i18n.templates.app.title }}</h1>
-        <p>Hello World!</p>
+        <p>Hello World! Check the console to see stuff. :)</p>
     </div>
 </template>
 

@@ -14,9 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.spf-explainer {
+.kubernetes-tool {
   $header: #0071fe;
-  @import "../../shared/scss/style.scss";
+  @import "globals";
+  @import "../../../node_modules/bulma/bulma";
+  @import "base";
+  @import "typography";
+  @import "header";
+  @import "github";
+  @import "buttons";
+  @import "forms";
+  @import "tables";
+  @import "footer";
+  @import "modals";
+  @import "tags";
+  @import "skeletons";
+  @import "no-search";  
 
   .main.container {
     .record-group {
