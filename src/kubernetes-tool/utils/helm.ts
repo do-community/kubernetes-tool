@@ -71,6 +71,7 @@ class HelmParserContext {
                     const startIndex = match.index!
                     const { length, endIndex } = this._findEnd(document, match[0])
                     const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                    break
                 }
                 default: {
                     // Not a statement, is it a definition?
