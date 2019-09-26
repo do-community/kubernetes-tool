@@ -27,15 +27,10 @@ class HelmParserContext {
         this.context = context
     }
 
-    // Handles if statements.
-    private _handleIf(condition: string, block: string): string {
-        return ""
-    }
-
     // Finds the end statement.
     private _findEnd(document: string, statement: string): {
-        length: number,
-        endIndex: number,
+        length: number;
+        endIndex: number;
     } {
         const m = document.match(/{{ *end *}}/)
         if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
@@ -47,9 +42,9 @@ class HelmParserContext {
 
     // Crops out a part of a document.
     private _crop(data: string, start: number, end: number): {
-        cropped: string,
-        beforeRegion: string,
-        afterRegion: string
+        cropped: string;
+        beforeRegion: string;
+        afterRegion: string;
     } {
         return {
             cropped: data.substr(start, end),
@@ -58,20 +53,66 @@ class HelmParserContext {
         }
     }
 
+    // Handles if statements.
+    private _handleIfBlock(condition: string, block: string, ifLength: number, endLength: number): string {
+        // Remove the if/end statement from the block.
+        block = block.substr(0, block.length - endLength).substr(ifLength, block.length).trim()
+
+        // This array will be full of else statements.
+        // condition [string | undefined] - The condition to trigger the else statement. Can be none.
+        // block [string] - The block to be returned.
+        const elses: {
+            condition: string | undefined;
+            block: string;
+        }[] = []
+
+        // Splits the block by any inline if statements.
+        const blockSplit = block.split(/{{ *if([^}]+)}}.+}{{ *end *}}/)
+        let recreatedBlock = ""
+        for (const part of blockSplit) {
+            if (part.substr(2).trim().startsWith("if")) {
+                // This is a if statement. Add this into the block.
+                recreatedBlock += part
+            } else {
+                // This is NOT a if statement. Deal with any else's in it.
+                const r = /{{ *else([^}]*)}}/
+                const elseRegexpMatch = part.match(r)
+                if (!elseRegexpMatch) {
+                    recreatedBlock += elseRegexpMatch
+                    continue
+                }
+                // TODO: Finish else parsing.
+            }
+        }
+
+        // Returns the block.
+        return recreatedBlock
+    }
+
     // Evals a document. The result can then be parsed into the Kubernetes parser.
     public eval(document: string): string {
         // Look for any statements in the document.
         for (;;) {
             const match = document.match(helmStatement)
             if (!match) break
-            const statementSplit = match[1].trim().split(" ")
-            const statement = statementSplit.shift()!.toLowerCase()
+            const args = match[1].trim().split(" ")
+            const statement = args.shift()!.toLowerCase()
             switch (statement) {
                 case "if": {
+                    // Defines the if statement.
                     const startIndex = match.index!
                     const { length, endIndex } = this._findEnd(document, match[0])
                     const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                    document = `${beforeRegion}${this._handleIfBlock(args.join(" "), cropped, match.input!.length, length)}${afterRegion}`
                     break
+                }
+                case "else": {
+                    // This needs to be in a if statement.
+                    throw new Error(`${match[0]} - This should be in a if statement!`)
+                }
+                case "end": {
+                    // End needs to follow a valid operator!
+                    throw new Error(`${match[0]} - End needs to follow a valid operator!`)
                 }
                 default: {
                     // Not a statement, is it a definition?
@@ -80,7 +121,7 @@ class HelmParserContext {
             }
         }
 
-        // Returns a empty string.
-        return ""
+        // Returns the document.
+        return document
     }
 }
