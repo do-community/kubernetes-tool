@@ -24,7 +24,11 @@ const fs = new GitHubFS("helm/charts")
 export const helmCache = {
     stable: fs.ls("stable"),
     incubator: fs.ls("incubator"),
-}
+} as Record<string, Promise<{
+    file: boolean;
+    path: string;
+    name: string;
+}[]> | undefined>
 
 // TODO: REMOVE THIS!
 console.log(helmCache)
@@ -330,7 +334,7 @@ export class HelmResult {
 export default class HelmCoreParser {
     public context: HelmDocumentParser
     public chart: string
-    public promise: Promise<HelmResult>
+    public promise: Promise<HelmResult | null>
 
     // Constructs the class.
     public constructor(context: Record<string, any>, chart: string) {
@@ -339,9 +343,28 @@ export default class HelmCoreParser {
         this.promise = this._exec()
     }
 
-    // Starts execution.
-    private async _exec(): Promise<HelmResult> {
+    // Handles the Helm folder.
+    private async _handleFolder(files: {
+        file: boolean;
+        path: string;
+        name: string;
+    }[]): Promise<HelmResult | null> {
         // TODO: This.
-        return new HelmResult()
+        return null
+    }
+
+    // Starts execution.
+    private async _exec(): Promise<HelmResult | null> {
+        const slashSplit = this.chart.toLowerCase().split("/")
+        if (slashSplit.length === 1) return null
+        const repo = helmCache[slashSplit[0]]
+        if (!repo) return null
+        for (const item of await repo) {
+            if (item.name === slashSplit[1] && !item.file) {
+                // This is the folder we want! Get results from it.
+                return this._handleFolder(await fs.ls(item.path))
+            }
+        }
+        return null
     }
 }
