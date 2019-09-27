@@ -251,6 +251,11 @@ class HelmParserContext {
         }
     }
 
+    // Quotes the string.
+    private _quote(data: string): string {
+        return JSON.stringify(data)
+    }
+
     // Evals a document. The result can then be parsed into the Kubernetes parser.
     public eval(document: string): string {
         // Look for any statements in the document.
@@ -276,9 +281,21 @@ class HelmParserContext {
                     // End needs to follow a valid operator!
                     throw new Error(`${match[0]} - End needs to follow a valid operator!`)
                 }
+                case "quote": {
+                    // Defines the function to quote all the things.
+                    const join = match[1].trim()
+                    if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                    document = `${beforeRegion}${this._helmdef2object(this._quote(join))}${afterRegion}`
+                }
                 default: {
                     // Not a statement, is it a definition?
-                    
+                    const join = match[1].trim()
+                    if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                    document = `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
                 }
             }
         }
