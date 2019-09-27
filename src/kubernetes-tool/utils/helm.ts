@@ -53,13 +53,39 @@ class HelmParserContext {
         }
     }
 
+    // Maps the Helm definition to a JS object.
+    private _helmdef2object(definition: string): any {
+        // Make it an array and remove the first thing which will be whitespace.
+        const defSplit = definition.split(".")
+        defSplit.shift()
+
+        // Get the final attribute. Reasons will be clear!
+        const last = defSplit.pop()
+
+        // Iterate through the rest of the parts.
+        let currentCtx = this.context
+        for (const part of defSplit) {
+            currentCtx = this.context[part]
+            if (currentCtx === undefined) {
+                // TODO: Better error here.
+                throw new Error("This should be a better error.")
+            }
+            // TODO: More context stuff.
+        }
+    }
+
     // Checks the condition given by doing some basic parsing.
     private _checkCondition(condition: string | undefined): boolean {
         // Return true if undefined.
         if (!condition) return true
 
         // Trim the condition initially.
-        condition = condition.trim()
+        condition = condition.trim().replace(/  +/g, " ")
+
+        // Split this condition.
+        const conditionSplit = condition.split(" ")
+
+        // If the first 
 
         // TODO: This function!
         return false
