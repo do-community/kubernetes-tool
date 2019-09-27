@@ -34,8 +34,8 @@ class OperatorManager {
     }
 }
 
-// The Helm deployment parser.
-class HelmParserContext {
+// The Helm document parser.
+class HelmDocumentParser {
     // Defines the context.
     private context: Record<string, any>
 
@@ -303,5 +303,30 @@ class HelmParserContext {
 
         // Returns the document.
         return document
+    }
+}
+
+// Defines the Helm result.
+export class HelmResult {
+    // TODO: This.
+}
+
+// Defines the Helm core parser.
+export default class HelmCoreParser {
+    public context: HelmDocumentParser
+    public chart: string
+    public promise: Promise<HelmResult>
+
+    // Constructs the class.
+    public constructor(context: Record<string, any>, chart: string) {
+        this.context = new HelmDocumentParser(context)
+        this.chart = chart
+        this.promise = this._exec()
+    }
+
+    // Starts execution.
+    private async _exec(): Promise<HelmResult> {
+        // TODO: This.
+        return new HelmResult()
     }
 }
