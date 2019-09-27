@@ -265,6 +265,7 @@ class HelmParserContext {
             const args = match[1].trim().split(" ")
             const statement = args.shift()!.toLowerCase()
             switch (statement) {
+                // TODO: Some more operators are needed here.
                 case "if": {
                     // Defines the if statement.
                     const startIndex = match.index!
