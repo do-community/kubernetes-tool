@@ -53,6 +53,18 @@ class HelmParserContext {
         }
     }
 
+    // Checks the condition given by doing some basic parsing.
+    private _checkCondition(condition: string | undefined): boolean {
+        // Return true if undefined.
+        if (!condition) return true
+
+        // Trim the condition initially.
+        condition = condition.trim()
+
+        // TODO: This function!
+        return false
+    }
+
     // Handles if statements.
     private _handleIfBlock(condition: string, block: string, ifLength: number, endLength: number): string {
         // Remove the if/end statement from the block.
@@ -69,24 +81,55 @@ class HelmParserContext {
         // Splits the block by any inline if statements.
         const blockSplit = block.split(/{{ *if([^}]+)}}.+}{{ *end *}}/)
         let recreatedBlock = ""
-        for (const part of blockSplit) {
+        for (let part of blockSplit) {
             if (part.substr(2).trim().startsWith("if")) {
                 // This is a if statement. Add this into the block.
                 recreatedBlock += part
             } else {
-                // This is NOT a if statement. Deal with any else's in it.
-                const r = /{{ *else([^}]*)}}/
-                const elseRegexpMatch = part.match(r)
-                if (!elseRegexpMatch) {
-                    recreatedBlock += elseRegexpMatch
-                    continue
+                for (;;) {
+                    // This is NOT a if statement. Deal with any else's in it.
+                    const r = /{{ *else([^}]*)}}/
+                    let elseRegexpMatch = part.match(r)
+                    if (!elseRegexpMatch) {
+                        recreatedBlock += elseRegexpMatch
+                        break
+                    }
+
+                    // Remove the match from the part.
+                    part = part.substr(0, elseRegexpMatch.index! + elseRegexpMatch[0].length)
+
+                    // Search for the next else if it exists.
+                    // If it does not exist, we can just go to the end of the document.
+                    const elseStart = elseRegexpMatch.index!
+                    const elseLength = elseRegexpMatch[0].length
+                    const condition = elseRegexpMatch[1]
+                    elseRegexpMatch = part.match(r)
+                    if (elseRegexpMatch) {
+                        elses.push({
+                            block: part.substr(elseStart + elseLength, part.length - elseRegexpMatch.index!),
+                            condition: condition,
+                        })
+                    } else {
+                        elses.push({
+                            block: part.substr(elseStart + elseLength, part.length),
+                            condition: condition,
+                        })
+                    }
                 }
-                // TODO: Finish else parsing.
             }
         }
 
-        // Returns the block.
-        return recreatedBlock
+        // Lets check the condition; if it fails, we will iterate elses.
+        if (this._checkCondition(condition)) {
+            return recreatedBlock
+        } else {
+            for (const else_ of elses) {
+                if (this._checkCondition(else_.condition)) return else_.block
+            }
+
+            // Return a empty string.
+            return ""
+        }
     }
 
     // Evals a document. The result can then be parsed into the Kubernetes parser.
