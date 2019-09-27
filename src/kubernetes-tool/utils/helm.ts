@@ -29,7 +29,7 @@ class OperatorManager {
         this.operator = operator
     }
 
-    call(): boolean {
+    public call(): boolean {
         return eval(`this.a ${this.operator} this.b`) as boolean
     }
 }
