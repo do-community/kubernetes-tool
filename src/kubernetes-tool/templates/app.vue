@@ -23,6 +23,7 @@ limitations under the License.
 
 <script>
     import i18n from "../i18n"
+    import "../utils/helm"
 
     export default {
         name: "App",

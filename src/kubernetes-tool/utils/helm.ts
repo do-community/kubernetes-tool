@@ -14,6 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Imports the GitHub filesystem.
+import GitHubFS from "./githubFs"
+
+// Defines the filesystem for the Helm Charts official repository.
+const fs = new GitHubFS("helm/charts")
+
+// Cache stable and incubator for any future reference.
+export const helmCache = {
+    stable: fs.ls("stable"),
+    incubator: fs.ls("incubator"),
+}
+
+// TODO: REMOVE THIS!
+console.log(helmCache)
+
 // A statement in Helm.
 const helmStatement = /{{([^}]+)}}/
 
