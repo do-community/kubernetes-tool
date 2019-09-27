@@ -17,6 +17,23 @@ limitations under the License.
 // A statement in Helm.
 const helmStatement = /{{([^}]+)}}/
 
+// The operator manager. Allows for operations to safely be evaled between 2 objects.
+class OperatorManager {
+    public a: any
+    public b: any
+    public operator: string
+
+    public constructor(a: any, b: any, operator: string) {
+        this.a = a
+        this.b = b
+        this.operator = operator
+    }
+
+    call(): boolean {
+        return eval(`this.a ${this.operator} this.b`) as boolean
+    }
+}
+
 // The Helm deployment parser.
 class HelmParserContext {
     // Defines the context.
@@ -59,19 +76,15 @@ class HelmParserContext {
         const defSplit = definition.split(".")
         defSplit.shift()
 
-        // Get the final attribute. Reasons will be clear!
-        const last = defSplit.pop()
-
-        // Iterate through the rest of the parts.
+        // Iterate through the beginning parts.
         let currentCtx = this.context
         for (const part of defSplit) {
             currentCtx = this.context[part]
-            if (currentCtx === undefined) {
-                // TODO: Better error here.
-                throw new Error("This should be a better error.")
-            }
-            // TODO: More context stuff.
+            if (currentCtx === undefined) return undefined
         }
+
+        // Returns the current context.
+        return currentCtx
     }
 
     // Checks the condition given by doing some basic parsing.
@@ -85,10 +98,90 @@ class HelmParserContext {
         // Split this condition.
         const conditionSplit = condition.split(" ")
 
-        // If the first 
+        // Check the operator if it exists.
+        let operator = conditionSplit.shift()!
 
-        // TODO: This function!
-        return false
+        // Not is a special edgecase! It goes up here due to that.
+        let not = false
+
+        // Check/set what the operator is. Can be eq, ne, lt, gt, and, or, not or a boolean value (ref: https://helm.sh/docs/chart_template_guide/#operators-are-functions)
+        switch (operator) {
+            case "eq": {
+                operator = "==="
+                break
+            }
+            case "ne": {
+                operator = "!=="
+                break
+            }
+            case "lt": {
+                operator = "<"
+                break
+            }
+            case "gt": {
+                operator = ">"
+                break
+            }
+            case "and": {
+                operator = "&&"
+                break
+            }
+            case "or": {
+                operator = "||"
+                break
+            }
+            case "not": {
+                not = true
+                break
+            }
+            default: {
+                if (operator.startsWith(".")) {
+                    // This *should* be the condition.
+                    return Boolean(this._helmdef2object(operator))
+                } else {
+                    throw new Error(`"${operator}" - Invalid operator!`)
+                }
+            }
+        }
+
+        // Each part in a easy to iterate array. Makes the next part a lot easier.
+        const dataParts: any[] = []
+
+        // Goes through each part applying the rule above.
+        for (const arg of conditionSplit) {
+            if (arg.startsWith("(")) {
+                // Inline function! Get the bits inbetween.
+                const m = arg.match(/^(.+)$/)
+                if (!m) throw new Error(`"${arg}" - Invalid argument!`)
+                const middle = m[1]
+                dataParts.push(this._checkCondition(middle))
+                continue
+            }
+
+            if (arg.startsWith(".")) {
+                // Get the attribute.
+                dataParts.push(this._helmdef2object(arg))
+                continue
+            }
+
+            // Whayyyyyyyyyyyt.
+            throw new Error(`"${arg}" - Invalid argument!`)
+        }
+
+        // If this is a not statement, we only need to worry about the first arg.
+        if (not) return !Boolean(dataParts[0])
+
+        // Get the final result.
+        let final = true
+        let last: any = undefined
+        for (const i of dataParts) {
+            const currentLast = last
+            last = i
+            if (currentLast === undefined) continue
+            const op = new OperatorManager(last, i, operator)
+            final = op.call()
+        }
+        return final
     }
 
     // Handles if statements.
