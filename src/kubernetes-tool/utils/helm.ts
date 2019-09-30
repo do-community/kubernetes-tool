@@ -17,6 +17,9 @@ limitations under the License.
 // Imports the GitHub filesystem.
 import GitHubFS from "./githubFs"
 
+// A YAML parser.
+import { safeLoad } from "js-yaml"
+
 // Defines the filesystem for the Helm Charts official repository.
 const fs = new GitHubFS("helm/charts")
 
@@ -68,7 +71,7 @@ class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        const m = document.match(/{{ *end *}}/)
+        const m = document.match(/[ -]* *end *[ -]*}}/)
         if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
         return {
             length: m.input!.length,
@@ -217,7 +220,7 @@ class HelmDocumentParser {
         }[] = []
 
         // Splits the block by any inline if statements.
-        const blockSplit = block.split(/{{ *if([^}]+)}}.+}{{ *end *}}/)
+        const blockSplit = block.split(/{{[ -]* *if([^}]+)[ -]*}}.+{{[ -]* *end *[ -]*}}/)
         let recreatedBlock = ""
         for (let part of blockSplit) {
             if (part.substr(2).trim().startsWith("if")) {
@@ -226,7 +229,7 @@ class HelmDocumentParser {
             } else {
                 for (;;) {
                     // This is NOT a if statement. Deal with any else's in it.
-                    const r = /{{ *else([^}]*)}}/
+                    const r = /{{[ -]* *else([^}]*)[ -]*}}/
                     let elseRegexpMatch = part.match(r)
                     if (!elseRegexpMatch) {
                         recreatedBlock += elseRegexpMatch
@@ -325,9 +328,34 @@ class HelmDocumentParser {
     }
 }
 
+// Defines the Helm chart maintainer.
+export class HelmChartMaintainer {
+    public name: string
+    public email: string
+
+    public constructor(name: string, email: string) {
+        this.email = email
+        this.name = name
+    }
+}
+
 // Defines the Helm result.
 export class HelmResult {
-    // TODO: This.
+    public name: string
+    public description: string
+    public version: string
+    public home: string
+    public maintainer: HelmChartMaintainer[]
+    public icon: string | undefined
+
+    public constructor(name: string, description: string, version: string, home: string, maintainer: HelmChartMaintainer[], icon: string | undefined) {
+        this.description = description
+        this.name = name
+        this.version = version
+        this.home = home
+        this.maintainer = maintainer
+        this.icon = icon
+    }
 }
 
 // Defines the Helm core parser.
@@ -344,12 +372,27 @@ export default class HelmCoreParser {
     }
 
     // Handles the Helm folder.
-    private async _handleFolder(files: {
-        file: boolean;
-        path: string;
-        name: string;
-    }[]): Promise<HelmResult | null> {
-        // TODO: This.
+    private async _handleFolder(path: String): Promise<HelmResult | null> {
+        const unparsedChartInformation = await fs.get(`${path}/Chart.yaml`)
+        if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
+        const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
+        const maintainers: HelmChartMaintainer[] = []
+        for (const m of chartYaml.maintainers) maintainers.push(new HelmChartMaintainer(m.name, m.email))
+        // TODO: Handle the chart YAML!
+        const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
+        if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
+        const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
+        // TODO: Use the values.yaml to hint at stuff.
+        const notes = await fs.get(`${path}/templates/values.yaml`)
+        // TODO: Parse notes!
+        const init = await fs.get(`${path}/templates/_helpers.tpl`)
+        if (init) this.context.eval(init)
+        // TODO: Kubernetes stuff.
+        const kubernetesParts: KubernetesDescription[] = []
+        for (const file of await fs.ls(`${path}/templates`)) {
+            kubernetesParts.push(await kubernetesParse(await fs.get(file.path)))
+        }
+        // TODO: Finish this class.
         return null
     }
 
@@ -362,7 +405,7 @@ export default class HelmCoreParser {
         for (const item of await repo) {
             if (item.name === slashSplit[1] && !item.file) {
                 // This is the folder we want! Get results from it.
-                return this._handleFolder(await fs.ls(item.path))
+                return this._handleFolder(item.path)
             }
         }
         return null
