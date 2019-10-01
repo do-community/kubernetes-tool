@@ -33,11 +33,8 @@ export const helmCache = {
     name: string;
 }[]> | undefined>
 
-// TODO: REMOVE THIS!
-console.log(helmCache)
-
 // A statement in Helm.
-const helmStatement = /{{([^}]+)}}/
+const helmStatement = /{{[ -]*([^}]+)[ -]*}}/
 
 // The operator manager. Allows for operations to safely be evaled between 2 objects.
 class OperatorManager {
@@ -60,10 +57,12 @@ class OperatorManager {
 class HelmDocumentParser {
     // Defines the context.
     private context: Record<string, any>
+    private templateContext: Record<string, any>
 
     // Constructs the class.
     public constructor(context: Record<string, any>) {
         this.context = context
+        this.templateContext = {}
     }
 
     // Finds the end statement.
@@ -71,11 +70,11 @@ class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        const m = document.match(/[ -]* *end *[ -]*}}/)
+        const m = document.match(/{{[ -]*end[ -]*}}/)
         if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
         return {
-            length: m.input!.length,
-            endIndex: m.index! + m.input!.length,
+            length: m[0].length,
+            endIndex: m.index! + m[0].length,
         }
     }
 
@@ -312,10 +311,26 @@ class HelmDocumentParser {
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                     document = `${beforeRegion}${this._helmdef2object(this._quote(join))}${afterRegion}`
                 }
+                case "define": {
+                    // Defines an item.
+                    const startIndex = match.index!
+                    const { length, endIndex } = this._findEnd(document, match[0])
+                    const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                    console.log(cropped)
+                    document = `${beforeRegion}${afterRegion}`
+                    break
+                }
                 default: {
                     // Not a statement, is it a definition?
                     const join = match[1].trim()
-                    if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                    if (join.startsWith("/*")) {
+                        // This is a comment. Remove/break here.
+                        const startIndex = match.index!
+                        const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                        document = `${beforeRegion}${afterRegion}`
+                        break
+                    }
+                    if (!join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
                     const startIndex = match.index!
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                     document = `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
@@ -388,9 +403,11 @@ export default class HelmCoreParser {
         const init = await fs.get(`${path}/templates/_helpers.tpl`)
         if (init) this.context.eval(init)
         // TODO: Kubernetes stuff.
-        const kubernetesParts: KubernetesDescription[] = []
+        // KubernetesDescription[]
+        const kubernetesParts: string[] = []
         for (const file of await fs.ls(`${path}/templates`)) {
-            kubernetesParts.push(await kubernetesParse(await fs.get(file.path)))
+            // await kubernetesParse(...)
+            kubernetesParts.push(this.context.eval((await fs.get(file.path))!))
         }
         // TODO: Finish this class.
         return null
@@ -411,3 +428,4 @@ export default class HelmCoreParser {
         return null
     }
 }
+window.HelmCoreParser = HelmCoreParser
