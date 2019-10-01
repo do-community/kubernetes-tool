@@ -117,7 +117,11 @@ class HelmDocumentParser {
         condition = condition.trim().replace(/  +/g, " ")
 
         // Split this condition.
-        const conditionSplit = condition.split(" ")
+        const args = condition.split(/"[^"]+"| /)
+        const conditionSplit: string[] = []
+        for (const a of args) {
+            if (a !== "") conditionSplit.push(a)
+        }
 
         // Check the operator if it exists.
         let operator = conditionSplit.shift()!
