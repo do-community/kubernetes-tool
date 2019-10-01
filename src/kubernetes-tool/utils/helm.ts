@@ -406,7 +406,7 @@ export default class HelmCoreParser {
     }
 
     // Handles the Helm folder.
-    private async _handleFolder(path: String): Promise<HelmResult | null> {
+    private async _handleFolder(path: string): Promise<HelmResult | null> {
         const unparsedChartInformation = await fs.get(`${path}/Chart.yaml`)
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
         const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
@@ -447,4 +447,5 @@ export default class HelmCoreParser {
         return null
     }
 }
+// @ts-ignore
 window.HelmCoreParser = HelmCoreParser
