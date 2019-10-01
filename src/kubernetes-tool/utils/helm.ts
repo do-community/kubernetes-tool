@@ -125,6 +125,9 @@ class HelmDocumentParser {
         // Not is a special edgecase! It goes up here due to that.
         let not = false
 
+        // Does one string contain another?
+        let contain = true
+
         // Check/set what the operator is. Can be eq, ne, lt, gt, and, or, not or a boolean value (ref: https://helm.sh/docs/chart_template_guide/#operators-are-functions)
         switch (operator) {
             case "eq": {
@@ -153,6 +156,10 @@ class HelmDocumentParser {
             }
             case "not": {
                 not = true
+                break
+            }
+            case "contains": {
+                contain = true
                 break
             }
             default: {
@@ -192,6 +199,9 @@ class HelmDocumentParser {
         // If this is a not statement, we only need to worry about the first arg.
         if (not) return !Boolean(dataParts[0])
 
+        // Check if one contains the other.
+        if (contain) return String(dataParts[0]).includes(dataParts[1])
+
         // Get the final result.
         let final = true
         let last: any = undefined
@@ -219,7 +229,7 @@ class HelmDocumentParser {
         }[] = []
 
         // Splits the block by any inline if statements.
-        const blockSplit = block.split(/{{[ -]* *if([^}]+)[ -]*}}.+{{[ -]* *end *[ -]*}}/)
+        const blockSplit = block.split(/{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
         let recreatedBlock = ""
         for (let part of blockSplit) {
             if (part.substr(2).trim().startsWith("if")) {
@@ -228,7 +238,7 @@ class HelmDocumentParser {
             } else {
                 for (;;) {
                     // This is NOT a if statement. Deal with any else's in it.
-                    const r = /{{[ -]* *else([^}]*)[ -]*}}/
+                    const r = /{{[ -]*else([^}]*)[ -]*}}/
                     let elseRegexpMatch = part.match(r)
                     if (!elseRegexpMatch) {
                         recreatedBlock += elseRegexpMatch
@@ -301,7 +311,8 @@ class HelmDocumentParser {
                 }
                 case "end": {
                     // End needs to follow a valid operator!
-                    throw new Error(`${match[0]} - End needs to follow a valid operator!`)
+                    document = ""
+                    break
                 }
                 case "quote": {
                     // Defines the function to quote all the things.
@@ -316,8 +327,11 @@ class HelmDocumentParser {
                     const startIndex = match.index!
                     const { length, endIndex } = this._findEnd(document, match[0])
                     const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                    console.log(length)
-                    console.log(afterRegion)
+                    let result = cropped.substr(0, cropped.length - length)
+                    const argStart = result.split("}}")
+                    argStart.pop()
+                    argStart.shift()
+                    result = `${argStart.join("}}")}}}`
                     document = `${beforeRegion}${afterRegion}`
                     break
                 }
@@ -393,6 +407,8 @@ export default class HelmCoreParser {
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
         const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
         this.context.context.Chart = chartYaml
+        const maintainers: HelmChartMaintainer[] = []
+        for (const m of chartYaml.maintainers) maintainers.push(new HelmChartMaintainer(m.name, m.email))
         const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
         if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
         const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
