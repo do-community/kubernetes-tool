@@ -56,7 +56,7 @@ class OperatorManager {
 // The Helm document parser.
 class HelmDocumentParser {
     // Defines the context.
-    private context: Record<string, any>
+    public context: Record<string, any>
     private templateContext: Record<string, any>
 
     // Constructs the class.
@@ -316,7 +316,8 @@ class HelmDocumentParser {
                     const startIndex = match.index!
                     const { length, endIndex } = this._findEnd(document, match[0])
                     const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                    console.log(cropped)
+                    console.log(length)
+                    console.log(afterRegion)
                     document = `${beforeRegion}${afterRegion}`
                     break
                 }
@@ -391,9 +392,7 @@ export default class HelmCoreParser {
         const unparsedChartInformation = await fs.get(`${path}/Chart.yaml`)
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
         const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
-        const maintainers: HelmChartMaintainer[] = []
-        for (const m of chartYaml.maintainers) maintainers.push(new HelmChartMaintainer(m.name, m.email))
-        // TODO: Handle the chart YAML!
+        this.context.context.Chart = chartYaml
         const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
         if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
         const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
