@@ -58,11 +58,13 @@ class HelmDocumentParser {
     // Defines the context.
     public context: Record<string, any>
     private templateContext: Record<string, any>
+    public variables: Record<string, any>
 
     // Constructs the class.
     public constructor(context: Record<string, any>) {
         this.context = context
         this.templateContext = {}
+        this.variables = {}
     }
 
     // Finds the end statement.
@@ -344,7 +346,7 @@ class HelmDocumentParser {
                     // This is a comment. Remove/break here.
                     const startIndex = match.index!
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                   return `${beforeRegion}${afterRegion}`
+                    return `${beforeRegion}${afterRegion}`
                 }
                 if (!join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
                 const startIndex = match.index!
@@ -354,14 +356,64 @@ class HelmDocumentParser {
         }
     }
 
+    // Handles pipes.
+    private _handlePipe(bundles: string[][], match: RegExpMatchArray) {
+        let last = undefined
+        for (const bundle of bundles) {
+            const cmd = bundle.shift()!
+            if (last) bundle.push(last)
+            last = this._execStatement(cmd, match, "", bundle)
+        }
+    }
+
     // Evals a document. The result can then be parsed into the Kubernetes parser.
     public eval(document: string): string {
+        // Reset the variables.
+        this.variables = {}
+
         // Look for any statements in the document.
         for (;;) {
             const match = document.match(helmStatement)
             if (!match) break
             const args = match[1].trim().split(" ")
-            document = this._execStatement(args.shift()!.toLowerCase(), match, document, args)
+
+            // Defines the dollar variable being set.
+            let inDollarContext = undefined
+            if (args[0][0] === "$") {
+                inDollarContext = args.shift()!
+                if (args.length === 0) {
+                    // Output the variable.
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length) 
+                    document = `${beforeRegion}${this.context[args[0]]}${afterRegion}`
+                    continue
+                }
+                args.shift()
+            }
+
+            if (args.includes("|")) {
+                // We need to pipe all the things down the argument chain
+                const bundles: string[][] = []
+                let buffer: string[] = []
+                for (const a of args) {
+                    if (a !== " ") {
+                        if (a === "|") {
+                            bundles.push(buffer)
+                            buffer = []
+                        } else {
+                            buffer.push(a)
+                        }
+                    }
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                    if (inDollarContext) this.variables[inDollarContext] = this._handlePipe(bundles, match)
+                    else document = `${beforeRegion}${this._handlePipe(bundles, match)}${afterRegion}`
+                }
+            } else {
+                // Execute any statements in the document.
+                if (inDollarContext) this._execStatement(args.shift()!.toLowerCase(), match, "", args)
+                else document = this._execStatement(args.shift()!.toLowerCase(), match, document, args)
+            }
         }
 
         // Returns the document.
