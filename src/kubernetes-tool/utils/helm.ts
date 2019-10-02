@@ -53,6 +53,14 @@ class OperatorManager {
     }
 }
 
+// A small class to define a quote.
+class Quote {
+    public text: string
+    public constructor(text: string) {
+        this.text = text
+    }
+}
+
 // The Helm document parser.
 class HelmDocumentParser {
     // Defines the context.
@@ -293,6 +301,42 @@ class HelmDocumentParser {
         return JSON.stringify(data)
     }
 
+    // Parses any args in the string.
+    private _parseArgs(args: string[]) {
+        // Defines the parsed arguments.
+        const parsedArgs: (string | Quote)[] = []
+
+        // Defines the buffer.
+        let buffer: string[] = []
+
+        // Handles the arguments.
+        for (const a of args) {
+            if (buffer.length !== 0) {
+                // A non-empty buffer! Does it end with a string?
+                if (a.endsWith('"')) {
+                    buffer.push(a.substr(0, a.length - 1))
+                    parsedArgs.push(new Quote(buffer.join(" ")))
+                    buffer = []
+                    continue
+                }
+            }
+
+            if (a.startsWith('"')) {
+                // The start of the quote.
+                if (a.endsWith('"')) parsedArgs.push(new Quote(a.substr(1, a.length - 2)))
+                else buffer.push(a.substr(1))
+            } else {
+                parsedArgs.push(a)
+            }
+        }
+
+        // Add the buffer to the args.
+        if (buffer.length !== 0) parsedArgs.push(new Quote(buffer.join(" "))) 
+
+        // Returns the parsed args.
+        return parsedArgs
+    }
+
     // Executes a statement.
     private _execStatement(statement: string, match: RegExpMatchArray, document: string, args: string[]) {
         switch (statement) {
@@ -351,6 +395,11 @@ class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}${this.templateContext[args[0]]}${afterRegion}`
+            }
+            case "printf": {
+                // Handles printf.
+                args = this._parseArgs(args)
+                console.log(args)
             }
             default: {
                 // Not a statement, is it a definition?
