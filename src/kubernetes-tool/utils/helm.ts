@@ -492,18 +492,31 @@ export default class HelmCoreParser {
 
     // Handles the Helm folder.
     private async _handleFolder(path: string): Promise<HelmResult | null> {
+        // Defines the unparsed Chard.json (if it exists).
         const unparsedChartInformation = await fs.get(`${path}/Chart.yaml`)
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
+
+        // Defines the parsed chart file and load in the chart.
         const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
         this.context.context.Chart = this._capAll(chartYaml)
+
+        // Defines the maintainers.
         const maintainers: HelmChartMaintainer[] = []
         for (const m of chartYaml.maintainers) maintainers.push(new HelmChartMaintainer(m.name, m.email))
+
+        // Defines the unparsed values.yaml (if it exists).
         const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
         if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
-        const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
+
         // TODO: Use the values.yaml to hint at stuff.
-        const notes = await fs.get(`${path}/templates/values.yaml`)
+        // Loads the values.yaml.
+        const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
+
         // TODO: Parse notes!
+        // Defines the notes.
+        const notes = await fs.get(`${path}/templates/values.yaml`)
+
+        // Initialises the context.
         const init = await fs.get(`${path}/templates/_helpers.tpl`)
         if (init) this.context.eval(init)
         // TODO: Kubernetes stuff.
@@ -513,6 +526,7 @@ export default class HelmCoreParser {
             // await kubernetesParse(...)
             console.log(this.context.eval((await fs.get(file.path))!))
         }
+
         // TODO: Finish this class.
         return null
     }
@@ -532,5 +546,6 @@ export default class HelmCoreParser {
         return null
     }
 }
+
 // @ts-ignore
 window.HelmCoreParser = HelmCoreParser
