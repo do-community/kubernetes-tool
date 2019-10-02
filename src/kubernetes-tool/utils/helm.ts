@@ -398,8 +398,8 @@ class HelmDocumentParser {
             }
             case "printf": {
                 // Handles printf.
-                args = this._parseArgs(args)
-                console.log(args)
+                const a = this._parseArgs(args)
+                console.log(a)
             }
             default: {
                 // Not a statement, is it a definition?
