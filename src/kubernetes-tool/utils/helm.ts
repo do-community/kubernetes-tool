@@ -312,13 +312,27 @@ class HelmDocumentParser {
                 // End needs to follow a valid operator!
                 return ""
             }
+            case "default": {
+                // Defines the default of a thing.
+                for (const a of args.reverse()) {
+                    if (a === "-") continue
+                    const res = this._helmdef2object(a)
+                    if (res) {
+                        console.log(res)
+                        const startIndex = match.index!
+                        const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                        return `${beforeRegion}${res}${afterRegion}`
+                    }
+                }
+                throw new Error(`${match[0]} - Cannot set a default!`)
+            }
             case "quote": {
                 // Defines the function to quote all the things.
                 const join = match[1].trim()
                 if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${this._helmdef2object(this._quote(join))}${afterRegion}`
+                return `${beforeRegion}${this._quote(this._helmdef2object(join))}${afterRegion}`
             }
             case "define": {
                 // Defines an item.
