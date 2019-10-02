@@ -291,6 +291,69 @@ class HelmDocumentParser {
         return JSON.stringify(data)
     }
 
+    // Executes a statement.
+    private _execStatement(statement: string, match: RegExpMatchArray, document: string, args: string[]) {
+        switch (statement) {
+            // TODO: Some more operators are needed here.
+            case "if": {
+                // Defines the if statement.
+                const startIndex = match.index!
+                const { length, endIndex } = this._findEnd(document, match[0])
+                const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                return `${beforeRegion}${this._handleIfBlock(args.join(" "), cropped, match.input!.length, length)}${afterRegion}`
+            }
+            case "else": {
+                // This needs to be in a if statement.
+                throw new Error(`${match[0]} - This should be in a if statement!`)
+            }
+            case "end": {
+                // End needs to follow a valid operator!
+                return ""
+            }
+            case "quote": {
+                // Defines the function to quote all the things.
+                const join = match[1].trim()
+                if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${this._helmdef2object(this._quote(join))}${afterRegion}`
+            }
+            case "define": {
+                // Defines an item.
+                const startIndex = match.index!
+                const { length, endIndex } = this._findEnd(document, match[0])
+                const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                let result = cropped.substr(0, cropped.length - length)
+                const argStart = result.split("}}")
+                argStart.pop()
+                argStart.shift()
+                result = `${argStart.join("}}")}}}`
+                this.templateContext[args[0]] = result
+                return `${beforeRegion}${afterRegion}`
+            }
+            case "template": {
+                // Defines an existing template.
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${this.templateContext[args[0]]}${afterRegion}`
+            }
+            default: {
+                // Not a statement, is it a definition?
+                const join = match[1].trim()
+                if (join.startsWith("/*")) {
+                    // This is a comment. Remove/break here.
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                   return `${beforeRegion}${afterRegion}`
+                }
+                if (!join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
+            }
+        }
+    }
+
     // Evals a document. The result can then be parsed into the Kubernetes parser.
     public eval(document: string): string {
         // Look for any statements in the document.
@@ -298,63 +361,7 @@ class HelmDocumentParser {
             const match = document.match(helmStatement)
             if (!match) break
             const args = match[1].trim().split(" ")
-            const statement = args.shift()!.toLowerCase()
-            switch (statement) {
-                // TODO: Some more operators are needed here.
-                case "if": {
-                    // Defines the if statement.
-                    const startIndex = match.index!
-                    const { length, endIndex } = this._findEnd(document, match[0])
-                    const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                    document = `${beforeRegion}${this._handleIfBlock(args.join(" "), cropped, match.input!.length, length)}${afterRegion}`
-                    break
-                }
-                case "else": {
-                    // This needs to be in a if statement.
-                    throw new Error(`${match[0]} - This should be in a if statement!`)
-                }
-                case "end": {
-                    // End needs to follow a valid operator!
-                    document = ""
-                    break
-                }
-                case "quote": {
-                    // Defines the function to quote all the things.
-                    const join = match[1].trim()
-                    if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
-                    const startIndex = match.index!
-                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                    document = `${beforeRegion}${this._helmdef2object(this._quote(join))}${afterRegion}`
-                }
-                case "define": {
-                    // Defines an item.
-                    const startIndex = match.index!
-                    const { length, endIndex } = this._findEnd(document, match[0])
-                    const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                    let result = cropped.substr(0, cropped.length - length)
-                    const argStart = result.split("}}")
-                    argStart.pop()
-                    argStart.shift()
-                    result = `${argStart.join("}}")}}}`
-                    document = `${beforeRegion}${afterRegion}`
-                    break
-                }
-                default: {
-                    // Not a statement, is it a definition?
-                    const join = match[1].trim()
-                    if (join.startsWith("/*")) {
-                        // This is a comment. Remove/break here.
-                        const startIndex = match.index!
-                        const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                        document = `${beforeRegion}${afterRegion}`
-                        break
-                    }
-                    if (!join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
-                    const startIndex = match.index!
-                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                    document = `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
-                }
-            }
+            document = this._execStatement(args.shift()!.toLowerCase(), match, document, args)
         }
 
         // Returns the document.
@@ -426,7 +433,7 @@ export default class HelmCoreParser {
         const kubernetesParts: string[] = []
         for (const file of await fs.ls(`${path}/templates`)) {
             // await kubernetesParse(...)
-            kubernetesParts.push(this.context.eval((await fs.get(file.path))!))
+            console.log(this.context.eval((await fs.get(file.path))!))
         }
         // TODO: Finish this class.
         return null
