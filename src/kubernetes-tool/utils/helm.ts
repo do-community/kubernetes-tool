@@ -394,12 +394,15 @@ class HelmDocumentParser {
             let inDollarContext = undefined
             if (args[0][0] === "$") {
                 inDollarContext = args.shift()!
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length) 
                 if (args.length === 0) {
                     // Output the variable.
-                    const startIndex = match.index!
-                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length) 
                     document = `${beforeRegion}${this.context[args[0]]}${afterRegion}`
                     continue
+                } else {
+                    // Hide this!
+                    document = `${beforeRegion}${afterRegion}`
                 }
                 args.shift()
             }
