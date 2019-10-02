@@ -102,7 +102,7 @@ class HelmDocumentParser {
         // Iterate through the beginning parts.
         let currentCtx = this.context
         for (const part of defSplit) {
-            currentCtx = this.context[part]
+            currentCtx = currentCtx[part]
             if (currentCtx === undefined) return undefined
         }
 
@@ -318,7 +318,6 @@ class HelmDocumentParser {
                     if (a === "-") continue
                     const res = this._helmdef2object(a)
                     if (res) {
-                        console.log(res)
                         const startIndex = match.index!
                         const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                         return `${beforeRegion}${res}${afterRegion}`
