@@ -399,6 +399,9 @@ class HelmDocumentParser {
             case "printf": {
                 // Handles printf.
                 const a = this._parseArgs(args)
+                const formatter = a.shift()!
+                if (typeof formatter === "string") throw new Error("Formatter must be a quote!")
+                // TODO: Take "formatter" and run printf with the given args.
                 console.log(a)
             }
             default: {
