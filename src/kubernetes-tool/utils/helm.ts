@@ -478,12 +478,22 @@ export default class HelmCoreParser {
         this.promise = this._exec()
     }
 
+    // Capitalized all the keys.
+    private _capAll(records: Record<string, any>): Record<string, any> {
+        const x: Record<string, any> = {}
+        for (const r in records) {
+            const split = r.split("")
+            x[`${split.shift()!.toUpperCase()}${split.join("").toLowerCase()}`] = records[r]
+        }
+        return x
+    }
+
     // Handles the Helm folder.
     private async _handleFolder(path: string): Promise<HelmResult | null> {
         const unparsedChartInformation = await fs.get(`${path}/Chart.yaml`)
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
         const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
-        this.context.context.Chart = chartYaml
+        this.context.context.Chart = this._capAll(chartYaml)
         const maintainers: HelmChartMaintainer[] = []
         for (const m of chartYaml.maintainers) maintainers.push(new HelmChartMaintainer(m.name, m.email))
         const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
