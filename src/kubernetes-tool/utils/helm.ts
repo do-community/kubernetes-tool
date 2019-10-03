@@ -14,6 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Imports printj.
+import * as printj from "printj"
+
 // Imports the GitHub filesystem.
 import GitHubFS from "./githubFs"
 
@@ -371,11 +374,21 @@ class HelmDocumentParser {
             }
             case "quote": {
                 // Defines the function to quote all the things.
-                const join = match[1].trim()
-                if (join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                let a = this._parseArgs(args)[0]
+                let toQuote = ""
+                if (typeof a === "string") {
+                    // HACK: TypeScript does not understand typeof very well.
+                    a = (a as unknown) as string
+                    if (a.startsWith("$")) toQuote = this.variables[a]
+                    else toQuote = this._helmdef2object(a)
+                } else {
+                    // HACK: TypeScript does not understand typeof very well.
+                    a = (a as unknown) as Quote
+                    toQuote = a.text
+                }
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${this._quote(this._helmdef2object(join))}${afterRegion}`
+                return `${beforeRegion}${this._quote(toQuote)}${afterRegion}`
             }
             case "define": {
                 // Defines an item.
@@ -399,10 +412,32 @@ class HelmDocumentParser {
             case "printf": {
                 // Handles printf.
                 const a = this._parseArgs(args)
-                const formatter = a.shift()!
+                let formatter = a.shift()!
                 if (typeof formatter === "string") throw new Error("Formatter must be a quote!")
-                // TODO: Take "formatter" and run printf with the given args.
-                console.log(a)
+                
+                // HACK: TypeScript does not understand typeof very well.
+                formatter = (formatter as unknown) as Quote
+
+                const transformedArgs: String[] = []
+                for (let part of a) {
+                    if (typeof formatter === "string") {
+                        // HACK: TypeScript does not understand typeof very well.
+                        part = (part as unknown) as string
+
+                        if (part.startsWith("$")) transformedArgs.push(this.variables[part])
+                        else transformedArgs.push(this._helmdef2object(part))
+                    } else {
+                        // HACK: TypeScript does not understand typeof very well.
+                        part = (part as unknown) as Quote
+
+                        transformedArgs.push(part.text)
+                    }
+                }
+
+                const formatted = printj.sprintf(formatter.text, ...transformedArgs)
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${formatted}${afterRegion}`
             }
             default: {
                 // Not a statement, is it a definition?
