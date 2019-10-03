@@ -132,16 +132,12 @@ class HelmDocumentParser {
     }
 
     // Checks the condition given by doing some basic parsing.
-    private _checkCondition(condition: string | undefined): boolean {
+    private _checkCondition(args: (string | Quote)[] | undefined): boolean {
         // Return true if undefined.
-        if (!condition) return true
-
-        // Trim the condition initially.
-        condition = condition.trim().replace(/  +/g, " ")
+        if (!args) return true
 
         // Split this condition.
-        const args = condition.split(/"[^"]+"| /)
-        const conditionSplit: string[] = []
+        const conditionSplit: (string | Quote)[] = []
         for (const a of args) {
             if (a !== "") conditionSplit.push(a)
         }
@@ -190,7 +186,7 @@ class HelmDocumentParser {
                 break
             }
             default: {
-                if (operator.startsWith(".")) {
+                if (typeof operator === "string" && operator.startsWith(".")) {
                     // This *should* be the condition.
                     return Boolean(this._helmdef2object(operator))
                 } else {
@@ -204,18 +200,24 @@ class HelmDocumentParser {
 
         // Goes through each part applying the rule above.
         for (const arg of conditionSplit) {
-            if (arg.startsWith("(")) {
-                // Inline function! Get the bits inbetween.
-                const m = arg.match(/^(.+)$/)
-                if (!m) throw new Error(`"${arg}" - Invalid argument!`)
-                const middle = m[1]
-                dataParts.push(this._checkCondition(middle))
-                continue
-            }
-
-            if (arg.startsWith(".")) {
-                // Get the attribute.
-                dataParts.push(this._helmdef2object(arg))
+            if (typeof arg === "string") {
+                if (arg.startsWith("(")) {
+                    // Inline function! Get the bits inbetween.
+                    const m = String(arg).match(/^(.+)$/)
+                    if (!m) throw new Error(`"${arg}" - Invalid argument!`)
+                    const middle = m[1]
+                    dataParts.push(this._checkCondition(this._parseArgs(middle.split(" "))))
+                    continue
+                }
+    
+                if (arg.startsWith(".")) {
+                    // Get the attribute.
+                    dataParts.push(this._helmdef2object(arg))
+                    continue
+                }
+            } else {
+                // Is a quote.
+                dataParts.push(arg.text)
                 continue
             }
 
@@ -243,7 +245,8 @@ class HelmDocumentParser {
     }
 
     // Handles if statements.
-    private _handleIfBlock(condition: string, block: string, ifLength: number, endLength: number): string {
+    private _handleIfBlock(condition: (string | Quote)[], block: string, ifLength: number, endLength: number): string {
+        console.log([condition, block, ifLength, endLength])
         // Remove the if/end statement from the block.
         block = block.substr(0, block.length - endLength).substr(ifLength, block.length).trim()
 
@@ -359,7 +362,7 @@ class HelmDocumentParser {
                 const startIndex = match.index!
                 const { length, endIndex } = this._findEnd(document, match[0])
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                return `${beforeRegion}${this._handleIfBlock(this._joinQuoteString(args, " "), cropped, match.input!.length, length)}${afterRegion}`
+                return `${beforeRegion}${this._handleIfBlock(args, cropped, match.input!.length, length)}${afterRegion}`
             }
             case "else": {
                 // This needs to be in a if statement.
@@ -512,7 +515,7 @@ class HelmDocumentParser {
 
             if (args.includes("|")) {
                 // We need to pipe all the things down the argument chain
-                const bundles: string[][] = []
+                const bundles: (string | Quote)[][] = []
                 let buffer: string[] = []
                 for (const a of args) {
                     if (a !== " ") {
@@ -523,12 +526,13 @@ class HelmDocumentParser {
                             buffer.push(a)
                         }
                     }
-                    const startIndex = match.index!
-                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                    const pipeHandler = this._handlePipe(bundles, match)
-                    if (inDollarContext) this.variables[inDollarContext] = pipeHandler
-                    else document = `${beforeRegion}${pipeHandler}${afterRegion}`
                 }
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                console.log(bundles)
+                const pipeHandler = this._handlePipe(bundles, match)
+                if (inDollarContext) this.variables[inDollarContext] = pipeHandler
+                else document = `${beforeRegion}${pipeHandler}${afterRegion}`
             } else {
                 // Execute any statements in the document.
                 const cmd = args.shift()!.toLowerCase()
