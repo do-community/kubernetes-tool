@@ -409,6 +409,11 @@ class HelmDocumentParser {
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}${this.templateContext[args[0]]}${afterRegion}`
             }
+            case "trunc": {
+                // Handles truncation.
+                const a = this._parseArgs(args)
+                console.log(a)
+            }
             case "printf": {
                 // Handles printf.
                 const a = this._parseArgs(args)
@@ -509,8 +514,9 @@ class HelmDocumentParser {
                     }
                     const startIndex = match.index!
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                    if (inDollarContext) this.variables[inDollarContext] = this._handlePipe(bundles, match)
-                    else document = `${beforeRegion}${this._handlePipe(bundles, match)}${afterRegion}`
+                    const pipeHandler = this._handlePipe(bundles, match)
+                    if (inDollarContext) this.variables[inDollarContext] = pipeHandler
+                    else document = `${beforeRegion}${pipeHandler}${afterRegion}`
                 }
             } else {
                 // Execute any statements in the document.
