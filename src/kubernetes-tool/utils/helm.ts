@@ -91,6 +91,16 @@ class HelmDocumentParser {
         }
     }
 
+    // Joins quotes and strings.
+    private _joinQuoteString(data: (string | Quote)[], join: string) {
+        const args: string[] = []
+        for (const d of data) {
+            if (typeof d === "string") args.push(d)
+            else args.push(d.text)
+        }
+        return args.join(join)
+    }
+
     // Crops out a part of a document.
     private _crop(data: string, start: number, end: number): {
         cropped: string;
@@ -341,7 +351,7 @@ class HelmDocumentParser {
     }
 
     // Executes a statement.
-    private _execStatement(statement: string, match: RegExpMatchArray, document: string, args: string[]) {
+    private _execStatement(statement: string, match: RegExpMatchArray, document: string, args: (string | Quote)[]) {
         switch (statement) {
             // TODO: Some more operators are needed here.
             case "if": {
@@ -349,7 +359,7 @@ class HelmDocumentParser {
                 const startIndex = match.index!
                 const { length, endIndex } = this._findEnd(document, match[0])
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                return `${beforeRegion}${this._handleIfBlock(args.join(" "), cropped, match.input!.length, length)}${afterRegion}`
+                return `${beforeRegion}${this._handleIfBlock(this._joinQuoteString(args, " "), cropped, match.input!.length, length)}${afterRegion}`
             }
             case "else": {
                 // This needs to be in a if statement.
@@ -363,7 +373,9 @@ class HelmDocumentParser {
                 // Defines the default of a thing.
                 for (const a of args.reverse()) {
                     if (a === "-") continue
-                    const res = this._helmdef2object(a)
+                    let res
+                    if (typeof a === "string") res = this._helmdef2object(a)
+                    else res = a.text
                     if (res) {
                         const startIndex = match.index!
                         const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
@@ -374,7 +386,7 @@ class HelmDocumentParser {
             }
             case "quote": {
                 // Defines the function to quote all the things.
-                let a = this._parseArgs(args)[0]
+                let a = args[0]
                 let toQuote = ""
                 if (typeof a === "string") {
                     // HACK: TypeScript does not understand typeof very well.
@@ -400,31 +412,30 @@ class HelmDocumentParser {
                 argStart.pop()
                 argStart.shift()
                 result = `${argStart.join("}}")}}}`
-                this.templateContext[args[0]] = result
+                this.templateContext[String(args[0])] = result
                 return `${beforeRegion}${afterRegion}`
             }
             case "template": {
                 // Defines an existing template.
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${this.templateContext[args[0]]}${afterRegion}`
+                return `${beforeRegion}${this.templateContext[String(args[0])]}${afterRegion}`
             }
             case "trunc": {
                 // Handles truncation.
-                const a = this._parseArgs(args)
-                console.log(a)
+                console.log(args)
             }
             case "printf": {
                 // Handles printf.
-                const a = this._parseArgs(args)
-                let formatter = a.shift()!
+                let formatter = args.shift()!
+                console.log(formatter)
                 if (typeof formatter === "string") throw new Error("Formatter must be a quote!")
                 
                 // HACK: TypeScript does not understand typeof very well.
                 formatter = (formatter as unknown) as Quote
 
-                const transformedArgs: String[] = []
-                for (let part of a) {
+                const transformedArgs: string[] = []
+                for (let part of args) {
                     if (typeof formatter === "string") {
                         // HACK: TypeScript does not understand typeof very well.
                         part = (part as unknown) as string
@@ -462,10 +473,10 @@ class HelmDocumentParser {
     }
 
     // Handles pipes.
-    private _handlePipe(bundles: string[][], match: RegExpMatchArray) {
+    private _handlePipe(bundles: (string | Quote)[][], match: RegExpMatchArray) {
         let last = undefined
         for (const bundle of bundles) {
-            const cmd = bundle.shift()!
+            const cmd = bundle.shift()! as string
             if (last) bundle.push(last)
             last = this._execStatement(cmd, match, "", bundle)
         }
@@ -520,8 +531,10 @@ class HelmDocumentParser {
                 }
             } else {
                 // Execute any statements in the document.
-                if (inDollarContext) this._execStatement(args.shift()!.toLowerCase(), match, "", args)
-                else document = this._execStatement(args.shift()!.toLowerCase(), match, document, args)
+                const cmd = args.shift()!.toLowerCase()
+                const a = this._parseArgs(args)
+                if (inDollarContext) this._execStatement(cmd, match, "", a)
+                else document = this._execStatement(cmd, match, document, a)
             }
         }
 
