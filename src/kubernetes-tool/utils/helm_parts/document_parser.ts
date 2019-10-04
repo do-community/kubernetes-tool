@@ -207,25 +207,27 @@ export default class HelmDocumentParser {
 
         // Defines all the variables.
         const variables = []
-        for (;;) {
-            if (typeof condition[0] === "string") {
-                let c = condition[0] as string
-                if (c.endsWith(",")) {
-                    c = c.substr(0, condition.length - 1)
-                }
-                if (c.startsWith("$")) {
-                    condition.shift()
-                    variables.push(c)
+
+        if (condition.length !== 1) {
+            // Gets all the variables.
+            for (;;) {
+                if (typeof condition[0] === "string") {
+                    let c = condition[0] as string
+                    if (c.endsWith(",")) c = c.substr(0, c.length - 1)
+                    if (c.startsWith("$")) {
+                        condition.shift()
+                        variables.push(c)
+                    } else {
+                        break
+                    }
                 } else {
                     break
                 }
-            } else {
-                break
-            }
-        }
+            }  
 
-        // Shift out the ":="
-        condition.shift()
+            // Shift out the ":="
+            condition.shift()
+        }
 
         // Iterates the object.
         const parts = []
@@ -234,7 +236,7 @@ export default class HelmDocumentParser {
             const i = obj[k]
             if (variables.length === 1) {
                 this.variables[variables[0]] = i
-            } else {
+            } else if (variables.length === 2) {
                 this.variables[variables[0]] = k
                 this.variables[variables[1]] = i
             }
