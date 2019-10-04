@@ -21,7 +21,7 @@ import * as printj from "printj"
 import GitHubFS from "./githubFs"
 
 // A YAML parser.
-import { safeLoad } from "js-yaml"
+import { safeLoad, safeDump } from "js-yaml"
 
 // Defines the filesystem for the Helm Charts official repository.
 const fs = new GitHubFS("helm/charts")
@@ -254,7 +254,7 @@ class HelmDocumentParser {
         // condition [string | undefined] - The condition to trigger the else statement. Can be none.
         // block [string] - The block to be returned.
         const elses: {
-            condition: string | undefined;
+            condition: (string | Quote)[] | undefined;
             block: string;
         }[] = []
 
@@ -282,7 +282,7 @@ class HelmDocumentParser {
                     // If it does not exist, we can just go to the end of the document.
                     const elseStart = elseRegexpMatch.index!
                     const elseLength = elseRegexpMatch[0].length
-                    const condition = elseRegexpMatch[1]
+                    const condition = this._parseArgs(elseRegexpMatch[1].split(" "))
                     elseRegexpMatch = part.match(r)
                     if (elseRegexpMatch) {
                         elses.push({
@@ -426,12 +426,53 @@ class HelmDocumentParser {
             }
             case "trunc": {
                 // Handles truncation.
-                console.log(args)
+                const integer = Number(args.shift()!)
+                if (integer === NaN) throw new Error(`${match[0]} - Truncation value not a number!`)
+                if (typeof args[0] === "string") {
+                    throw new Error(`${match[0]} - Value to truncate must be a quote.`)
+                } else {
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                    return `${beforeRegion}${args[0].text.substr(0, integer)}${afterRegion}`
+                }
+            }
+            case "indent": {
+                // Indents by X number of spaces.
+                const integer = Number(args.shift()!)
+                if (integer === NaN) throw new Error(`${match[0]} - Truncation value not a number!`)
+                if (typeof args[0] === "string") {
+                    throw new Error(`${match[0]} - Value to truncate must be a quote.`)
+                } else {
+                    let indentedText = ""
+                    for (const part of args[0].text.split(" ")) {
+                        indentedText += " ".repeat(integer) + part
+                    }
+                    const startIndex = match.index!
+                    const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                    return `${beforeRegion}${indentedText}${afterRegion}`
+                }
+            }
+            case "toYaml": {
+                // Takes a value and dumps it into YAML.
+                let yaml = ""
+                const arg = args[0]
+                if (typeof arg === "string") {
+                    if (arg.startsWith("$")) {
+                        yaml = safeDump(this.variables[arg])
+                    } else {
+                        const helmDump = this._helmdef2object(arg)
+                        yaml = safeDump(helmDump === undefined ? null : helmDump)
+                    }
+                } else {
+                    yaml = safeDump(arg.text)
+                }
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${yaml}${afterRegion}`
             }
             case "printf": {
                 // Handles printf.
                 let formatter = args.shift()!
-                console.log(formatter)
                 if (typeof formatter === "string") throw new Error("Formatter must be a quote!")
                 
                 // HACK: TypeScript does not understand typeof very well.
@@ -492,6 +533,7 @@ class HelmDocumentParser {
 
         // Look for any statements in the document.
         for (;;) {
+            if (!document) document = ""
             const match = document.match(helmStatement)
             if (!match) break
             const args = match[1].trim().split(" ")
@@ -529,7 +571,6 @@ class HelmDocumentParser {
                 }
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                console.log(bundles)
                 const pipeHandler = this._handlePipe(bundles, match)
                 if (inDollarContext) this.variables[inDollarContext] = pipeHandler
                 else document = `${beforeRegion}${pipeHandler}${afterRegion}`
