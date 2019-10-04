@@ -47,16 +47,6 @@ export default class HelmDocumentParser {
         }
     }
 
-    // Joins quotes and strings.
-    private _joinQuoteString(data: (string | Quote)[], join: string) {
-        const args: string[] = []
-        for (const d of data) {
-            if (typeof d === "string") args.push(d)
-            else args.push(d.text)
-        }
-        return args.join(join)
-    }
-
     // Crops out a part of a document.
     private _crop(data: string, start: number, end: number): {
         cropped: string;
@@ -210,9 +200,53 @@ export default class HelmDocumentParser {
         return final
     }
 
+    // Handles range statements.
+    private _handleRangeBlock(condition: (string | Quote)[], block: string, rangeLength: number, endLength: number): string {
+        // Remove the range/end statement from the block.
+        block = block.substr(0, block.length - endLength).substr(rangeLength, block.length).trim()
+
+        // Defines all the variables.
+        const variables = []
+        for (;;) {
+            if (typeof condition[0] === "string") {
+                let c = condition[0] as string
+                if (c.endsWith(",")) {
+                    c = c.substr(0, condition.length - 1)
+                }
+                if (c.startsWith("$")) {
+                    condition.shift()
+                    variables.push(c)
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
+        }
+
+        // Shift out the ":="
+        condition.shift()
+
+        // Iterates the object.
+        const parts = []
+        const obj = this._helmdef2object(condition[0] as string) || {}
+        for (const k in obj) {
+            const i = obj[k]
+            if (variables.length === 1) {
+                this.variables[variables[0]] = i
+            } else {
+                this.variables[variables[0]] = k
+                this.variables[variables[1]] = i
+            }
+            parts.push(this._eval(block))
+        }
+
+        // Returns all the parts joined.
+        return parts.join("")
+    }
+
     // Handles if statements.
     private _handleIfBlock(condition: (string | Quote)[], block: string, ifLength: number, endLength: number): string {
-        console.log([condition, block, ifLength, endLength])
         // Remove the if/end statement from the block.
         block = block.substr(0, block.length - endLength).substr(ifLength, block.length).trim()
 
@@ -330,6 +364,13 @@ export default class HelmDocumentParser {
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
                 return `${beforeRegion}${this._handleIfBlock(args, cropped, match.input!.length, length)}${afterRegion}`
             }
+            case "range": {
+                // Defines the range statement.
+                const startIndex = match.index!
+                const { length, endIndex } = this._findEnd(document, match[0])
+                const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
+                return `${beforeRegion}${this._handleRangeBlock(args, cropped, match.input!.length, length)}${afterRegion}`
+            }
             case "else": {
                 // This needs to be in a if statement.
                 throw new Error(`${match[0]} - This should be in a if statement!`)
@@ -399,7 +440,7 @@ export default class HelmDocumentParser {
                 } else {
                     const startIndex = match.index!
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                    return `${beforeRegion}${args[0].text.substr(0, integer)}${afterRegion}`
+                    return `${beforeRegion}${(args[0] as Quote).text.substr(0, integer)}${afterRegion}`
                 }
             }
             case "indent": {
@@ -410,7 +451,7 @@ export default class HelmDocumentParser {
                     throw new Error(`${match[0]} - Value to truncate must be a quote.`)
                 } else {
                     let indentedText = ""
-                    for (const part of args[0].text.split(" ")) {
+                    for (const part of (args[0] as Quote).text.split(" ")) {
                         indentedText += " ".repeat(integer) + part
                     }
                     const startIndex = match.index!
