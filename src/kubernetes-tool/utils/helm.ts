@@ -569,6 +569,7 @@ class HelmDocumentParser {
                         }
                     }
                 }
+                for (const bundleIndex in bundles) bundles[bundleIndex] = this._parseArgs(bundles[bundleIndex] as string[])
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 const pipeHandler = this._handlePipe(bundles, match)
