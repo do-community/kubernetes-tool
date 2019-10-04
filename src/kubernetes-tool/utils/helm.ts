@@ -14,6 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Imports semver.
+import * as semver from "semver"
+
 // Imports printj.
 import * as printj from "printj"
 
@@ -151,6 +154,9 @@ class HelmDocumentParser {
         // Does one string contain another?
         let contain = true
 
+        // Is this a semver check?
+        let semverFlag = false
+
         // Check/set what the operator is. Can be eq, ne, lt, gt, and, or, not or a boolean value (ref: https://helm.sh/docs/chart_template_guide/#operators-are-functions)
         switch (operator) {
             case "eq": {
@@ -183,6 +189,10 @@ class HelmDocumentParser {
             }
             case "contains": {
                 contain = true
+                break
+            }
+            case "semverCompare": {
+                semverFlag = true
                 break
             }
             default: {
@@ -224,6 +234,9 @@ class HelmDocumentParser {
             // Whayyyyyyyyyyyt.
             throw new Error(`"${arg}" - Invalid argument!`)
         }
+
+        // Handles semver.
+        if (semverFlag) return semver.eq(dataParts[0], dataParts[1])
 
         // If this is a not statement, we only need to worry about the first arg.
         if (not) return !Boolean(dataParts[0])
