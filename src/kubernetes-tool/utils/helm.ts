@@ -521,7 +521,7 @@ class HelmDocumentParser {
         let last = undefined
         for (const bundle of bundles) {
             const cmd = bundle.shift()! as string
-            if (last) bundle.push(last)
+            if (last) bundle.push(new Quote(last))
             last = this._execStatement(cmd, match, "", bundle)
         }
     }
