@@ -19,6 +19,7 @@ import { Quote, OperatorManager, helmStatement } from "./utils"
 import * as semver from "semver"
 import * as printj from "printj"
 import { safeDump } from "js-yaml"
+import escapeStringRegexp from "escape-string-regexp"
 
 // The Helm document parser.
 export default class HelmDocumentParser {
@@ -39,7 +40,13 @@ export default class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        const m = document.match(/{{[ -]*end[ -]*}}/)
+        // Handles indentiation.
+        const indentRegex = new RegExp(`([\\v\\t ]*)${escapeStringRegexp(statement)}`)
+        const indentMatch = document.match(indentRegex)
+        let spacing = ""
+        if (indentMatch) spacing = indentMatch[1]
+
+        let m = document.match(new RegExp(`^${spacing}{{[ -]*end[ -]*}}`, "m"))
         if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
         return {
             length: m[0].length,
@@ -375,6 +382,7 @@ export default class HelmDocumentParser {
             }
             case "else": {
                 // This needs to be in a if statement.
+                console.log(document)
                 throw new Error(`${match[0]} - This should be in a if statement!`)
             }
             case "end": {

@@ -5,7 +5,8 @@
         "allowJs": true,
         "noEmit": true,
         "noImplicitAny": true,
-        "strict": true
+        "strict": true,
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"
