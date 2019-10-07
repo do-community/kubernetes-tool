@@ -107,6 +107,9 @@ export default class HelmDocumentParser {
         // Is this a semver check?
         let semverFlag = false
 
+        // Is this a empty check?
+        let empty = false
+
         // Check/set what the operator is. Can be eq, ne, lt, gt, and, or, not or a boolean value (ref: https://helm.sh/docs/chart_template_guide/#operators-are-functions)
         switch (operator) {
             case "eq": {
@@ -143,6 +146,10 @@ export default class HelmDocumentParser {
             }
             case "semverCompare": {
                 semverFlag = true
+                break
+            }
+            case "empty": {
+                empty = true
                 break
             }
             default: {
@@ -193,6 +200,15 @@ export default class HelmDocumentParser {
 
         // Check if one contains the other.
         if (contain) return String(dataParts[0]).includes(dataParts[1])
+
+        // Check if any of the things are blank.
+        if (empty) {
+            empty = false
+            for (const p of dataParts) {
+                if (String(p) === "") empty = true
+            }
+            return empty
+        }
 
         // Get the final result.
         let final = true
@@ -268,7 +284,7 @@ export default class HelmDocumentParser {
         }[] = []
 
         // Splits the block by any inline if statements.
-        const blockSplit = block.split(/{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
+        const blockSplit = block.split(/[\r\n \t\v]*{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
         let recreatedBlock = ""
         for (let part of blockSplit) {
             if (part.substr(2).trim().startsWith("if")) {
