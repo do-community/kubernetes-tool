@@ -166,14 +166,35 @@ export default class HelmDocumentParser {
         const dataParts: any[] = []
 
         // Goes through each part applying the rule above.
-        for (const arg of conditionSplit) {
+        for (;;) {
+            const arg = conditionSplit[0]
+            if (arg === undefined) break
+
             if (typeof arg === "string") {
                 if (arg.startsWith("(")) {
                     // Inline function! Get the bits inbetween.
-                    const m = String(arg).match(/^(.+)$/)
-                    if (!m) throw new Error(`"${arg}" - Invalid argument!`)
-                    const middle = m[1]
-                    dataParts.push(this._checkCondition(this._parseArgs(middle.split(" "))))
+                    const argParts = []
+                    if (arg.endsWith(")")) {
+                        argParts.push(arg.substr(1, arg.length - 2))
+                    } else {
+                        // Get any related arguments.
+                        argParts.push(arg.substr(1))
+                        for (;;) {
+                            const item = conditionSplit.shift()
+                            if (item === undefined) {
+                                throw new Error(`"${arg}" - Unterminated brackets!`)
+                            } else {
+                                if (typeof item === "string" && item.endsWith(")")) {
+                                    argParts.push(item.substr(0, arg.length - 2))
+                                    break
+                                } else {
+                                    argParts.push(item)
+                                }
+                            }
+                        }
+                    }
+
+                    dataParts.push(this._checkCondition(argParts))
                     continue
                 }
     
