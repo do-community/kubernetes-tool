@@ -419,7 +419,6 @@ export default class HelmDocumentParser {
             }
             case "else": {
                 // This needs to be in a if statement.
-                console.log(document)
                 throw new Error(`${match[0]} - This should be in a if statement!`)
             }
             case "end": {
