@@ -110,6 +110,9 @@ export default class HelmDocumentParser {
         // Is this a empty check?
         let empty = false
 
+        // Is this a include?
+        let include = false
+
         // Check/set what the operator is. Can be eq, ne, lt, gt, and, or, not or a boolean value (ref: https://helm.sh/docs/chart_template_guide/#operators-are-functions)
         switch (operator) {
             case "eq": {
@@ -150,6 +153,10 @@ export default class HelmDocumentParser {
             }
             case "empty": {
                 empty = true
+                break
+            }
+            case "include": {
+                include = true
                 break
             }
             default: {
@@ -210,8 +217,11 @@ export default class HelmDocumentParser {
             }
 
             // Whayyyyyyyyyyyt.
-            throw new Error(`"${arg}" - Invalid argument!`)
+            if (arg !== "-") throw new Error(`"${arg}" - Invalid argument!`)
         }
+
+        // Handles include.
+        if (include) return dataParts[0]
 
         // Handles semver.
         if (semverFlag) return semver.eq(dataParts[0], dataParts[1])
@@ -551,6 +561,16 @@ export default class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}${formatted}${afterRegion}`
+            }
+            case "include": {
+                // Handle include here too.
+                const join = match[1].trim()
+                let item
+                if (join.startsWith(".")) item = this._helmdef2object(join)
+                else if (join.startsWith("$")) item = this.variables[join]
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${item}${afterRegion}` 
             }
             default: {
                 // Not a statement, is it a definition?
