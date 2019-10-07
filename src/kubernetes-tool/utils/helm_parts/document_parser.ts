@@ -167,7 +167,7 @@ export default class HelmDocumentParser {
 
         // Goes through each part applying the rule above.
         for (;;) {
-            const arg = conditionSplit[0]
+            const arg = conditionSplit.shift()
             if (arg === undefined) break
 
             if (typeof arg === "string") {
