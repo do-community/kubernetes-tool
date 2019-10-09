@@ -19,7 +19,7 @@ import { Quote, OperatorManager, helmStatement } from "./utils"
 import * as semver from "semver"
 import * as printj from "printj"
 import { safeDump } from "js-yaml"
-import escapeStringRegexp from "escape-string-regexp"
+import uuidv4 from "uuid/v4"
 
 // The Helm document parser.
 export default class HelmDocumentParser {
@@ -40,13 +40,18 @@ export default class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        // Handles indentiation.
-        const indentRegex = new RegExp(`([\\v\\t ]*)${escapeStringRegexp(statement)}`)
-        const indentMatch = document.match(indentRegex)
-        let spacing = ""
-        if (indentMatch) spacing = indentMatch[1]
-
-        let m = document.match(new RegExp(`^${spacing}{{[ -]*end[ -]*}}`, "m"))
+        let matchIterator = document.matchAll(new RegExp(`{{[ -]*end[ -]*}}`))
+        const matches = []
+        for (;;) {
+            const n = matchIterator.next()
+            if (n.done) break
+            matches.push(n.value)
+        }
+        let m
+        for (const n of matches.reverse()) {
+            m = n;
+            break
+        }
         if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
         return {
             length: m[0].length,
@@ -257,7 +262,9 @@ export default class HelmDocumentParser {
     // Handles range statements.
     private _handleRangeBlock(condition: (string | Quote)[], block: string, rangeLength: number, endLength: number): string {
         // Remove the range/end statement from the block.
-        block = block.substr(0, block.length - endLength).substr(rangeLength, block.length).trim()
+        const start = block.length - rangeLength
+        block = block.substr(start)
+        block = block.substr(0, block.length - endLength).trim()
 
         // Defines all the variables.
         const variables = []
@@ -302,9 +309,10 @@ export default class HelmDocumentParser {
     }
 
     // Handles if statements.
-    private _handleIfBlock(condition: (string | Quote)[], block: string, ifLength: number, endLength: number): string {
+    private _handleIfBlock(condition: (string | Quote)[], block: string, ifStatement: string, endLength: number): string {
         // Remove the if/end statement from the block.
-        block = block.substr(0, block.length - endLength).substr(ifLength, block.length).trim()
+        block = block.substr(ifStatement.length)
+        block = block.substr(0, block.length - endLength - 1).trim()
 
         // This array will be full of else statements.
         // condition [string | undefined] - The condition to trigger the else statement. Can be none.
@@ -315,10 +323,10 @@ export default class HelmDocumentParser {
         }[] = []
 
         // Splits the block by any inline if statements.
-        const blockSplit = block.split(/[\r\n \t\v]*{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
+        const blockSplit = block.split(/{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
         let recreatedBlock = ""
         for (let part of blockSplit) {
-            if (part.substr(2).trim().startsWith("if")) {
+            if (part.includes("if")) {
                 // This is a if statement. Add this into the block.
                 recreatedBlock += part
             } else {
@@ -327,12 +335,12 @@ export default class HelmDocumentParser {
                     const r = /{{[ -]*else([^}]*)[ -]*}}/
                     let elseRegexpMatch = part.match(r)
                     if (!elseRegexpMatch) {
-                        recreatedBlock += elseRegexpMatch
+                        recreatedBlock += part
                         break
                     }
 
                     // Remove the match from the part.
-                    part = part.substr(0, elseRegexpMatch.index! + elseRegexpMatch[0].length)
+                    part = part.substr(0, part.length - elseRegexpMatch[0].length)
 
                     // Search for the next else if it exists.
                     // If it does not exist, we can just go to the end of the document.
@@ -341,13 +349,16 @@ export default class HelmDocumentParser {
                     const condition = this._parseArgs(elseRegexpMatch[1].split(" "))
                     elseRegexpMatch = part.match(r)
                     if (elseRegexpMatch) {
+                        const p = part.substr(elseStart + elseLength)
+                        console.log(p)
+                        const m = p.match(r)
                         elses.push({
-                            block: part.substr(elseStart + elseLength, part.length - elseRegexpMatch.index!),
+                            block: p.substr(0, part.length - m!.index!),
                             condition: condition,
                         })
                     } else {
                         elses.push({
-                            block: part.substr(elseStart + elseLength, part.length),
+                            block: part.substr(elseStart + elseLength),
                             condition: condition,
                         })
                     }
@@ -412,20 +423,43 @@ export default class HelmDocumentParser {
     // Executes a statement.
     private _execStatement(statement: string, match: RegExpMatchArray, document: string, args: (string | Quote)[]) {
         switch (statement) {
-            // TODO: Some more operators are needed here.
+            case "env": {
+                // Gets a enviroment variable.
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                let toQuote = ""
+                let a = args[0]
+                if (typeof a === "string") {
+                    // HACK: TypeScript does not understand typeof very well.
+                    a = (a as unknown) as string
+                    if (a.startsWith("$")) toQuote = this.variables[a]
+                    else toQuote = this._helmdef2object(a)
+                } else {
+                    // HACK: TypeScript does not understand typeof very well.
+                    a = (a as unknown) as Quote
+                    toQuote = a.text
+                }
+                return `${beforeRegion}<${toQuote} env>${afterRegion}` 
+            }
+            case "uuidv4": {
+                // Makes a UUID.
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${uuidv4()}${afterRegion}` 
+            }
             case "if": {
                 // Defines the if statement.
                 const startIndex = match.index!
                 const { length, endIndex } = this._findEnd(document, match[0])
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                return `${beforeRegion}${this._handleIfBlock(args, cropped, match.input!.length, length)}${afterRegion}`
+                return `${beforeRegion}${this._handleIfBlock(args, cropped, match[0], length)}${afterRegion}`
             }
             case "range": {
                 // Defines the range statement.
                 const startIndex = match.index!
                 const { length, endIndex } = this._findEnd(document, match[0])
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                return `${beforeRegion}${this._handleRangeBlock(args, cropped, match.input!.length, length)}${afterRegion}`
+                return `${beforeRegion}${this._handleRangeBlock(args, cropped, match[0].length, length)}${afterRegion}`
             }
             case "else": {
                 // This needs to be in a if statement.
@@ -604,7 +638,19 @@ export default class HelmDocumentParser {
         // Look for any statements in the document.
         for (;;) {
             if (!document) document = ""
-            const match = document.match(helmStatement)
+            let matchIterator = document.matchAll(helmStatement)
+            const matches = []
+            for (;;) {
+                const n = matchIterator.next()
+                if (n.done) break
+                matches.push(n.value)
+            }
+            let match
+            for (const n of matches.reverse()) {
+                if (n[1].includes("end") || n[1].includes("else")) continue
+                match = n
+                break
+            }
             if (!match) break
             const args = match[1].trim().split(" ")
 

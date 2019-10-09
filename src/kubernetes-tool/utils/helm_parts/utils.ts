@@ -43,7 +43,7 @@ export class Quote {
 }
 
 // A statement in Helm.
-export const helmStatement = /{{[ -]*([^}]+)[ -]*}}/
+export const helmStatement = /{{[ -]*([^}]+)[ -]*}}/g
 
 // Defines the filesystem for the Helm Charts official repository.
 export const fs = new GitHubFS("helm/charts")
