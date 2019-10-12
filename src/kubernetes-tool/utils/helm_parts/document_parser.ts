@@ -498,21 +498,24 @@ export default class HelmDocumentParser {
             case "define": {
                 // Defines an item.
                 const startIndex = match.index!
-                const { length, endIndex } = this._findEnd(document, match)
-                const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
-                let result = cropped.substr(0, cropped.length - length)
-                const argStart = result.split("}}")
-                argStart.pop()
-                argStart.shift()
-                result = `${argStart.join("}}")}}}`
-                this.templateContext[String(args[0])] = result
+                const { endIndex: beforeEndIndex } = this._findEnd(document, match)
+                let { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, beforeEndIndex)
+                const m = cropped.match(/{{[ -]*end[ -]*}}/)
+                cropped = cropped.substr(0, m!.index!).substr(match[0].length).trim()
+                let arg
+                if (typeof args[0] === "string") arg = args[0]
+                else arg = args[0].text
+                this.templateContext[arg] = cropped
                 return `${beforeRegion}${afterRegion}`
             }
             case "template": {
                 // Defines an existing template.
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${this.templateContext[String(args[0])]}${afterRegion}`
+                let arg
+                if (typeof args[0] === "string") arg = args[0]
+                else arg = args[0].text
+                return `${beforeRegion}${this.templateContext[arg]}${afterRegion}`
             }
             case "trunc": {
                 // Handles truncation.
