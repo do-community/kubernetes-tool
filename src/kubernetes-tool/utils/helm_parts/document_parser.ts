@@ -36,23 +36,25 @@ export default class HelmDocumentParser {
     }
 
     // Finds the end statement.
-    private _findEnd(document: string, statement: string): {
+    private _findEnd(document: string, match: RegExpMatchArray): {
         length: number;
         endIndex: number;
     } {
-        let matchIterator = document.matchAll(new RegExp(`{{[ -]*end[ -]*}}`))
-        const matches = []
+        const matchIterator = document.matchAll(/{{[ -]*end[ -]*}}/g)
+        const arr = []
         for (;;) {
             const n = matchIterator.next()
             if (n.done) break
-            matches.push(n.value)
+            arr.push(n.value)
         }
         let m
-        for (const n of matches.reverse()) {
-            m = n;
-            break
+        for (const n of arr) {
+            if (n.index! > match.index!) {
+                m = n
+                break
+            }
         }
-        if (!m) throw new Error(`${statement} - No "end" found to this statement!`)
+        if (!m) throw new Error(`${match[0]} - No "end" found to this statement!`)
         return {
             length: m[0].length,
             endIndex: m.index! + m[0].length,
@@ -322,46 +324,35 @@ export default class HelmDocumentParser {
             block: string;
         }[] = []
 
-        // Splits the block by any inline if statements.
-        const blockSplit = block.split(/{{[ -]*if([^}]+)[ -]*}}.+{{[ -]*end[ -]*}}/)
+        // Recreates the else block.
+        let matchIterator = block.matchAll(/{{[ -]*(?:end|else)([^}]*)[ -]*}}/)
+        const matches = []
         let recreatedBlock = ""
-        for (let part of blockSplit) {
-            if (part.includes("if")) {
-                // This is a if statement. Add this into the block.
-                recreatedBlock += part
+        for (;;) {
+            const n = matchIterator.next()
+            if (n.done) break
+            matches.push(n.value)
+        }
+        for (const m of matches.reverse()) {
+            const index = m.index!
+            const innerMatch = m[1].split(" ")
+            if (innerMatch[0] === "end") {
+                // Remove this end.
+                block = block.substr(0, block.length - index)
             } else {
-                for (;;) {
-                    // This is NOT a if statement. Deal with any else's in it.
-                    const r = /{{[ -]*else([^}]*)[ -]*}}/
-                    let elseRegexpMatch = part.match(r)
-                    if (!elseRegexpMatch) {
-                        recreatedBlock += part
-                        break
-                    }
-
-                    // Remove the match from the part.
-                    part = part.substr(0, part.length - elseRegexpMatch[0].length)
-
-                    // Search for the next else if it exists.
-                    // If it does not exist, we can just go to the end of the document.
-                    const elseStart = elseRegexpMatch.index!
-                    const elseLength = elseRegexpMatch[0].length
-                    const condition = this._parseArgs(elseRegexpMatch[1].split(" "))
-                    elseRegexpMatch = part.match(r)
-                    if (elseRegexpMatch) {
-                        const p = part.substr(elseStart + elseLength)
-                        console.log(p)
-                        const m = p.match(r)
-                        elses.push({
-                            block: p.substr(0, part.length - m!.index!),
-                            condition: condition,
-                        })
-                    } else {
-                        elses.push({
-                            block: part.substr(elseStart + elseLength),
-                            condition: condition,
-                        })
-                    }
+                // Handles the else statement.
+                innerMatch.shift()
+                const end = block.substr(index).substr(m[0].length)
+                if (innerMatch.length === 0) {
+                    elses.push({
+                        block: end,
+                        condition: undefined,
+                    })
+                } else {
+                    elses.push({
+                        block: end,
+                        condition: this._parseArgs(innerMatch),
+                    })
                 }
             }
         }
@@ -450,14 +441,14 @@ export default class HelmDocumentParser {
             case "if": {
                 // Defines the if statement.
                 const startIndex = match.index!
-                const { length, endIndex } = this._findEnd(document, match[0])
+                const { length, endIndex } = this._findEnd(document, match)
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
                 return `${beforeRegion}${this._handleIfBlock(args, cropped, match[0], length)}${afterRegion}`
             }
             case "range": {
                 // Defines the range statement.
                 const startIndex = match.index!
-                const { length, endIndex } = this._findEnd(document, match[0])
+                const { length, endIndex } = this._findEnd(document, match)
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
                 return `${beforeRegion}${this._handleRangeBlock(args, cropped, match[0].length, length)}${afterRegion}`
             }
@@ -505,7 +496,7 @@ export default class HelmDocumentParser {
             case "define": {
                 // Defines an item.
                 const startIndex = match.index!
-                const { length, endIndex } = this._findEnd(document, match[0])
+                const { length, endIndex } = this._findEnd(document, match)
                 const { cropped, beforeRegion, afterRegion } = this._crop(document, startIndex, endIndex)
                 let result = cropped.substr(0, cropped.length - length)
                 const argStart = result.split("}}")
