@@ -606,7 +606,7 @@ export default class HelmDocumentParser {
                     const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                     return `${beforeRegion}${afterRegion}`
                 }
-                if (!join.startsWith(".")) throw new Error(`${match[0]} - Invalid definition!`)
+                if (!join.startsWith(".")) throw new Error(`${match[0]} (${statement}) - Invalid definition!`)
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
