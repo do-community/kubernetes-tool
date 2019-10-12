@@ -504,8 +504,8 @@ export default class HelmDocumentParser {
                 cropped = cropped.substr(0, m!.index!).substr(match[0].length).trim()
                 let arg
                 if (typeof args[0] === "string") arg = args[0]
-                else arg = args[0].text
-                this.templateContext[arg] = cropped
+                else arg = (args[0] as Quote).text
+                this.templateContext[arg as string] = cropped
                 return `${beforeRegion}${afterRegion}`
             }
             case "template": {
@@ -514,8 +514,8 @@ export default class HelmDocumentParser {
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 let arg
                 if (typeof args[0] === "string") arg = args[0]
-                else arg = args[0].text
-                return `${beforeRegion}${this.templateContext[arg]}${afterRegion}`
+                else arg = (args[0] as Quote).text
+                return `${beforeRegion}${this.templateContext[arg as string]}${afterRegion}`
             }
             case "trunc": {
                 // Handles truncation.
