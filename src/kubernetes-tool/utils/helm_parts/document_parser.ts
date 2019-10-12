@@ -734,6 +734,7 @@ export default class HelmDocumentParser {
         // Reset the variables.
         this.variables = {}
 
+        // Runs the internal eval function.
         return this._eval(document)
     }
 }
