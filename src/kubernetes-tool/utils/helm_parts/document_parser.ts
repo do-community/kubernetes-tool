@@ -364,6 +364,7 @@ export default class HelmDocumentParser {
             return recreatedBlock
         } else {
             for (const else_ of elses) {
+                if (else_.condition && else_.condition.length === 0) else_.condition = undefined
                 if (this._checkCondition(else_.condition)) return else_.block
             }
 
@@ -672,7 +673,13 @@ export default class HelmDocumentParser {
             }
             let match
             for (const n of matches.reverse()) {
-                if (n[1].includes("end") || n[1].includes("else")) continue
+                if (n[1].includes("end") || n[1].includes("else")) {
+                    if (matches.length === 1 && n[1].includes("end")) {
+                        document = document.substr(0, n.index!)    
+                    } else {
+                        continue
+                    }
+                }
                 match = n
                 break
             }
