@@ -19,6 +19,8 @@ import HelmDocumentParser from "./document_parser"
 import { fs } from "./utils"
 import { safeLoad } from "js-yaml"
 import helmCache from "./helm_cache"
+import asyncLock from "async-lock"
+const lock = new asyncLock()
 
 // Defines the Helm chart maintainer.
 export class HelmChartMaintainer {
@@ -103,7 +105,8 @@ export class HelmCoreParser {
         const promises: Promise<void>[] = []
         const kubernetesParts: Record<string, string> = {}
         for (const file of await fs.ls(`${path}/templates`)) {
-            promises.push(fs.get(file.path).then(d => {
+            promises.push(fs.get(file.path).then(async d => {
+                await lock.acquire("ctx-lock", () => void(0))
                 const ctx = this.context.eval(d!)
                 if (file.name !== "_helpers.tpl") kubernetesParts[file.path] = ctx
             }))
