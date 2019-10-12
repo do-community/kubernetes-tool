@@ -350,6 +350,7 @@ export default class HelmDocumentParser {
                         condition: undefined,
                     })
                 } else {
+                    innerMatch.shift()
                     elses.push({
                         block: end,
                         condition: this._parseArgs(innerMatch),
