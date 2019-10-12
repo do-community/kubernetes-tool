@@ -91,25 +91,25 @@ export class HelmCoreParser {
         const unparsedValuesYaml = await fs.get(`${path}/values.yaml`)
         if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
 
-        // TODO: Use the values.yaml to hint at stuff.
         // Loads the values.yaml.
         const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
         this.context.context.Values = valuesYaml
 
-        // TODO: Parse notes!
-        // Defines the notes.
-        const notes = await fs.get(`${path}/templates/values.yaml`)
-
         // Initialises the context.
         const init = await fs.get(`${path}/templates/_helpers.tpl`)
         if (init) this.context.eval(init)
-        // TODO: Kubernetes stuff.
-        // KubernetesDescription[]
-        const kubernetesParts: string[] = []
+
+        // Handles each part.
+        const promises: Promise<void>[] = []
+        const kubernetesParts: Record<string, string> = {}
         for (const file of await fs.ls(`${path}/templates`)) {
-            // await kubernetesParse(...)
-            console.log(this.context.eval((await fs.get(file.path))!))
+            promises.push(fs.get(file.path).then(d => {
+                const ctx = this.context.eval(d!)
+                if (file.name !== "_helpers.tpl") kubernetesParts[file.path] = ctx
+            }))
         }
+        await Promise.all(promises)
+        console.log(kubernetesParts)
 
         // TODO: Finish this class.
         return null
