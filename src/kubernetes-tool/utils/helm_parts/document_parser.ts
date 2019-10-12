@@ -20,6 +20,7 @@ import * as semver from "semver"
 import * as printj from "printj"
 import { safeDump } from "js-yaml"
 import uuidv4 from "uuid/v4"
+import escapeStringRegexp from "escape-string-regexp"
 
 // The Helm document parser.
 export default class HelmDocumentParser {
@@ -596,6 +597,35 @@ export default class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}${item}${afterRegion}` 
+            }
+            case "replace": {
+                let a = args[0]
+                if (typeof a === "string") {
+                    if (a.startsWith(".")) a = this._helmdef2object(a)
+                    else if (a.startsWith("$")) a = this.variables[a]
+                } else {
+                    a = a.text
+                }
+                a = a as string
+                let b = args[0]
+                if (typeof b === "string") {
+                    if (b.startsWith(".")) b = this._helmdef2object(b)
+                    else if (b.startsWith("$")) b = this.variables[b]
+                } else {
+                    b = b.text
+                }
+                b = b as string
+                let c = args[0]
+                if (typeof c === "string") {
+                    if (c.startsWith(".")) c = this._helmdef2object(c)
+                    else if (c.startsWith("$")) c = this.variables[c]
+                } else {
+                    c = c.text
+                }
+                c = c as string
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                return `${beforeRegion}${c.replace(new RegExp(escapeStringRegexp(a), "g"), b)}${afterRegion}` 
             }
             default: {
                 // Not a statement, is it a definition?
