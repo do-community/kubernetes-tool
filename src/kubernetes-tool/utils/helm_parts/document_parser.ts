@@ -596,7 +596,7 @@ export default class HelmDocumentParser {
 
                 const transformedArgs: string[] = []
                 for (let part of args) {
-                    if (typeof formatter === "string") {
+                    if (typeof part === "string") {
                         // HACK: TypeScript does not understand typeof very well.
                         part = (part as unknown) as string
 
