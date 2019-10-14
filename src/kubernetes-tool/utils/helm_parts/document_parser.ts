@@ -68,9 +68,9 @@ export default class HelmDocumentParser {
         afterRegion: string;
     } {
         return {
-            cropped: data.substr(start, end),
+            cropped: data.substr(start, end).trimStart(),
             afterRegion: data.substr(end, data.length),
-            beforeRegion: data.substr(0, start),
+            beforeRegion: data.substr(0, start).replace(/\n$/g, ""),
         }
     }
 
@@ -665,7 +665,8 @@ export default class HelmDocumentParser {
                 if (!join.startsWith(".")) throw new Error(`${match[0]} (${statement}) - Invalid definition!`)
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${this._helmdef2object(join)}${afterRegion}`
+                const d = this._helmdef2object(join)
+                return `${beforeRegion}${d}${afterRegion}`
             }
         }
     }
@@ -747,7 +748,7 @@ export default class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 const pipeHandler = this._handlePipe(bundles, match)
-                if (inDollarContext) this.variables[inDollarContext] = pipeHandler
+                if (inDollarContext) pipeHandler
                 else document = `${beforeRegion}${pipeHandler}${afterRegion}`
             } else {
                 // Execute any statements in the document.
