@@ -333,7 +333,7 @@ export default class HelmDocumentParser {
             if (n.done) break
             matches.push(n.value)
         }
-        for (const m of matches.reverse()) {
+        for (const m of matches) {
             const index = m.index!
             const innerMatch = m[1].split(" ")
             if (innerMatch[0] === "end") {
