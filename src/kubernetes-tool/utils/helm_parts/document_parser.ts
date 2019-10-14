@@ -681,6 +681,7 @@ export default class HelmDocumentParser {
             if (last) bundle.push(new Quote(last))
             last = this._execStatement(cmd, match, "", bundle)
         }
+        return last
     }
 
     // Used for recalling the eval stuff locally without reinitialising all the things.
