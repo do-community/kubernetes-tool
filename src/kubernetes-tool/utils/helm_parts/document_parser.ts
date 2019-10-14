@@ -440,6 +440,31 @@ export default class HelmDocumentParser {
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 return `${beforeRegion}<randomly generated UUID>${afterRegion}` 
             }
+            case "trimSuffix": {
+                // Trims the suffix given.
+                let a = args[0]
+                if (typeof a === "string") {
+                    if (a.startsWith(".")) a = this._helmdef2object(a)
+                    else if (a.startsWith("$")) a = this.variables[a]
+                } else {
+                    a = a.text
+                }
+                a = a as string
+                let b = args[1]
+                if (typeof b === "string") {
+                    if (b.startsWith(".")) b = this._helmdef2object(b)
+                    else if (b.startsWith("$")) b = this.variables[b]
+                } else {
+                    b = b.text
+                }
+                b = b as string
+                const regex = new RegExp(`(^${escapeStringRegexp(a)}+)|(${escapeStringRegexp(a)}+$)`, "g")
+                const startIndex = match.index!
+                const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
+                console.log(b)
+                console.log(`${beforeRegion}${b.replace(regex, "")}${afterRegion}` )
+                return `${beforeRegion}${b.replace(regex, "")}${afterRegion}` 
+            }
             case "if": {
                 // Defines the if statement.
                 const startIndex = match.index!
@@ -611,7 +636,7 @@ export default class HelmDocumentParser {
                     a = a.text
                 }
                 a = a as string
-                let b = args[0]
+                let b = args[1]
                 if (typeof b === "string") {
                     if (b.startsWith(".")) b = this._helmdef2object(b)
                     else if (b.startsWith("$")) b = this.variables[b]
@@ -619,7 +644,7 @@ export default class HelmDocumentParser {
                     b = b.text
                 }
                 b = b as string
-                let c = args[0]
+                let c = args[2]
                 if (typeof c === "string") {
                     if (c.startsWith(".")) c = this._helmdef2object(c)
                     else if (c.startsWith("$")) c = this.variables[c]
@@ -707,7 +732,7 @@ export default class HelmDocumentParser {
                 const bundles: (string | Quote)[][] = []
                 let buffer: string[] = []
                 for (const a of args) {
-                    if (a !== " ") {
+                    if (a !== " " && a !== "-") {
                         if (a === "|") {
                             bundles.push(buffer)
                             buffer = []
