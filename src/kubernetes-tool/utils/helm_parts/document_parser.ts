@@ -19,7 +19,6 @@ import { Quote, OperatorManager, helmStatement } from "./utils"
 import * as semver from "semver"
 import * as printj from "printj"
 import { safeDump } from "js-yaml"
-import uuidv4 from "uuid/v4"
 import escapeStringRegexp from "escape-string-regexp"
 
 // The Helm document parser.
@@ -439,7 +438,7 @@ export default class HelmDocumentParser {
                 // Makes a UUID.
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                return `${beforeRegion}${uuidv4()}${afterRegion}` 
+                return `${beforeRegion}<randomly generated UUID>${afterRegion}` 
             }
             case "if": {
                 // Defines the if statement.
