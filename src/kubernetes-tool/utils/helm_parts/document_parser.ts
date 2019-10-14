@@ -461,8 +461,6 @@ export default class HelmDocumentParser {
                 const regex = new RegExp(`(^${escapeStringRegexp(a)}+)|(${escapeStringRegexp(a)}+$)`, "g")
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
-                console.log(b)
-                console.log(`${beforeRegion}${b.replace(regex, "")}${afterRegion}` )
                 return `${beforeRegion}${b.replace(regex, "")}${afterRegion}` 
             }
             case "if": {
