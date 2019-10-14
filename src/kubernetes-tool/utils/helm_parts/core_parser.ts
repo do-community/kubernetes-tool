@@ -125,7 +125,6 @@ export class HelmCoreParser {
         }
         await Promise.all(promises)
         console.log(kubernetesParts)
-        console.log(this.context.templateContext)
 
         // TODO: Finish this class.
         return null

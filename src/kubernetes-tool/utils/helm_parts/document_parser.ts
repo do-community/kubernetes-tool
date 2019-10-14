@@ -694,7 +694,7 @@ export default class HelmDocumentParser {
                 matches.push(n.value)
             }
             let match
-            for (const n of matches.reverse()) {
+            for (const n of matches) {
                 if (n[1].includes("end") || n[1].includes("else")) {
                     if (matches.length === 1 && n[1].includes("end")) {
                         document = document.substr(0, n.index!)    
