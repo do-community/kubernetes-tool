@@ -116,6 +116,7 @@ export class HelmCoreParser {
         const promises: Promise<void>[] = []
         const kubernetesParts: Record<string, string> = {}
         for (const file of await fs.ls(`${path}/templates`)) {
+            if (!file.file) continue
             promises.push(fs.get(file.path).then(async d => {
                 await lock.acquire("ctx-lock", () => void(0))
                 const ctx = this.context.eval(d!)
