@@ -108,7 +108,7 @@ export class HelmCoreParser {
             promises.push(fs.get(file.path).then(async d => {
                 await lock.acquire("ctx-lock", () => void(0))
                 const ctx = this.context.eval(d!)
-                if (file.name !== "_helpers.tpl") kubernetesParts[file.path] = ctx
+                if (file.name !== "_helpers.tpl" && ctx !== "") kubernetesParts[file.path] = ctx
             }))
         }
         await Promise.all(promises)
