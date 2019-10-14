@@ -15,18 +15,22 @@ limitations under the License.
 -->
 
 <template>
-    <div>
+    <div class="kubernetes-tool">
         <h1>{{ i18n.templates.app.title }}</h1>
-        <p>Hello World! Check the console to see stuff. :)</p>
+        <SplitView title="test" yaml="123" :properties="[['type', 'type here'], ['inner', [['class', 'here']]]]" />
     </div>
 </template>
 
 <script>
     import i18n from "../i18n"
     import "../utils/helm"
+    import SplitView from "./split_view"
 
     export default {
         name: "App",
+        components: {
+            SplitView,
+        },
         data() {
             return {
                 i18n,

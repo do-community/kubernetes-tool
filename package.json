@@ -41,6 +41,7 @@
     "printj": "^1.2.2",
     "semver": "^6.3.0",
     "vue": "^2.6.10",
+    "vue-highlightjs": "^1.3.3",
     "vue-hot-reload-api": "^2.3.3",
     "vue-tippy": "^4.0.0-beta.4"
   },
