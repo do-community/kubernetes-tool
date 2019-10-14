@@ -97,6 +97,17 @@ export class HelmCoreParser {
         const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
         this.context.context.Values = valuesYaml
 
+        // Sets the release context.
+        this.context.context.Release = {
+            Name: "<release name>",
+            Namespace: "<release namespace>",
+            Service: "Tiller", // This is always Tiller, idk why it's a thing, seems useless to me.
+            IsUpgrade: false, // This emulates a clean install.
+            IsInstall: true,
+            Revision: 1, // No upgrades, clean install!
+            Time: Math.floor(Date.now() / 1000),
+        }
+
         // Initialises the context.
         const init = await fs.get(`${path}/templates/_helpers.tpl`)
         if (init) this.context.eval(init)
@@ -113,6 +124,7 @@ export class HelmCoreParser {
         }
         await Promise.all(promises)
         console.log(kubernetesParts)
+        console.log(this.context.templateContext)
 
         // TODO: Finish this class.
         return null

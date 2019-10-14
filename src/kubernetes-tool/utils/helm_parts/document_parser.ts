@@ -26,7 +26,7 @@ import escapeStringRegexp from "escape-string-regexp"
 export default class HelmDocumentParser {
     // Defines the context.
     public context: Record<string, any>
-    private templateContext: Record<string, any>
+    public templateContext: Record<string, any>
     public variables: Record<string, any>
 
     // Constructs the class.
