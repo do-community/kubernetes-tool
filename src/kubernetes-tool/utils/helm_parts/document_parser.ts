@@ -717,6 +717,10 @@ export default class HelmDocumentParser {
                         }
                     }
                 }
+                if (buffer.length !== 0) {
+                    bundles.push(buffer)
+                    buffer = []
+                }
                 for (const bundleIndex in bundles) bundles[bundleIndex] = this._parseArgs(bundles[bundleIndex] as string[])
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
