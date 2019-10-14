@@ -599,7 +599,6 @@ export default class HelmDocumentParser {
                     if (typeof part === "string") {
                         // HACK: TypeScript does not understand typeof very well.
                         part = (part as unknown) as string
-
                         if (part.startsWith("$")) transformedArgs.push(this.variables[part])
                         else transformedArgs.push(this._helmdef2object(part))
                     } else {
@@ -754,7 +753,7 @@ export default class HelmDocumentParser {
                 // Execute any statements in the document.
                 const cmd = args.shift()!.toLowerCase()
                 const a = this._parseArgs(args)
-                if (inDollarContext) this._execStatement(cmd, match, "", a)
+                if (inDollarContext) this.variables[inDollarContext] = this._execStatement(cmd, match, "", a)
                 else document = this._execStatement(cmd, match, document, a)
             }
         }
