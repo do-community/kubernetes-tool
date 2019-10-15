@@ -338,11 +338,12 @@ export default class HelmDocumentParser {
             const innerMatch = m[1].split(" ")
             if (innerMatch[0] === "end") {
                 // Remove this end.
-                block = block.substr(0, block.length - index)
+                const { beforeRegion, afterRegion } = this._crop(block, index, m[0].length)
+                block = `${beforeRegion}${afterRegion}`
             } else {
                 // Handles the else statement.
                 innerMatch.shift()
-                const end = block.substr(index).substr(m[0].length)
+                const end = block.substr(index + m[0].length)
                 if (innerMatch.length === 0) {
                     elses.push({
                         block: end,
