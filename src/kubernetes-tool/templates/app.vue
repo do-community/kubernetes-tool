@@ -29,7 +29,6 @@ limitations under the License.
 
 <script>
     import i18n from "../i18n"
-    import "../utils/helm"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
     import KubernetesParser from "../utils/kubernetes"
