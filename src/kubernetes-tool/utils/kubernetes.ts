@@ -31,7 +31,7 @@ class KVRecursiveRecord {
 }
 
 // Parses based on the spec specified.
-const parseSpec = (layer: string, obj: Record<string, any>): KVRecursiveRecord[] => {
+const parseSpec = (layer: string, obj: Record<string, any>, label?: boolean): KVRecursiveRecord[] => {
     // Defines all the KV things.
     const kv: KVRecursiveRecord[] = []
 
@@ -42,9 +42,14 @@ const parseSpec = (layer: string, obj: Record<string, any>): KVRecursiveRecord[]
     for (const key in obj) {
         const kvObj = new KVRecursiveRecord(key, loadedSpec[key] || "Unable to recognise this key in this tool.")
         if (obj[key] && obj[key].constructor === Object) {
-            if (layer === "base") layer = obj.kind
-            kvObj.recursive = parseSpec(layer, obj[key])
+            if (layer === "base") {
+                if (key === "metadata") layer = "metadata"
+                else layer = obj.kind
+            }
+            if (key === "labels") label = true
+            kvObj.recursive = parseSpec(layer, obj[key], label)
         }
+        if (label && key !== "labels") kvObj.value = "This attaches this label to the deployment."
         kv.push(kvObj)
     }
 

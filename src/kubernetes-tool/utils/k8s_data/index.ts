@@ -1,3 +1,4 @@
 import base from "./base.json"
+import metadata from "./metadata.json"
 
-export default { base } as Record<string, any>
+export default { base, metadata } as Record<string, any>
