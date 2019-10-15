@@ -20,7 +20,7 @@ limitations under the License.
             <SplashScreen :style="{maxWidth: '40%', margin: 'auto', textAlign: 'center', paddingTop: '40px'}" @result="resultSet" />
         </div>
         <div v-else :style="{padding: '20px'}">
-            <p><a class="button" @click="toBeRendered = {}">{{ i18n.templates.shared.mainMenu }}</a></p>
+            <p><a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a></p>
             <div v-for="(v, k) in toBeRendered" :key="k">
                 <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
             </div>
@@ -52,6 +52,9 @@ limitations under the License.
             },
             kubeParse(v) {
                 return KubernetesParser(v)
+            },
+            mainMenu() {
+                this.$data.toBeRendered = {}
             },
         },
     }

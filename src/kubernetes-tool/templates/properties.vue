@@ -19,12 +19,10 @@ limitations under the License.
         <div v-if="!arr">
             <p>This file could not be parsed.</p>
         </div>
-        <div v-for="v in arr" v-else :key="v[0]">
-            <span v-if="typeof v[1] === 'string'">
-                <p><code class="slim">{{ v[0] }}</code>: {{ v[1] }}</p>
-            </span>
-            <span v-else>
-                <Properties :padding="padding + 30" :arr="v[1]" />
+        <div v-for="v in arr" v-else :key="v.key">
+            <p><code class="slim">{{ v.key }}</code>: {{ v.value }}</p>
+            <span v-if="v.recursive">
+                <Properties :padding="padding + 30" :arr="v.recursive" />
             </span>
         </div>
     </div>
@@ -33,9 +31,6 @@ limitations under the License.
 <script>
     export default {
         name: "Properties",
-        props: {
-            padding: Number,
-            arr: Object,
-        },
+        props: ["padding", "arr"],
     }
 </script>
