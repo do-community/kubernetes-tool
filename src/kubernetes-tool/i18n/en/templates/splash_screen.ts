@@ -5,7 +5,6 @@ export default {
     helmErr: "Helm Parser Error",
     k8sErr: "Kubernetes Parser Error",
     helmDoesntExist: "The Helm chart does not seem to exist.",
-    mainMenu: "Return to Main Menu",
     k8sTitle: "Kubernetes File",
     k8sDescription: "Copy the Kubernetes file into the textbox below:",
 } as {[key: string]: string}

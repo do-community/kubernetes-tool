@@ -33,7 +33,7 @@ limitations under the License.
         <form autocomplete="on" @submit.prevent="execHelm">
             <input v-model="helmId" class="input" type="text" :placeholder="i18n.templates.splashScreen.helmTitle">
             <br><br>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.splashScreen.mainMenu }}</a>
+            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
             <input class="button" type="submit" value="Submit">
         </form>
     </div>
@@ -45,7 +45,7 @@ limitations under the License.
         <prism-editor v-model="k8s" language="yaml"></prism-editor>
         <form autocomplete="on" @submit.prevent="execK8s">
             <br>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.splashScreen.mainMenu }}</a>
+            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
             <input class="button" type="submit" value="Submit">
         </form>
     </div>
@@ -55,7 +55,7 @@ limitations under the License.
         </h1>
         <p>{{ err }}</p>
         <p>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.splashScreen.mainMenu }}</a>
+            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
         </p>
     </div>
     <div v-else-if="screen === 'k8sErr'">
@@ -64,7 +64,7 @@ limitations under the License.
         </h1>
         <p>{{ err }}</p>
         <p>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.splashScreen.mainMenu }}</a>
+            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
         </p>
     </div>
 </template>
