@@ -19,7 +19,7 @@ limitations under the License.
         <div v-if="!arr">
             <p>This file could not be parsed.</p>
         </div>
-        <div v-else v-for="v in arr" :key="v[0]">
+        <div v-for="v in arr" v-else :key="v[0]">
             <span v-if="typeof v[1] === 'string'">
                 <p><code class="slim">{{ v[0] }}</code>: {{ v[1] }}</p>
             </span>

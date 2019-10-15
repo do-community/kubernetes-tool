@@ -32,6 +32,7 @@ limitations under the License.
     import "../utils/helm"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
+    import KubernetesParser from "../utils/kubernetes"
 
     export default {
         name: "App",
@@ -50,8 +51,7 @@ limitations under the License.
                 this.$set(this.$data, "toBeRendered", obj)
             },
             kubeParse(v) {
-                console.log(v)
-                return
+                return KubernetesParser(v)
             },
         },
     }
