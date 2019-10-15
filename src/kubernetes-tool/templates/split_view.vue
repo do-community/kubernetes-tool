@@ -20,10 +20,10 @@ limitations under the License.
         <p><b>{{ $props.title }}</b></p>
         <hr>
         <div class="columns">
-            <div class="column is-half">
+            <div :class="`column${properties ? ' is-half' : ''}`">
                 <pre v-highlightjs="yaml"><code :class="properties ? 'yaml' : undefined"></code></pre>
             </div>
-            <div class="column is-half">
+            <div :class="`column${properties ? ' is-half' : ''}`" v-if="properties">
                 <Properties :padding="0" :arr="properties" />
             </div>
         </div>

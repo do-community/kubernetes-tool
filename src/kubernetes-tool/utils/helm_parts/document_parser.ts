@@ -314,7 +314,7 @@ export default class HelmDocumentParser {
     private _handleIfBlock(condition: (string | Quote)[], block: string, ifStatement: string, endLength: number): string {
         // Remove the if/end statement from the block.
         block = block.substr(ifStatement.length)
-        block = block.substr(0, block.length - endLength - 1).trim()
+        block = block.substr(0, block.length - endLength).trim()
 
         // This array will be full of else statements.
         // condition [string | undefined] - The condition to trigger the else statement. Can be none.
@@ -324,8 +324,13 @@ export default class HelmDocumentParser {
             block: string;
         }[] = []
 
+        // Gets the if spacing.
+        const ifSpacingMatch = block.match(new RegExp(`^( *){{[ -]*if([^}]*)[ -]*}}`, "m"))
+        let spacing = ""
+        if (ifSpacingMatch) spacing = ifSpacingMatch[1]
+
         // Recreates the else block.
-        let matchIterator = block.matchAll(/{{[ -]*(?:end|else)([^}]*)[ -]*}}/)
+        let matchIterator = block.matchAll(new RegExp(`^${spacing}{{[ -]*(?:end|else)([^}]*)[ -]*}}`, "m"))
         const matches = []
         let recreatedBlock = ""
         for (;;) {
