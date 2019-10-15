@@ -21,7 +21,7 @@ limitations under the License.
         <hr>
         <div class="columns">
             <div class="column is-half">
-                <pre v-highlightjs="yaml"><code class="yaml"></code></pre>
+                <pre v-highlightjs="yaml"><code :class="properties ? 'yaml' : undefined"></code></pre>
             </div>
             <div class="column is-half">
                 <Properties :padding="0" :arr="properties" />
