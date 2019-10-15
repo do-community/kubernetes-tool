@@ -15,6 +15,9 @@ limitations under the License.
 */
 
 import "babel-polyfill"
+import "prismjs"
+import "vue-prism-editor/dist/VuePrismEditor.css"
+import "prismjs/themes/prism-tomorrow.css"
 import "abortcontroller-polyfill/dist/polyfill-patch-fetch"
 
 import Vue from "vue"

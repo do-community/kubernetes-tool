@@ -16,25 +16,43 @@ limitations under the License.
 
 <template>
     <div class="kubernetes-tool">
-        <h1>{{ i18n.templates.app.title }}</h1>
-        <SplitView title="test" yaml="123" :properties="[['type', 'type here'], ['inner', [['class', 'here']]]]" />
+        <div v-if="Object.keys(toBeRendered).length === 0">
+            <SplashScreen :style="{maxWidth: '40%', margin: 'auto', textAlign: 'center', paddingTop: '40px'}" @result="resultSet" />
+        </div>
+        <div v-else :style="{padding: '20px'}">
+            <div v-for="(v, k) in toBeRendered" :key="k">
+                <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import i18n from "../i18n"
     import "../utils/helm"
+    import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
 
     export default {
         name: "App",
         components: {
+            SplashScreen,
             SplitView,
         },
         data() {
             return {
                 i18n,
+                toBeRendered: {},
             }
+        },
+        methods: {
+            resultSet(obj) {
+                this.$set(this.$data, "toBeRendered", obj)
+            },
+            kubeParse(v) {
+                console.log(v)
+                return
+            },
         },
     }
 </script>
