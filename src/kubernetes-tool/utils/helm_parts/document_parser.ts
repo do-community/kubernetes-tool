@@ -40,23 +40,10 @@ export default class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        const matchIterator = document.matchAll(/{{[ -]*end[ -]*}}/g)
-        const arr = []
-        for (;;) {
-            const n = matchIterator.next()
-            if (n.done) break
-            arr.push(n.value)
-        }
-        let m
-        for (const n of arr) {
-            if (n.index! > match.index!) {
-                m = n
-                break
-            }
-        }
+        const m = document.match(/{{[ -]*(?:if|range|:=)[^}]*}}(?:.|[\r\n])+({{[ -]*end[ -]*}})/)
         if (!m) throw new Error(`${match[0]} - No "end" found to this statement!`)
         return {
-            length: m[0].length,
+            length: m[1].length,
             endIndex: m.index! + m[0].length,
         }
     }
