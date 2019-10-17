@@ -40,7 +40,7 @@ export default class HelmDocumentParser {
         length: number;
         endIndex: number;
     } {
-        const m = document.match(/{{[ -]*(?:if|range|:=)[^}]*}}(?:.|[\r\n])+({{[ -]*end[ -]*}})/)
+        const m = document.match(/{{[ -]*(?:if|range)[^}]*}}(?:.|[\r\n])+({{[ -]*end[ -]*}})/)
         if (!m) throw new Error(`${match[0]} - No "end" found to this statement!`)
         return {
             length: m[1].length,

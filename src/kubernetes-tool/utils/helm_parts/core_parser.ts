@@ -85,7 +85,7 @@ export default class HelmCoreParser {
             if (!file.file) continue
             promises.push(fs.get(file.path).then(async d => {
                 await lock.acquire("ctx-lock", () => void(0))
-                const ctx = this.context.eval(d!)
+                const ctx = this.context.eval(d!).trim()
                 if (file.name !== "_helpers.tpl" && ctx !== "") kubernetesParts[file.path] = ctx
             }))
         }
