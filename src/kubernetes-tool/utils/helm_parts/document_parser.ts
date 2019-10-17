@@ -71,7 +71,7 @@ export default class HelmDocumentParser {
         let currentCtx = this.context
         for (const part of defSplit) {
             currentCtx = currentCtx[part]
-            if (currentCtx === undefined) return undefined
+            if (currentCtx === undefined) return `<${definition} is undefined>`
         }
 
         // Returns the current context.
