@@ -65,7 +65,7 @@ export default class HelmDocumentParser {
     private _helmdef2object(definition: string): any {
         // Make it an array and remove any pipes/the first thing which will be whitespace.
         definition = definition.split(/\|/g)[0].trim()
-        const defSplit = definition.split(/\||\./g)
+        const defSplit = definition.split(".")
         defSplit.shift()
 
         // Iterate through the beginning parts.
