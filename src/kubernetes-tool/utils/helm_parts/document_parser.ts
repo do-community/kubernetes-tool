@@ -690,8 +690,8 @@ export default class HelmDocumentParser {
             }
             let match
             for (const n of matches) {
-                if (n[1].includes("end") || n[1].includes("else")) {
-                    if (matches.length === 1 && n[1].includes("end")) {
+                if (n[1].match(/^[ -]*(?:else|end).*/g)) {
+                    if (matches.length === 1 && n[1].match(/^[ -]*end.*/g)) {
                         document = document.substr(0, n.index!)    
                     } else {
                         continue
