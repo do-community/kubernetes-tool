@@ -522,7 +522,7 @@ export default class HelmDocumentParser {
                 let arg
                 if (typeof args[0] === "string") arg = args[0]
                 else arg = (args[0] as Quote).text
-                this.templateContext[arg as string] = cropped
+                this.templateContext[arg as string] = this._eval(cropped)
                 return `${beforeRegion}${afterRegion}`
             }
             case "template": {
