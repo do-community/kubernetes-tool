@@ -711,7 +711,7 @@ export default class HelmDocumentParser {
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length) 
                 if (args.length === 0) {
                     // Output the variable.
-                    document = `${beforeRegion}${this.context[args[0]]}${afterRegion}`
+                    document = `${beforeRegion}${this.context[inDollarContext]}${afterRegion}`
                     continue
                 } else {
                     // Hide this!
