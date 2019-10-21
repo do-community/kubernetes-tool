@@ -72,7 +72,7 @@ export default class HelmDocumentParser {
         let currentCtx = this.context
         for (const part of defSplit) {
             currentCtx = currentCtx[part]
-            if (currentCtx === undefined) return `<${definition} is undefined>`
+            if (currentCtx === undefined) return undefined
         }
 
         // Returns the current context.
@@ -660,7 +660,7 @@ export default class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 const d = this._helmdef2object(join)
-                return `${beforeRegion}${d}${afterRegion}`
+                return `${beforeRegion}${d === undefined ? `<${join} is undefined>` : d}${afterRegion}`
             }
         }
     }
