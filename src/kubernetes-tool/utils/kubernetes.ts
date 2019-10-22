@@ -41,13 +41,14 @@ const parseSpec = (layer: string, obj: Record<string, any>, label?: boolean): KV
     // Iterates the object.
     for (const key in obj) {
         const kvObj = new KVRecursiveRecord(key, loadedSpec[key] || "Unable to recognise this key in this tool.")
+        let newLayer = layer
         if (obj[key] && obj[key].constructor === Object) {
             if (layer === "base") {
-                if (key === "metadata") layer = "metadata"
-                else layer = obj.kind
+                if (key === "metadata") newLayer = "metadata"
+                else newLayer = obj.kind
             }
             if (key === "labels") label = true
-            kvObj.recursive = parseSpec(layer, obj[key], label)
+            kvObj.recursive = parseSpec(newLayer, obj[key], label)
         }
         if (label && key !== "labels") kvObj.value = "This attaches this label to the deployment."
         kv.push(kvObj)

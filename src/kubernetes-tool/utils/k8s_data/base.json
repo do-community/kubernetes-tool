@@ -1,5 +1,6 @@
 {
     "apiVersion": "Defines the API version of the deployment. This will commonly be \"v1\", but this can change depending on if it is a beta or alpha deployment or a custom resource definition.",
     "kind": "Defines the kind of the deployment.",
-    "metadata": "Defines the metadata of the deployment."
+    "metadata": "Defines the metadata of the deployment.",
+    "spec": "This tells Kubernetes to folloe the specification based on the kind of the deployment."
 }

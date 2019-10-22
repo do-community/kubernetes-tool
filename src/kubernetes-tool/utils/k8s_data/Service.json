@@ -1,0 +1,4 @@
+{
+    "clusterIP": "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster.",
+    "": ""
+}
