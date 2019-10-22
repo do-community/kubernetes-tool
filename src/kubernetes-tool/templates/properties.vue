@@ -22,7 +22,7 @@ limitations under the License.
         <div v-for="v in arr" v-else :key="v.key">
             <p><code class="slim">{{ v.key }}</code>: {{ v.value }}</p>
             <span v-if="v.recursive">
-                <Properties :padding="padding + 30" :arr="v.recursive" />
+                <Properties :padding="padding + 30" :arr="manageRecursive(v)" />
             </span>
         </div>
     </div>
@@ -32,5 +32,13 @@ limitations under the License.
     export default {
         name: "Properties",
         props: ["padding", "arr"],
+        methods: {
+            manageRecursive(v) {
+                for (const i of v.recursive) {
+                    if (!i.value) i.value = v.value
+                }
+                return v.recursive
+            },
+        },
     }
 </script>

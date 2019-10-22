@@ -21,10 +21,10 @@ import { safeLoad } from "js-yaml"
 // Defines the data structure.
 class KVRecursiveRecord {
     public key: string
-    public value: string
+    public value: string | undefined
     public recursive?: KVRecursiveRecord[]
 
-    public constructor(key: string, value: string) {
+    public constructor(key: string, value: string | undefined) {
         this.key = key
         this.value = value
     }
@@ -40,7 +40,7 @@ const parseSpec = (layer: string, obj: Record<string, any>, label?: boolean): KV
 
     // Iterates the object.
     for (const key in obj) {
-        const kvObj = new KVRecursiveRecord(key, loadedSpec[key] || "Unable to recognise this key in this tool.")
+        const kvObj = new KVRecursiveRecord(key, loadedSpec[key])
         let newLayer = layer
         if (obj[key] && obj[key].constructor === Object) {
             if (layer === "base") {
