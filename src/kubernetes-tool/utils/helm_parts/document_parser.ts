@@ -682,22 +682,12 @@ export default class HelmDocumentParser {
         for (;;) {
             if (!document) document = ""
             let matchIterator = document.matchAll(helmStatement)
-            const matches = []
+            let match
             for (;;) {
                 const n = matchIterator.next()
                 if (n.done) break
-                matches.push(n.value)
-            }
-            let match
-            for (const n of matches) {
-                if (n[1].match(/^[ -]*(?:else|end).*/g)) {
-                    if (matches.length === 1 && n[1].match(/^[ -]*end.*/g)) {
-                        document = document.substr(0, n.index!)    
-                    } else {
-                        continue
-                    }
-                }
-                match = n
+                if (n.value[1].match(/^[ -]*(?:else|end).*/g)) continue
+                match = n.value
                 break
             }
             if (!match) break
