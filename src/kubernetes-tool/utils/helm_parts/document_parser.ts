@@ -732,7 +732,7 @@ export default class HelmDocumentParser {
                 const startIndex = match.index!
                 const { beforeRegion, afterRegion } = this._crop(document, startIndex, startIndex + match[0].length)
                 const pipeHandler = this._handlePipe(bundles, match)
-                if (inDollarContext) pipeHandler
+                if (inDollarContext) this.variables[inDollarContext] = this._eval(pipeHandler!)
                 else document = `${beforeRegion}${pipeHandler}${afterRegion}`
             } else {
                 // Execute any statements in the document.
