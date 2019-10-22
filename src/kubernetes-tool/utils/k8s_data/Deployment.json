@@ -1,0 +1,5 @@
+{
+    "replicas": "This defines how many replicas a deployment uses.",
+    "template": "This defines the template which the deployment uses.",
+    "volumes": "This defines the volumes in the deployment."
+}
