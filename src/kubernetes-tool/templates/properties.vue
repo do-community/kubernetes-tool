@@ -16,10 +16,7 @@ limitations under the License.
 
 <template>
     <div :style="{paddingLeft: `${$props.padding}px`}">
-        <div v-if="!arr">
-            <p>This file could not be parsed.</p>
-        </div>
-        <div v-for="v in arr" v-else :key="v.key">
+        <div v-for="v in arr" :key="v.key">
             <p><code class="slim">{{ v.key }}</code>: {{ v.value }}</p>
             <span v-if="v.recursive">
                 <Properties :padding="padding + 30" :arr="manageRecursive(v)" />
