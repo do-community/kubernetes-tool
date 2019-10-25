@@ -1,5 +1,12 @@
 import { helmStatement } from "./utils"
 
+// These statements require a end statement.
+const requireEnd = [
+    "if",
+    "range",
+    "define"
+]
+
 // Defines the token.
 export class Token {
     public data?: string
@@ -49,7 +56,7 @@ export class Tokeniser {
             const m = matches.shift()
             if (!m) break
             const t = m[1].split(/ +/g)[0].toLowerCase()
-            if (["if", "range"].includes(t)) {
+            if (requireEnd.includes(t)) {
                 skip = true
             } else if (t === "else") {
                 if (!skip) returned.push(m)
@@ -82,7 +89,7 @@ export class Tokeniser {
             doneIndex = match.index! + match[0].length
 
             // If this is a if/range statement, we need to do some special stuff to get the end.
-            if (["if", "range"].includes(match[1].split(" ")[0].toLowerCase())) {
+            if (requireEnd.includes(match[1].split(" ")[0].toLowerCase())) {
                 // Gets the end and any elses (right now, this variable name is misleading - in a few lines it won't be).
                 const elses = this._manageEnd(all)
 
