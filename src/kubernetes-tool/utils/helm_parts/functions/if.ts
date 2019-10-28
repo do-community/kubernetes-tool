@@ -88,54 +88,8 @@ const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boo
     // Each part in a easy to iterate array. Makes the next part a lot easier.
     const dataParts: any[] = []
 
-    // Goes through each part applying the rule above.
-    for (;;) {
-        const arg = conditionSplit.shift()
-        if (arg === undefined) break
-
-        if (typeof arg === "string") {
-            if (arg.startsWith("(")) {
-                // Inline function! Get the bits inbetween.
-                const argParts = []
-                if (arg.endsWith(")")) {
-                    argParts.push(arg.substr(1, arg.length - 2))
-                } else {
-                    // Get any related arguments.
-                    argParts.push(arg.substr(1))
-                    for (;;) {
-                        const item = conditionSplit.shift()
-                        if (item === undefined) {
-                            throw new Error(`"${arg}" - Unterminated brackets!`)
-                        } else {
-                            if (typeof item === "string" && item.endsWith(")")) {
-                                argParts.push(item.substr(0, arg.length - 2))
-                                break
-                            } else {
-                                argParts.push(item)
-                            }
-                        }
-                    }
-                }
-
-                dataParts.push(processCondition(parser, argParts))
-                continue
-            }
-
-            if (arg.startsWith(".")) {
-                // Get the attribute.
-                dataParts.push(parser.helmdef2object(arg))
-                continue
-            }
-        } else {
-            // Is a quote.
-            dataParts.push(arg.text)
-            continue
-        }
-
-        // Whayyyyyyyyyyyt.
-        if (arg !== "-") throw new Error(`"${arg}" - Invalid argument!`)
-    }
-
+    // Processes each argument.
+    for (const p of args) dataParts.push(parser.processArg(p))
 
     // Handles include.
     if (include) return dataParts[0]
@@ -205,6 +159,7 @@ export default (parser: DocumentParser, args: (string | Quote)[], token: Token):
         }
 
         // Process the argument to see if it is true; if it is, parse this.
+        elseQuoteSplit.shift()
         if (processCondition(parser, elseQuoteSplit)) return parser.handleTokens(else_.inner!)
     }
 
