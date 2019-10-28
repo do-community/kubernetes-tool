@@ -9,11 +9,11 @@ const requireEnd = [
 
 // Defines the token.
 export class Token {
-    public data?: string
+    public data: string
     public inner?: (Token | string)[]
     public else?: Token[]
 
-    public constructor(data?: string, inner?: (Token | string)[], _else?: Token[]) {
+    public constructor(data: string, inner?: (Token | string)[], _else?: Token[]) {
         this.data = data
         this.inner = inner
         this.else = _else
@@ -49,7 +49,7 @@ export class Tokeniser {
         let skip = false
 
         // Contains either 1 end, or else's and a end.
-        const returned = []
+        const returned: RegExpMatchArray[] = []
 
         // Iterates all of the matches.
         for (;;) {
