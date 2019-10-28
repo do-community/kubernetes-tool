@@ -75,7 +75,8 @@ export default class DocumentParser {
             if (func.startsWith(".")) return String(this.helmdef2object(func))
             throw new Error(`${func} - Unknown command!`)
         }
-        return functions[func](this, args, token)
+        const exec = functions[func](this, args, token)
+        return exec
     }
 
     // Handles the tokens and events relating to them.
@@ -93,7 +94,13 @@ export default class DocumentParser {
 
                 // Handles variables.
                 let variable: string | undefined
-                const s = p.data.split(" ")
+                let s = p.data.split(" ")
+                let a = 0
+                for (;;) {
+                    if (!s[a]) break
+                    if (s[a] === "-") delete s[a]
+                    a++
+                }
                 if (s[1] === ":=") {
                     variable = s.shift()!
                     s.shift()
@@ -111,12 +118,13 @@ export default class DocumentParser {
                         if (lastPart) a.push(lastPart)
                         lastPart = new Quote(this._handleToken(newToken, a))
                     }
-                    if (variable) this.variables[variable] = lastPart
-                    else document += lastPart
+                    if (variable) this.variables[variable] = lastPart!.text
+                    else document += lastPart!.text
                 } else {
                     // There is no pipe.
-                    if (variable) this.variables[variable] = this._handleToken(p, [])
-                    else document += this._handleToken(p, [])
+                    const tokenRes = this._handleToken(p, [])
+                    if (variable) this.variables[variable] = tokenRes
+                    else document += tokenRes
                 }
             }
         }
