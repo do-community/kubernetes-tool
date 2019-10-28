@@ -71,7 +71,10 @@ export default class DocumentParser {
         const func: string = args.shift()! as string
 
         // Runs the function.
-        if (functions[func] === undefined) throw new Error(`${func} - Unknown command!`)
+        if (functions[func] === undefined) {
+            if (func.startsWith(".")) return String(this.helmdef2object(func))
+            throw new Error(`${func} - Unknown command!`)
+        }
         return functions[func](this, args, token)
     }
 
