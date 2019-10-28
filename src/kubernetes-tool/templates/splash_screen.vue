@@ -16,8 +16,8 @@ limitations under the License.
 
 <template>
     <div class="landing">
-        <div class="background-top"></div>
-        <div class="background-bottom"></div>
+        <div class="background-top" v-html="svgTop"></div>
+        <div class="background-bottom" v-html="svgBottom"></div>
 
         <div v-if="screen === 'splash'" class="container">
             <h1 class="title">
@@ -96,6 +96,8 @@ limitations under the License.
 <script>
     import i18n from "../i18n"
     import { HelmCoreParser } from "../utils/helm"
+    import svgTop from "../../../build/svg/top.svg"
+    import svgBottom from "../../../build/svg/bottom.svg"
     import PrismEditor from "vue-prism-editor"
     import { safeLoad } from "js-yaml"
 
@@ -111,6 +113,8 @@ limitations under the License.
                 helmId: "",
                 err: "",
                 k8s: "",
+                svgTop,
+                svgBottom,
             }
         },
         methods: {
