@@ -18,6 +18,24 @@ $header: #0071fe;
 @import "../../../node_modules/do-bulma/src/style";
 
 .do-bulma {
+  .input-container {
+    .prism-editor-wrapper {
+      flex-grow: 1;
+      width: auto;
+
+      pre {
+        @include disabled-focus;
+
+        background: $background;
+        border: $border-size solid $dark-grey;
+        border-radius: $border-radius;
+        color: $text;
+        font-size: .85em;
+        min-height: $height;
+      }
+    }
+  }
+
   .main.container {
     .record-group {
       padding-left: $margin * 2;
