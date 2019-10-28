@@ -81,6 +81,9 @@ export class Tokeniser {
             const match = all.shift()
             if (!match) break
 
+            // Is the match a comment? Discard it if so.
+            if (match[1].startsWith("/*")) continue
+
             // Get any parts of the document before this but after the last match and put them in the array. 
             const b = document.substr(doneIndex, match.index! - doneIndex)
             if (b !== "") parsed.push(b)
