@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <template>
-    <div class="kubernetes-tool">
+    <div class="do-bulma">
         <div v-if="Object.keys(toBeRendered).length === 0">
             <SplashScreen :style="{maxWidth: '40%', margin: 'auto', textAlign: 'center', paddingTop: '40px'}" @result="resultSet" />
         </div>
