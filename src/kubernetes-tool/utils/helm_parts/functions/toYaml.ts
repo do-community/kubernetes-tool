@@ -15,7 +15,9 @@ export default (parser: DocumentParser, args: (string | Quote)[]): string => {
         return d
     }
     for (const x in a) {
-        d += `${safeDump(x)}: ${safeDump(a[x])}\n`
+        let dump = safeDump(a[x]).trim()
+        if (a[x] instanceof Object) dump = `\n${dump.match(/ +/) ? dump.match(/ +/)![0] : ""}${dump}`
+        d += `${safeDump(x).trim()}: ${dump}\n`
     }
     return d
 }
