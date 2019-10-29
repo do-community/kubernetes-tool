@@ -1,12 +1,19 @@
 import { helmStatement } from "./utils"
 
+// These statements require a end statement.
+const requireEnd = [
+    "if",
+    "range",
+    "define"
+]
+
 // Defines the token.
 export class Token {
-    public data?: string
+    public data: string
     public inner?: (Token | string)[]
     public else?: Token[]
 
-    public constructor(data?: string, inner?: (Token | string)[], _else?: Token[]) {
+    public constructor(data: string, inner?: (Token | string)[], _else?: Token[]) {
         this.data = data
         this.inner = inner
         this.else = _else
@@ -42,14 +49,14 @@ export class Tokeniser {
         let skip = false
 
         // Contains either 1 end, or else's and a end.
-        const returned = []
+        const returned: RegExpMatchArray[] = []
 
         // Iterates all of the matches.
         for (;;) {
             const m = matches.shift()
             if (!m) break
             const t = m[1].split(/ +/g)[0].toLowerCase()
-            if (["if", "range"].includes(t)) {
+            if (requireEnd.includes(t)) {
                 skip = true
             } else if (t === "else") {
                 if (!skip) returned.push(m)
@@ -74,6 +81,9 @@ export class Tokeniser {
             const match = all.shift()
             if (!match) break
 
+            // Is the match a comment? Discard it if so.
+            if (match[1].startsWith("/*")) continue
+
             // Get any parts of the document before this but after the last match and put them in the array. 
             const b = document.substr(doneIndex, match.index! - doneIndex)
             if (b !== "") parsed.push(b)
@@ -82,7 +92,7 @@ export class Tokeniser {
             doneIndex = match.index! + match[0].length
 
             // If this is a if/range statement, we need to do some special stuff to get the end.
-            if (["if", "range"].includes(match[1].split(" ")[0].toLowerCase())) {
+            if (requireEnd.includes(match[1].split(" ")[0].toLowerCase())) {
                 // Gets the end and any elses (right now, this variable name is misleading - in a few lines it won't be).
                 const elses = this._manageEnd(all)
 
