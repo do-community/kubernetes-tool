@@ -29,11 +29,14 @@ limitations under the License.
                     <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
                 </template>
             </Header>
+
             <div class="main container">
                 <div v-for="(v, k) in toBeRendered" :key="k">
                     <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
                 </div>
             </div>
+
+            <Footer></Footer>
         </div>
     </div>
 </template>
@@ -43,6 +46,7 @@ limitations under the License.
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
     import Header from "./header"
+    import Footer from "./footer"
     import KubernetesParser from "../utils/kubernetes"
 
     export default {
@@ -51,6 +55,7 @@ limitations under the License.
             SplashScreen,
             SplitView,
             Header,
+            Footer,
         },
         data() {
             return {
