@@ -18,6 +18,14 @@ $header: #0071fe;
 @import "../../../node_modules/do-bulma/src/style";
 
 .do-bulma {
+  .landing {
+    .container {
+      .container {
+        padding: 0;
+      }
+    }
+  }
+
   .input-container {
     .prism-editor-wrapper {
       flex-grow: 1;
