@@ -87,8 +87,8 @@ export default class DocumentParser {
         // Iterates all the parts.
         for (const p of parts) {
             if (typeof p === "string") {
-                // Just reapply this. We do not need to worry about it.
-                document += p
+                // Just reapply this. We do not need to worry about it other than trimming blank lines.
+                document += p.replace(/\n+$/g, "")
             } else {
                 // It's a token; we need to worry about this.
 
