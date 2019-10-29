@@ -4,6 +4,6 @@ import { Token } from "../tokeniser"
 
 export default (parser: DocumentParser, args: (string | Quote)[], token: Token): string => {
     const full = parser.processArg(args[0])
-    parser.templateContext[full] = parser.handleTokens(token.inner!)
+    parser.templateContext[full] = parser.handleTokens(token.inner!).trim()
     return ""
 }
