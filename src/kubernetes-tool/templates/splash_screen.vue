@@ -15,69 +15,105 @@ limitations under the License.
 -->
 
 <template>
-    <div v-if="screen === 'splash'">
-        <h1 class="title">
-            {{ i18n.templates.app.title }}
-        </h1>
-        <p>{{ i18n.templates.splashScreen.whereDoYouWantToGoToday }}</p>
-        <p>
-            <a class="button" @click="setScreen('helm')">{{ i18n.templates.splashScreen.helmTitle }}</a>
-            <a class="button" @click="setScreen('k8s')">{{ i18n.templates.splashScreen.k8sTitle }}</a>
-        </p>
-    </div>
-    <div v-else-if="screen === 'helm'">
-        <h1 class="title">
-            {{ i18n.templates.splashScreen.helmTitle }}
-        </h1>
-        <p>{{ i18n.templates.splashScreen.helmDescription }}</p>
-        <form autocomplete="on" @submit.prevent="execHelm">
-            <input v-model="helmId" class="input" type="text" :placeholder="i18n.templates.splashScreen.helmTitle">
-            <br><br>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
-            <input class="button" type="submit" value="Submit">
-        </form>
-    </div>
-    <div v-else-if="screen === 'k8s'">
-        <h1 class="title">
-            {{ i18n.templates.splashScreen.k8sTitle }}
-        </h1>
-        <p>{{ i18n.templates.splashScreen.k8sDescription }}</p>
-        <prism-editor v-model="k8s" language="yaml"></prism-editor>
-        <form autocomplete="on" @submit.prevent="execK8s">
-            <br>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
-            <input class="button" type="submit" value="Submit">
-        </form>
-    </div>
-    <div v-else-if="screen === 'helmErr'">
-        <h1 class="title">
-            {{ i18n.templates.splashScreen.helmErr }}
-        </h1>
-        <p>{{ err }}</p>
-        <p>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
-        </p>
-    </div>
-    <div v-else-if="screen === 'k8sErr'">
-        <h1 class="title">
-            {{ i18n.templates.splashScreen.k8sErr }}
-        </h1>
-        <p>{{ err }}</p>
-        <p>
-            <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
-        </p>
+    <div class="landing">
+        <div class="background-top" v-html="svgTop"></div>
+        <div class="background-bottom" v-html="svgBottom"></div>
+
+        <div class="container">
+            <div v-if="screen === 'splash'" class="container">
+                <h1 class="title">
+                    {{ i18n.templates.app.title }}
+                </h1>
+                <p>{{ i18n.templates.splashScreen.whereDoYouWantToGoToday }}</p>
+                <p>
+                    <a class="button is-primary" @click="setScreen('helm')">{{ i18n.templates.splashScreen.helmTitle }}</a>
+                    <a class="button is-primary" @click="setScreen('k8s')">{{ i18n.templates.splashScreen.k8sTitle }}</a>
+                </p>
+            </div>
+
+            <div v-else-if="screen === 'helm'" class="container">
+                <h1 class="title">
+                    {{ i18n.templates.splashScreen.helmTitle }}
+                </h1>
+                <p>{{ i18n.templates.splashScreen.helmDescription }}</p>
+
+                <form autocomplete="on" @submit.prevent="execHelm">
+                    <div class="input-container">
+                        <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
+                        <i class="fas fa-dharmachakra"></i>
+                        <input id="helmInput"
+                               v-model="helmId"
+                               class="input"
+                               type="text"
+                               :placeholder="i18n.templates.splashScreen.helmTitle"
+                        />
+                        <input class="button is-primary" type="submit" value="Submit" />
+                    </div>
+                </form>
+
+                <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
+            </div>
+
+            <div v-else-if="screen === 'k8s'" class="container">
+                <h1 class="title">
+                    {{ i18n.templates.splashScreen.k8sTitle }}
+                </h1>
+                <p>{{ i18n.templates.splashScreen.k8sDescription }}</p>
+
+                <form autocomplete="on" @submit.prevent="execK8s">
+                    <div class="input-container">
+                        <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.k8sTitle }}</label>
+                        <prism-editor v-model="k8s" language="yaml"></prism-editor>
+                        <input type="hidden" />
+                        <input class="button is-primary" type="submit" value="Submit" style="align-self:flex-end" />
+                    </div>
+                </form>
+
+                <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
+            </div>
+
+            <div v-else-if="screen === 'helmErr'" class="container">
+                <h1 class="title">
+                    {{ i18n.templates.splashScreen.helmErr }}
+                </h1>
+                <p>{{ err }}</p>
+                <p>
+                    <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
+                </p>
+            </div>
+
+            <div v-else-if="screen === 'k8sErr'" class="container">
+                <h1 class="title">
+                    {{ i18n.templates.splashScreen.k8sErr }}
+                </h1>
+                <p>{{ err }}</p>
+                <p>
+                    <a class="button" @click="setScreen('splash')">{{ i18n.templates.shared.mainMenu }}</a>
+                </p>
+            </div>
+
+            <ExternalLink
+                class="github-link"
+                :text="i18n.templates.splashScreen.github"
+                link="https://github.com/do-community/kubernetes-tool"
+            ></ExternalLink>
+        </div>
     </div>
 </template>
 
 <script>
     import i18n from "../i18n"
+    import ExternalLink from "./ext_link"
     import { HelmCoreParser } from "../utils/helm"
+    import svgTop from "../../../build/svg/top.svg"
+    import svgBottom from "../../../build/svg/bottom.svg"
     import PrismEditor from "vue-prism-editor"
     import { safeLoad } from "js-yaml"
 
     export default {
         name: "SplashScreen",
         components: {
+            ExternalLink,
             PrismEditor,
         },
         data() {
@@ -87,6 +123,8 @@ limitations under the License.
                 helmId: "",
                 err: "",
                 k8s: "",
+                svgTop,
+                svgBottom,
             }
         },
         methods: {
@@ -111,7 +149,7 @@ limitations under the License.
                     return
                 }
                 this.setScreen("splash")
-                this.$emit("result", {"Kubernetes File": d})
+                this.$emit("result", { "Kubernetes File": d })
             },
             async execHelm() {
                 const coreParser = new HelmCoreParser({}, this.$data.helmId)
@@ -126,7 +164,7 @@ limitations under the License.
                 if (!res) {
                     this.setScreen("helmErr")
                     this.$data.err += i18n.templates.splashScreen.helmDoesntExist
-                    return 
+                    return
                 }
                 this.setScreen("splash")
                 this.$emit("result", res)

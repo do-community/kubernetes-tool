@@ -14,10 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-span.tag {
-  border-radius: $border-radius;
-  font-size: .9rem;
-  height: auto;
-  line-height: 1;
-  padding: ($margin / 2) $margin;
+// Parses URL's from data.
+export default (text: string) => {
+    const matchRegex = /{link\|([^|]+)\|([^|]+)}/
+    const items: (string | string[])[] = []
+    for (;;) {
+        const match = text.match(matchRegex)
+        if (!match) break
+        const splitByMatch = text.split(match[0])
+        items.push(splitByMatch[0])
+        items.push([match[1], match[2]])
+        text = splitByMatch[1]
+    }
+    items.push(text)
+    return items
 }

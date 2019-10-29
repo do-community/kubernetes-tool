@@ -14,22 +14,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.kubernetes-tool {
-  $header: #0071fe;
-  @import "globals";
-  @import "../../../node_modules/bulma/bulma";
-  @import "base";
-  @import "typography";
-  @import "header";
-  @import "github";
-  @import "buttons";
-  @import "forms";
-  @import "tables";
-  @import "footer";
-  @import "modals";
-  @import "tags";
-  @import "skeletons";
-  @import "no-search";  
+$header: #0071fe;
+@import "../../../node_modules/do-bulma/src/style";
+
+.do-bulma {
+  .landing {
+    .container {
+      .container {
+        padding: 0;
+      }
+    }
+  }
+
+  .input-container {
+    .prism-editor-wrapper {
+      flex-grow: 1;
+      width: auto;
+
+      pre {
+        @include disabled-focus;
+
+        background: $background;
+        border: $border-size solid $dark-grey;
+        border-radius: $border-radius;
+        color: $text;
+        font-size: .85em;
+        min-height: $height;
+      }
+    }
+  }
 
   .main.container {
     .record-group {

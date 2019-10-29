@@ -15,15 +15,28 @@ limitations under the License.
 -->
 
 <template>
-    <div class="kubernetes-tool">
+    <div class="all do-bulma">
         <div v-if="Object.keys(toBeRendered).length === 0">
-            <SplashScreen :style="{maxWidth: '40%', margin: 'auto', textAlign: 'center', paddingTop: '40px'}" @result="resultSet" />
+            <SplashScreen @result="resultSet" />
         </div>
-        <div v-else :style="{padding: '20px'}">
-            <p><a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a></p>
-            <div v-for="(v, k) in toBeRendered" :key="k">
-                <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+        <div v-else>
+            <Header :title="i18n.templates.app.title">
+                <template v-slot:description>
+                </template>
+                <template v-slot:header>
+                </template>
+                <template v-slot:buttons>
+                    <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
+                </template>
+            </Header>
+
+            <div class="main container">
+                <div v-for="(v, k) in toBeRendered" :key="k">
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+                </div>
             </div>
+
+            <Footer></Footer>
         </div>
     </div>
 </template>
@@ -32,6 +45,8 @@ limitations under the License.
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
+    import Header from "./header"
+    import Footer from "./footer"
     import KubernetesParser from "../utils/kubernetes"
 
     export default {
@@ -39,6 +54,8 @@ limitations under the License.
         components: {
             SplashScreen,
             SplitView,
+            Header,
+            Footer,
         },
         data() {
             return {
