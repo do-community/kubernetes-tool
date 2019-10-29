@@ -19,10 +19,20 @@ limitations under the License.
         <div v-if="Object.keys(toBeRendered).length === 0">
             <SplashScreen @result="resultSet" />
         </div>
-        <div v-else :style="{padding: '20px'}">
-            <p><a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a></p>
-            <div v-for="(v, k) in toBeRendered" :key="k">
-                <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+        <div v-else>
+            <Header :title="i18n.templates.app.title">
+                <template v-slot:description>
+                </template>
+                <template v-slot:header>
+                </template>
+                <template v-slot:buttons>
+                    <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
+                </template>
+            </Header>
+            <div class="main container">
+                <div v-for="(v, k) in toBeRendered" :key="k">
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+                </div>
             </div>
         </div>
     </div>
@@ -32,6 +42,7 @@ limitations under the License.
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
+    import Header from "./header"
     import KubernetesParser from "../utils/kubernetes"
 
     export default {
@@ -39,6 +50,7 @@ limitations under the License.
         components: {
             SplashScreen,
             SplitView,
+            Header,
         },
         data() {
             return {
