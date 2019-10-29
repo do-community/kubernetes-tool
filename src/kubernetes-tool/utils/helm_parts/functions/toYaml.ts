@@ -20,6 +20,7 @@ import { safeDump } from "js-yaml"
 
 export default (parser: DocumentParser, args: (string | Quote)[]): string => {
     const a = parser.processArg(args[0])
+    if (a === "") return ""
     if (typeof a === "string") return safeDump(a)
     if (typeof a === "boolean") return String(a)
     if (!a) return "null"

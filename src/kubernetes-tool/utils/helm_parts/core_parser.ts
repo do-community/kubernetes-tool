@@ -22,6 +22,14 @@ import helmCache from "./helm_cache"
 import asyncLock from "async-lock"
 const lock = new asyncLock()
 
+// Patches for values.
+const valuesPatches = {
+    "stable/rethinkdb": (values: any) => {
+        values.cluster.readinessProbe = ""
+        return values
+    },
+}
+
 // Defines the Helm core parser.
 export default class HelmCoreParser {
     public context: HelmDocumentParser
@@ -61,7 +69,7 @@ export default class HelmCoreParser {
 
         // Loads the values.yaml.
         const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
-        this.context.context.Values = valuesYaml
+        this.context.context.Values = valuesPatches[path] ? valuesPatches[path](valuesYaml) : valuesYaml
 
         // Sets the release context.
         this.context.context.Release = {
