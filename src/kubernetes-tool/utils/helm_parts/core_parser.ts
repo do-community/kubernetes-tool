@@ -28,7 +28,7 @@ const valuesPatches = {
         values.cluster.readinessProbe = ""
         return values
     },
-}
+} as Record<string, (values: any) => any>
 
 // Defines the Helm core parser.
 export default class HelmCoreParser {
