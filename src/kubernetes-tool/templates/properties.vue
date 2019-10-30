@@ -16,10 +16,10 @@ limitations under the License.
 
 <template>
     <div :style="{paddingLeft: `${$props.padding}px`}">
-        <div v-for="v in arr" :key="v.key">
+        <div v-for="v in handleArrayTrimming(arr)" :key="v.key">
             <p><code class="slim">{{ v.key }}</code>: {{ v.value }}</p>
             <span v-if="v.recursive">
-                <Properties :padding="padding + 30" :arr="manageRecursive(v)" />
+                <Properties :padding="padding + 30" :arr="v.recursive" />
             </span>
         </div>
     </div>
@@ -33,11 +33,12 @@ limitations under the License.
             arr: Array
         },
         methods: {
-            manageRecursive(v) {
-                for (const i of v.recursive) {
-                    if (!i.value) i.value = v.value
+            handleArrayTrimming(v) {
+                const copy = []
+                for (i of v) {
+                    if (i.value) copy.push(i)
                 }
-                return v.recursive
+                return copy
             },
         },
     }
