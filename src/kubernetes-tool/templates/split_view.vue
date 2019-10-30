@@ -23,7 +23,7 @@ limitations under the License.
             <div :class="`column${properties ? ' is-half' : ''}`">
                 <pre v-highlightjs="yaml"><code :class="properties ? 'yaml' : undefined"></code></pre>
             </div>
-            <div :class="`column${properties ? ' is-half' : ''}`" v-if="properties">
+            <div v-if="properties" :class="`column${properties ? ' is-half' : ''}`">
                 <Properties :padding="0" :arr="properties" />
             </div>
         </div>
