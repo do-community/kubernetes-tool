@@ -36,7 +36,7 @@ limitations under the License.
                 </div>
             </div>
 
-            <Footer :text="i18n.templates.footer.oss" />
+            <Footer :text="i18n.templates.app.oss" />
         </div>
     </div>
 </template>

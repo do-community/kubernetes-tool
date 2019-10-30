@@ -7,5 +7,4 @@ export default {
     helmDoesntExist: "The Helm chart does not seem to exist.",
     k8sTitle: "Kubernetes File",
     k8sDescription: "Copy the Kubernetes file into the textbox below:",
-    github: "View this tool on GitHub",
 } as {[key: string]: string}
