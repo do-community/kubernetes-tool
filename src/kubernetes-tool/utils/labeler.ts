@@ -15,12 +15,12 @@ limitations under the License.
 */
 
 // Defines a circular type.
-type LabelValue = {
+interface LabelValue {
     // Base is the base name,
-    base?: string,
+    base?: string;
 
     // Children is the children arguments.
-    children?: LabelValueObject,
+    children?: LabelValueObject;
 }
 interface LabelValueObject extends Record<string, LabelValue> {}
 
