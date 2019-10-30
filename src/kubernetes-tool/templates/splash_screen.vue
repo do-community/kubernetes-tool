@@ -17,8 +17,8 @@ limitations under the License.
 <template>
     <Landing :background-top="svgTop"
              :background-bottom="svgBottom"
-             title="test"
-             description="test"
+             title="testtitle"
+             description="testdesc"
              github="https://github.com/do-community/kubernetes-tool"
     >
         <div v-if="screen === 'splash'" class="container">
