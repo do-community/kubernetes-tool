@@ -1,8 +1,22 @@
 {
-    "apiVersion": "Defines the API version of the deployment. This will commonly be \"v1\", but this can change depending on if it is a beta or alpha deployment or a custom resource definition.",
-    "kind": "Defines the kind of the deployment.",
-    "metadata": "Defines the metadata of the deployment.",
-    "spec": "This tells Kubernetes to follow the specification based on the kind of the deployment.",
-    "type": "This defines the type of the secret.",
-    "data": "This defines the data that will be included in the secret."
+    "base": "DO NOT CHANGE THIS STRUCTURE - BASE IS A EDGECASE!",
+    "children": {
+        "apiVersion": {
+            "base": "This defines the API version."
+        },
+        "spec": {
+            "base": "This defines the specification for this deployment."
+        },
+        "metadata": {
+            "base": "This defines the metadata for this deployment.",
+            "children": {
+                "name": {
+                    "base": "This defines the name of a deployment."
+                }
+            }
+        },
+        "kind": {
+            "base": "This defines the kind of this deployment."
+        }
+    }
 }

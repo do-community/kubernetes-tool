@@ -17,6 +17,7 @@ limitations under the License.
 // Imports the needed stuff.
 import k8sData from "./k8s_data"
 import { safeLoad } from "js-yaml"
+import Labeler from "./labeler"
 
 // Defines the data structure.
 class KVRecursiveRecord {
@@ -30,53 +31,54 @@ class KVRecursiveRecord {
     }
 }
 
-// Parses based on the spec specified.
-const parseSpec = (layer: string, obj: Record<string, any>, label?: boolean): KVRecursiveRecord[] => {
-    // Defines all the KV things.
-    const kv: KVRecursiveRecord[] = []
-
-    // Loads the spec up.
-    const loadedSpec = k8sData[layer] || {}
-
-    // Iterates the object.
-    for (const key in obj) {
-        const kvObj = new KVRecursiveRecord(key, loadedSpec[key])
-        let newLayer = layer
-        if (obj[key] && obj[key].constructor === Object) {
-            if (layer === "base") {
-                if (key === "metadata") newLayer = "metadata"
-                else newLayer = obj.kind
-            }
-            if (key === "labels") label = true
-            kvObj.recursive = parseSpec(newLayer, obj[key], label)
-        }
-        if (label && key !== "labels") kvObj.value = "This attaches this label to the deployment."
-        kv.push(kvObj)
-    }
-
-    // Returns KV.
-    return kv
-}
-
 // Parses the Kubernetes data.
-export default (data: string | undefined): KVRecursiveRecord[] | undefined => {
+const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVRecursiveRecord[] | undefined => {
+    // If not keys, make the keys array.
+    if (!keys) keys = []
+
     // Return here.
     if (!data) return
 
     // Defines the parsed data.
     let parsedData: Record<string, any>
-    try {
-        parsedData = safeLoad(data)
-        if (!parsedData || parsedData.constructor !== Object) throw new Error()
-    } catch (_) {
-        // Returns nothing.
-        return
+    if (typeof data === "string") {
+        try {
+            parsedData = safeLoad(data)
+            if (!parsedData || parsedData.constructor !== Object) throw new Error()
+        } catch (_) {
+            // Returns nothing.
+            return
+        }
+    } else {
+        parsedData = data
     }
 
-    // Parse all the things.
-    const kv = parseSpec("base", parsedData)
+    // Defines the result.
+    const result: KVRecursiveRecord[] = []
+
+    // Creates a labeler with the base.
+    const l = new Labeler(k8sData.base)
+
+    // Handles the label.
+    l.importChildren({
+        spec: {
+            children: k8sData[parsedData.spec],
+        }
+    })
+    for (const k in parsedData) {
+        const keyPlus = keys.slice()
+        keyPlus.push(k)
+        if (typeof parsedData[k] === "string") {
+            result.push(new KVRecursiveRecord(k, l.getLabel(keyPlus)))
+        } else {
+            const kv = new KVRecursiveRecord(k, l.getLabel(keyPlus))
+            kv.recursive = p(parsedData[k], keyPlus)
+        }
+    }
 
     // Returns all the KV bits.
-    if (kv.length === 0) return
-    return kv
+    if (result.length === 0) return
+    console.log(result)
+    return result
 }
+export default p

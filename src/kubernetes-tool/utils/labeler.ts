@@ -101,7 +101,7 @@ export default class Labeler {
         let lastLabel: string | undefined
 
         // Gets the last object.
-        let lastObject: LabelValueObject | undefined = this.labels.children!
+        let lastObject: LabelValueObject | undefined = this.labels.children
 
         // Handles each part of the path.
         for (const p of path) {
