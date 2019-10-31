@@ -1,6 +1,6 @@
 # Kubernetes Tool
 
-A Kubernetes tool.
+A tool to explain Kubernetes files and Helm charts for the DigitalOcean Community.
 
 ---
 

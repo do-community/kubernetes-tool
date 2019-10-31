@@ -1,7 +1,7 @@
 {
   "name": "kubernetes-tool",
   "version": "1.0.0",
-  "description": "A Kubernetes tool.",
+  "description": "A tool to explain Kubernetes files and Helm charts for the DigitalOcean Community.",
   "license": "Apache-2.0",
   "scripts": {
     "build": "npm run build:clean && npm run build:svg && npm run build:template && npm run build:static && node ./build/buildTool.js kubernetes-tool",
