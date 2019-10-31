@@ -34,8 +34,8 @@ limitations under the License.
     import Prism from "vue-prism-component"
     import "prismjs/components/prism-yaml"
     import "prismjs/components/prism-markdown"
-    import Properties from "./properties"
     import * as path from "path"
+    import Properties from "./properties"
 
     export default {
         name: "SplitView",
