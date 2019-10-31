@@ -17,11 +17,11 @@ limitations under the License.
 <template>
     <div>
         <hr>
-        <p><b>{{ $props.title }}</b></p>
+        <p><b>{{ title }}</b></p>
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
-                <pre v-highlightjs="yaml"><code :class="properties ? 'yaml' : undefined"></code></pre>
+                <prism :language="lang" :code="yaml" />
             </div>
             <div v-if="properties" :class="`column${properties ? ' is-half' : ''}`">
                 <Properties :padding="0" :arr="properties" />
@@ -31,15 +31,16 @@ limitations under the License.
 </template>
 
 <script>
-    import Vue from "vue"
-    import VueHighlightJS from "vue-highlightjs"
+    import Prism from "vue-prism-component"
+    import "prismjs/components/prism-yaml"
+    import "prismjs/components/prism-markdown"
+    import * as path from "path"
     import Properties from "./properties"
-
-    Vue.use(VueHighlightJS)
 
     export default {
         name: "SplitView",
         components: {
+            Prism,
             Properties,
         },
         props: {
@@ -51,6 +52,12 @@ limitations under the License.
 
             // The properties. The properties are an array of string:string (or same array type) arrays to repersent K/V and recursiveness.
             properties: Array,
+        },
+        data() {
+            return {
+                ext: path.extname(this.$props.title).toLowerCase(),
+                lang: this.$props.properties ? 'yaml' : this.ext === 'md' ? 'markdown' : undefined
+            }
         },
     }
 </script>

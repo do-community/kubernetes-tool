@@ -74,13 +74,15 @@ limitations under the License.
 </template>
 
 <script>
-    import i18n from "../i18n"
     import Landing from "do-vue/src/templates/landing"
+    import "prismjs"
+    import "vue-prism-editor/dist/VuePrismEditor.css"
+    import PrismEditor from "vue-prism-editor"
+    import { safeLoad } from "js-yaml"
+    import i18n from "../i18n"
     import { HelmCoreParser } from "../utils/helm"
     import svgTop from "../../../build/svg/top.svg"
     import svgBottom from "../../../build/svg/bottom.svg"
-    import PrismEditor from "vue-prism-editor"
-    import { safeLoad } from "js-yaml"
 
     const titlesAndDescriptions = {
         splash: {
@@ -127,7 +129,7 @@ limitations under the License.
             setScreen(type) {
                 this.$data.screen = type
                 this.$data.helmId = ""
-                this.$data.k8s = ""
+                this.$data.k8s = "\n"
                 this.$data.title = titlesAndDescriptions[type].title
                 this.$data.description = titlesAndDescriptions[type].description
             },
