@@ -21,7 +21,7 @@ limitations under the License.
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
-                <pre v-highlightjs="yaml"><code :class="properties ? 'yaml' : undefined"></code></pre>
+                <prism :language="properties ? 'yaml' : ''" :code="yaml" />
             </div>
             <div v-if="properties" :class="`column${properties ? ' is-half' : ''}`">
                 <Properties :padding="0" :arr="properties" />
@@ -31,15 +31,14 @@ limitations under the License.
 </template>
 
 <script>
-    import Vue from "vue"
-    import VueHighlightJS from "vue-highlightjs"
+    import Prism from "vue-prism-component"
+    import "prismjs/components/prism-yaml"
     import Properties from "./properties"
-
-    Vue.use(VueHighlightJS)
 
     export default {
         name: "SplitView",
         components: {
+            Prism,
             Properties,
         },
         props: {
