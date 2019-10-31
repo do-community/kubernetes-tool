@@ -17,15 +17,19 @@ limitations under the License.
 @import url("https://assets.digitalocean.com/prism/prism.css");
 
 // Fix Bulma interfering with Prism
-code[class*="language-"] .token.number {
-  background: transparent;
-  border-radius: initial;
-  display: initial;
-  font-size: initial;
-  margin: initial;
-  padding: initial;
-  text-align: initial;
-  vertical-align: initial;
+code[class*="language-"] .token {
+  &.number,
+  &.tag {
+    background: transparent;
+    border-radius: initial;
+    color: inherit;
+    display: initial;
+    font-size: inherit;
+    margin: initial;
+    padding: initial;
+    text-align: initial;
+    vertical-align: initial;
+  }
 }
 
 $header: #0071fe;

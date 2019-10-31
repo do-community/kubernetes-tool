@@ -17,11 +17,11 @@ limitations under the License.
 <template>
     <div>
         <hr>
-        <p><b>{{ $props.title }}</b></p>
+        <p><b>{{ title }}</b></p>
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
-                <prism :language="properties ? 'yaml' : ''" :code="yaml" />
+                <prism :language="lang" :code="yaml" />
             </div>
             <div v-if="properties" :class="`column${properties ? ' is-half' : ''}`">
                 <Properties :padding="0" :arr="properties" />
@@ -33,7 +33,9 @@ limitations under the License.
 <script>
     import Prism from "vue-prism-component"
     import "prismjs/components/prism-yaml"
+    import "prismjs/components/prism-markdown"
     import Properties from "./properties"
+    import * as path from "path"
 
     export default {
         name: "SplitView",
@@ -50,6 +52,12 @@ limitations under the License.
 
             // The properties. The properties are an array of string:string (or same array type) arrays to repersent K/V and recursiveness.
             properties: Array,
+        },
+        data() {
+            return {
+                ext: path.extname(this.$props.title).toLowerCase(),
+                lang: this.$props.properties ? 'yaml' : this.ext === 'md' ? 'markdown' : undefined
+            }
         },
     }
 </script>
