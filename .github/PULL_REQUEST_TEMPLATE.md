@@ -2,8 +2,7 @@
 <!-- What part of the source are you modifying? Remove the irrelevant options. -->
 
 - **Build Scripts:** <!-- Scripts relating to building, testing or CI -->
-- **Shared Source:** <!-- Source code that is used by all the tools -->
-- **Tool Source:** <!-- Say which tool, here! Changes to a specific tool in the repo -->
+- **Tool Source:** <!-- Which part of the tool source? Vue, TS, SASS? -->
 - **Something else:** <!-- Say what it is, here! -->
 
 ## What issue does this relate to?
