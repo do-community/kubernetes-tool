@@ -127,7 +127,7 @@ limitations under the License.
             setScreen(type) {
                 this.$data.screen = type
                 this.$data.helmId = ""
-                this.$data.k8s = ""
+                this.$data.k8s = "\n"
                 this.$data.title = titlesAndDescriptions[type].title
                 this.$data.description = titlesAndDescriptions[type].description
             },
