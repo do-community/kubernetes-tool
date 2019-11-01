@@ -40,7 +40,7 @@ limitations under the License.
                            :placeholder="i18n.templates.splashScreen.helmTitle"
                     />
                     <button id="submitHelm" class="button is-primary" :click="submitHelm">
-                        Submit
+                        {{ i18n.templates.splashScreen.submit }}
                     </button>
                 </div>
             </form>
@@ -55,7 +55,7 @@ limitations under the License.
                     <prism-editor v-model="k8s" language="yaml"></prism-editor>
                     <input type="hidden" />
                     <button id="submitK8s" class="button is-primary" :click="submitK8s" style="align-self:flex-end">
-                        Submit
+                        {{ i18n.templates.splashScreen.submit }}
                     </button>
                 </div>
             </form>
