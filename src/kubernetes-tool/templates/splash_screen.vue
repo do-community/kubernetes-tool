@@ -29,7 +29,7 @@ limitations under the License.
         </div>
 
         <div v-else-if="screen === 'helm'" class="container">
-            <form autocomplete="on" ref="formHelm" @submit.prevent="execHelm">
+            <form ref="formHelm" autocomplete="on" @submit.prevent="execHelm">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
                     <i class="fas fa-dharmachakra"></i>
@@ -49,7 +49,7 @@ limitations under the License.
         </div>
 
         <div v-else-if="screen === 'k8s'" class="container">
-            <form autocomplete="on" ref="formK8s" @submit.prevent="execK8s">
+            <form ref="formK8s" autocomplete="on" @submit.prevent="execK8s">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.k8sTitle }}</label>
                     <prism-editor v-model="k8s" language="yaml"></prism-editor>
