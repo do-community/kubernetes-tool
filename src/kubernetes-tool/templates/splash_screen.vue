@@ -29,7 +29,7 @@ limitations under the License.
         </div>
 
         <div v-else-if="screen === 'helm'" class="container">
-            <form autocomplete="on" @submit.prevent="execHelm">
+            <form autocomplete="on" ref="formHelm" @submit.prevent="execHelm">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
                     <i class="fas fa-dharmachakra"></i>
@@ -39,7 +39,9 @@ limitations under the License.
                            type="text"
                            :placeholder="i18n.templates.splashScreen.helmTitle"
                     />
-                    <input class="button is-primary" type="submit" value="Submit" />
+                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                        Submit
+                    </button>
                 </div>
             </form>
 
@@ -150,21 +152,32 @@ limitations under the License.
                 this.setScreen("splash")
                 this.$emit("result", { "Kubernetes File": d })
             },
+            submitHelm() {
+                this.$refs.formHelm.submit()
+            },
             async execHelm() {
+                const el = document.getElementById("submitHelm")
+                el.classList.add("is-loading")
+
                 const coreParser = new HelmCoreParser({}, this.$data.helmId)
                 let res
                 try {
                     res = await coreParser.promise
                 } catch (e) {
+                    el.classList.remove("is-loading")
                     this.setScreen("helmErr")
                     this.$data.description += String(e)
                     return
                 }
+
                 if (!res) {
+                    el.classList.remove("is-loading")
                     this.setScreen("helmErr")
                     this.$data.description += i18n.templates.splashScreen.helmDoesntExist
                     return
                 }
+
+                el.classList.remove("is-loading")
                 this.setScreen("splash")
                 this.$emit("result", res)
             },
