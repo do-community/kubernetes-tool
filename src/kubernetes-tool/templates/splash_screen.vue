@@ -29,7 +29,7 @@ limitations under the License.
         </div>
 
         <div v-else-if="screen === 'helm'" class="container">
-            <form autocomplete="on" @submit.prevent="execHelm">
+            <form ref="formHelm" autocomplete="on" @submit.prevent="execHelm">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
                     <i class="fas fa-dharmachakra"></i>
@@ -39,7 +39,9 @@ limitations under the License.
                            type="text"
                            :placeholder="i18n.templates.splashScreen.helmTitle"
                     />
-                    <input class="button is-primary" type="submit" value="Submit" />
+                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                        {{ i18n.templates.splashScreen.submit }}
+                    </button>
                 </div>
             </form>
 
@@ -47,12 +49,14 @@ limitations under the License.
         </div>
 
         <div v-else-if="screen === 'k8s'" class="container">
-            <form autocomplete="on" @submit.prevent="execK8s">
+            <form ref="formK8s" autocomplete="on" @submit.prevent="execK8s">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.k8sTitle }}</label>
                     <prism-editor v-model="k8s" language="yaml"></prism-editor>
                     <input type="hidden" />
-                    <input class="button is-primary" type="submit" value="Submit" style="align-self:flex-end" />
+                    <button id="submitK8s" class="button is-primary" :click="submitK8s" style="align-self:flex-end">
+                        {{ i18n.templates.splashScreen.submit }}
+                    </button>
                 </div>
             </form>
 
@@ -133,7 +137,13 @@ limitations under the License.
                 this.$data.title = titlesAndDescriptions[type].title
                 this.$data.description = titlesAndDescriptions[type].description
             },
+            submitK8s() {
+                this.$refs.formK8s.submit()
+            },
             execK8s() {
+                const el = document.getElementById("submitK8s")
+                el.classList.add("is-loading")
+
                 const d = this.$data.k8s
                 try {
                     const x = safeLoad(d)
@@ -143,28 +153,42 @@ limitations under the License.
                         return
                     }
                 } catch (e) {
+                    el.classList.remove("is-loading")
                     this.setScreen("k8sErr")
                     this.$data.description += String(e)
                     return
                 }
+
+                el.classList.remove("is-loading")
                 this.setScreen("splash")
                 this.$emit("result", { "Kubernetes File": d })
             },
+            submitHelm() {
+                this.$refs.formHelm.submit()
+            },
             async execHelm() {
+                const el = document.getElementById("submitHelm")
+                el.classList.add("is-loading")
+
                 const coreParser = new HelmCoreParser({}, this.$data.helmId)
                 let res
                 try {
                     res = await coreParser.promise
                 } catch (e) {
+                    el.classList.remove("is-loading")
                     this.setScreen("helmErr")
                     this.$data.description += String(e)
                     return
                 }
+
                 if (!res) {
+                    el.classList.remove("is-loading")
                     this.setScreen("helmErr")
                     this.$data.description += i18n.templates.splashScreen.helmDoesntExist
                     return
                 }
+
+                el.classList.remove("is-loading")
                 this.setScreen("splash")
                 this.$emit("result", res)
             },
