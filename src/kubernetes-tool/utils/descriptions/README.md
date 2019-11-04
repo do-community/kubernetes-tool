@@ -12,7 +12,7 @@ Key:
 ```
 Commited YAML should use 2 spaces. After the file is created, you will need to import it into the `index.js` file. Import the file with the same filename you used for the above minus the extension.
 ```js
-import Filename from "./filename.yml"
+import Filename from "./Filename.yml"
 ```
 From here, you can add it to the exported dictionary:
 ```js
