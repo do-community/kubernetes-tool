@@ -1,0 +1,12 @@
+clusterIP:
+  base: "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster."
+ports:
+  base: "This defines the ports which this service will forward to the pods responsible."
+selector:
+  base: "This defines the labels that should be used when selecting pods. If a selector matches, it will be included."
+type:
+  base: "This defines the type of IP address which will be used. This is commonly \"ClusterIP\" which a local IP address in your Kubernetes cluster."
+externalIPs:
+  base: "This defines any external IP addresses which should be used."
+loadBalancerSourceRanges:
+  base: "This defines what IP ranges will be allowed to connect."

@@ -1,0 +1,29 @@
+children:
+  kind:
+    base: "This defines the kind of a deployment. This is used as a unique identifier for the type of deployment based on the API version."
+  apiVersion:
+    base: "This defines the API version."
+  spec:
+    base: "This defines the specification for this deployment."
+  metadata:
+    base: "This defines the metadata for this deployment."
+    children:
+      name:
+        base: "This defines the name of a deployment."
+      labels:
+        base: "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
+      annotations:
+        base: "Annotations are used to describe what a deployment does. Unlike a label, these are normally used within in-cluster tools and not used to select a deployment."
+        children:
+          "service.alpha.kubernetes.io/tolerate-unready-endpoints":
+            base: "This is for legacy Kubernetes installations to tell it that un-ready pods can still be published."
+    kind:
+      base: "This defines the kind of this deployment."
+  type:
+    base: "The type of the deployment. This is used like a genre of the kind of deployment."
+
+  # Special edgecases for secrets.
+  data:
+    base: "This defines the data as base 64."
+  stringData:
+    base: "This defines the data as a string."
