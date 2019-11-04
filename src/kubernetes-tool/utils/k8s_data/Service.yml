@@ -1,8 +1,10 @@
 base: "This is a service. Services are used to say that a port from a pod or set should be balanced by Kubernetes."
 children:
-  clusterIP:
-    base: "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster."
-  port:
-    base: "Defines the ports which this service will forward to the pods responsible."
-  selector:
-    base: "This defines the labels that should be used when selecting pods."
+  spec:
+    children:
+      clusterIP:
+        base: "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster."
+      ports:
+        base: "This defines the ports which this service will forward to the pods responsible."
+      selector:
+        base: "This defines the labels that should be used when selecting pods."

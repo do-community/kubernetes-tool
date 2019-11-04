@@ -36,7 +36,7 @@ export default class Labeler {
     }
 
     // Imports any children.
-    public importChildren(children: LabelValueObject, path?: string[]) {
+    public importChildren(object: LabelValue, path?: string[]) {
         // If path does not exist, make the path array.
         if (!path) path = []
 
@@ -65,9 +65,10 @@ export default class Labeler {
         if (!parentObject.children) parentObject.children = {}
 
         // Handles all children.
-        for (const key in children) {
+        const o = object.children || {}
+        for (const key in o) {
             // Gets the child.
-            const child = children[key]
+            const child = o[key]
 
             // Get the relevant object from the parent. If it doesn't exist, make it.
             let relevant = parentObject.children[key]
@@ -90,7 +91,7 @@ export default class Labeler {
                 truePath.push(key)
 
                 // Handles the children.
-                this.importChildren(child.children, truePath)
+                this.importChildren(child, truePath)
             }
         }
     }

@@ -32,7 +32,7 @@ class KVRecursiveRecord {
 }
 
 // Parses the Kubernetes data.
-const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVRecursiveRecord[] | undefined => {
+const p = (data: string | Record<string, any> | undefined, keys?: string[], kind?: string): KVRecursiveRecord[] | undefined => {
     // If not keys, make the keys array.
     if (!keys) keys = []
 
@@ -59,16 +59,24 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVR
     // Creates a labeler with the base.
     const l = new Labeler(k8sData.base)
 
+    // Imports the children.
+    l.importChildren((k8sData as any)[kind || parsedData.kind] || {})
+
     // Handles the label.
-    l.importChildren((k8sData as any)[parsedData.kind] ? (k8sData as any)[parsedData.kind].children : {})
     for (const k in parsedData) {
+        // The array of the JSON path (we clone it because it is shared).
         const keyPlus = keys.slice()
+
+        // Push the current key to the JSON path.
         keyPlus.push(k)
+
         if (!parsedData[k] || parsedData[k].constructor !== Object) {
+            // This is not a object, handle this here.
             result.push(new KVRecursiveRecord(k, l.getLabel(keyPlus)))
         } else {
+            // This is a object, lets be recursive.
             const kv = new KVRecursiveRecord(k, l.getLabel(keyPlus))
-            kv.recursive = p(parsedData[k], keyPlus)
+            kv.recursive = p(parsedData[k], keyPlus, kind || parsedData.kind)
             result.push(kv)
         }
     }
