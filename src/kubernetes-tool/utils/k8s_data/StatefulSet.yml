@@ -26,5 +26,7 @@ template:
           base: "This defines the service account name which is used for the deployment."
         containers:
           base: "This defines all of the specifications for the pods."
+        volumes:
+          base: "This is used to expose secrets as volumes."
 volumeClaimTemplates:
   base: "This defines the volume claim which will be used for each pod."

@@ -19,3 +19,11 @@ children:
             base: "This is for legacy Kubernetes installations to tell it that un-ready pods can still be published."
     kind:
       base: "This defines the kind of this deployment."
+  type:
+    base: "The type of the deployment. This is used like a genre of the kind of deployment."
+
+  # Special edgecases for secrets.
+  data:
+    base: "This defines the data as base 64."
+  stringData:
+    base: "This defines the data as a string."
