@@ -1,9 +1,6 @@
-children:
-  spec:
-    children:
-      clusterIP:
-        base: "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster."
-      ports:
-        base: "This defines the ports which this service will forward to the pods responsible."
-      selector:
-        base: "This defines the labels that should be used when selecting pods."
+clusterIP:
+  base: "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster."
+ports:
+  base: "This defines the ports which this service will forward to the pods responsible."
+selector:
+  base: "This defines the labels that should be used when selecting pods. If a selector matches, it will be included."

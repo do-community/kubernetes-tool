@@ -1,4 +1,6 @@
 children:
+  kind:
+    base: "This defines the kind of a deployment. This is used as a unique identifier for the type of deployment based on the API version."
   apiVersion:
     base: "This defines the API version."
   spec:

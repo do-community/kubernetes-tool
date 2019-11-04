@@ -60,7 +60,13 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[], kind
     const l = new Labeler(k8sData.base)
 
     // Imports the children.
-    l.importChildren((k8sData as any)[kind || parsedData.kind] || {})
+    l.importChildren({
+        children: {
+            spec: {
+                children: (k8sData as any)[kind || parsedData.kind] || {},
+            },
+        },
+    })
 
     // Handles the label.
     for (const k in parsedData) {
