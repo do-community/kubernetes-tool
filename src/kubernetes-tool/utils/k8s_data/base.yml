@@ -12,5 +12,10 @@ children:
         base: "This defines the name of a deployment."
       labels:
         base: "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
+      annotations:
+        base: "Annotations are used to describe what a deployment does. Unlike a label, these are normally used within in-cluster tools and not used to select a deployment."
+        children:
+          "service.alpha.kubernetes.io/tolerate-unready-endpoints":
+            base: "This is for legacy Kubernetes installations to tell it that un-ready pods can still be published."
     kind:
       base: "This defines the kind of this deployment."
