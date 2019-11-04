@@ -16,8 +16,8 @@ limitations under the License.
 
 // Imports the needed stuff.
 import k8sData from "../descriptions"
-import { safeLoad } from "js-yaml"
 import Labeler from "./labeler"
+import { safeLoad } from "js-yaml"
 
 // Defines the data structure.
 class KVRecursiveRecord {
