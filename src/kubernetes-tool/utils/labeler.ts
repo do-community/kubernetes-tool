@@ -109,7 +109,7 @@ export default class Labeler {
             const newItem: LabelValue | undefined = lastObject[p]
 
             // If last object is no more, return here.
-            if (!newItem) return lastLabel
+            if (!newItem) return
 
             // Sets last object.
             lastObject = newItem.children || {}
