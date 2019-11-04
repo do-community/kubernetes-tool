@@ -36,7 +36,7 @@ limitations under the License.
                 </div>
             </div>
 
-            <Footer></Footer>
+            <Footer :text="i18n.templates.app.oss" />
         </div>
     </div>
 </template>
@@ -45,8 +45,8 @@ limitations under the License.
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
-    import Header from "./header"
-    import Footer from "./footer"
+    import Header from "do-vue/src/templates/header"
+    import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
 
     export default {

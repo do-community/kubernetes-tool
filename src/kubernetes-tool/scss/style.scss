@@ -14,13 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+@import url("https://assets.digitalocean.com/prism/prism.css");
+
+// Fix Bulma interfering with Prism
+code[class*="language-"] .token {
+  &.number,
+  &.tag {
+    background: transparent;
+    border-radius: initial;
+    color: inherit;
+    display: initial;
+    font-size: inherit;
+    margin: initial;
+    padding: initial;
+    text-align: initial;
+    vertical-align: initial;
+  }
+}
+
 $header: #0071fe;
-@import "../../../node_modules/do-bulma/src/style";
+@import "~do-bulma/src/style";
 
 .do-bulma {
   .landing {
     .container {
       .container {
+        flex-grow: 0;
         padding: 0;
       }
     }

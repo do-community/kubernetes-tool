@@ -28,7 +28,10 @@ limitations under the License.
 <script>
     export default {
         name: "Properties",
-        props: ["padding", "arr"],
+        props: {
+            padding: Number,
+            arr: Array
+        },
         methods: {
             manageRecursive(v) {
                 for (const i of v.recursive) {
