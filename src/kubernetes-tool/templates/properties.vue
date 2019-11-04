@@ -26,6 +26,8 @@ limitations under the License.
 </template>
 
 <script>
+    import { flags } from "../utils/flags"
+
     export default {
         name: "Properties",
         props: {
@@ -36,7 +38,7 @@ limitations under the License.
             handleArrayTrimming(v) {
                 const copy = []
                 for (i of v) {
-                    if (i.value) copy.push(i)
+                    if (flags.includes("show-undefined") || i.value) copy.push(i)
                 }
                 return copy
             },
