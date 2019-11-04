@@ -12,6 +12,9 @@
             "children": {
                 "name": {
                     "base": "This defines the name of a deployment."
+                },
+                "labels": {
+                    "base": "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
                 }
             }
         },
