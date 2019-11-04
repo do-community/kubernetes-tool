@@ -1,6 +1,6 @@
 import base from "./base.yml"
-import metadata from "./metadata.json"
 import Service from "./Service.yml"
 import StatefulSet from "./StatefulSet.yml"
+import Deployment from "./Deployment.yml"
 
-export default { base, metadata, Service, StatefulSet }
+export default { base, Deployment, Service, StatefulSet }
