@@ -1,4 +1,3 @@
-base: "This is the base of the deployment. Hello world!"
 children:
   apiVersion:
     base: "This defines the API version."

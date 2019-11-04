@@ -1,4 +1,3 @@
-base: "This is a service. Services are used to say that a port from a pod or set should be balanced by Kubernetes."
 children:
   spec:
     children:
