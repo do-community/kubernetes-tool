@@ -1,0 +1,8 @@
+secretName:
+  base: "This defines the secret name."
+dnsNames:
+  base: "This defines the DNS names which will be used."
+issuerRef:
+  base: "The issuer which will be used to create the certificate."
+acme:
+  base: "Handles the ACME configuration."
