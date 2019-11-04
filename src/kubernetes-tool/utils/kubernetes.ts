@@ -60,11 +60,7 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVR
     const l = new Labeler(k8sData.base)
 
     // Handles the label.
-    l.importChildren({
-        spec: {
-            children: (k8sData as any)[parsedData.spec],
-        }
-    })
+    l.importChildren((k8sData as any)[parsedData.kind] ? (k8sData as any)[parsedData.kind].children : {})
     for (const k in parsedData) {
         const keyPlus = keys.slice()
         keyPlus.push(k)

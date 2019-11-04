@@ -1,15 +1,15 @@
 base: "This is the base of the deployment. Hello world!"
 children:
-    apiVersion:
-        base: "This defines the API version."
-    spec:
-        base: "This defines the specification for this deployment."
-    metadata:
-        base: "This defines the metadata for this deployment."
-        children:
-            name:
-                base: "This defines the name of a deployment."
-            labels:
-                base: "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
-        kind:
-            base: "This defines the kind of this deployment."
+  apiVersion:
+    base: "This defines the API version."
+  spec:
+    base: "This defines the specification for this deployment."
+  metadata:
+    base: "This defines the metadata for this deployment."
+    children:
+      name:
+        base: "This defines the name of a deployment."
+      labels:
+        base: "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
+    kind:
+      base: "This defines the kind of this deployment."
