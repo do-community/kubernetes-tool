@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 // Imports the needed stuff.
-import k8sData from "./k8s_data"
+import k8sData from "./descriptions"
 import { safeLoad } from "js-yaml"
 import Labeler from "./labeler"
 
