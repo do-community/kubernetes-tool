@@ -101,18 +101,18 @@ export default class Labeler {
         let lastLabel: string | undefined
 
         // Gets the last object.
-        let lastObject: LabelValueObject | undefined = this.labels.children
+        let lastObject: LabelValueObject = this.labels.children || {}
 
         // Handles each part of the path.
         for (const p of path) {
             // Gets the key from the last object.
-            const newItem: LabelValue | undefined = lastObject![p]
+            const newItem: LabelValue | undefined = lastObject[p]
 
             // If last object is no more, return here.
             if (!newItem) return lastLabel
 
             // Sets last object.
-            lastObject = newItem.children
+            lastObject = newItem.children || {}
 
             // Set the last label to this base.
             lastLabel = newItem.base

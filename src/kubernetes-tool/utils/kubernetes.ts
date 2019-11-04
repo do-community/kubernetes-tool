@@ -68,17 +68,18 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVR
     for (const k in parsedData) {
         const keyPlus = keys.slice()
         keyPlus.push(k)
-        if (typeof parsedData[k] === "string") {
+        if (!parsedData[k] || parsedData[k].constructor !== Object) {
             result.push(new KVRecursiveRecord(k, l.getLabel(keyPlus)))
         } else {
             const kv = new KVRecursiveRecord(k, l.getLabel(keyPlus))
             kv.recursive = p(parsedData[k], keyPlus)
+            result.push(kv)
         }
     }
 
     // Returns all the KV bits.
     if (result.length === 0) return
-    console.log(result)
     return result
 }
+
 export default p
