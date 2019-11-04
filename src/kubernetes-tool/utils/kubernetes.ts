@@ -62,7 +62,7 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[]): KVR
     // Handles the label.
     l.importChildren({
         spec: {
-            children: k8sData[parsedData.spec],
+            children: (k8sData as any)[parsedData.spec],
         }
     })
     for (const k in parsedData) {
