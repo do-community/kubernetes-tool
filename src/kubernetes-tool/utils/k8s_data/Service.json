@@ -1,5 +1,0 @@
-{
-    "clusterIP": "This defines the IP address which the service will be exposed at. Putting none here makes it just run internally in the cluster.",
-    "ports": "Defines the ports which this service will forward to the pods responsible.",
-    "selector": "This defines the labels that should be used when selecting pods."
-}

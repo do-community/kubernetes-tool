@@ -1,0 +1,6 @@
+replicas:
+  base: "This defines how many replicas a deployment uses."
+template:
+  base: "This defines the template which the deployment uses."
+volumes:
+  base: "This defines the volumes in the deployment."

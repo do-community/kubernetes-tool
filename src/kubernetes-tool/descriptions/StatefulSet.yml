@@ -1,0 +1,32 @@
+serviceName:
+  base: "This defines the name of the service that will be created based on the ports from the StatefulSet."
+replicas:
+  base: "This defines the amount of pods which will be created for this set."
+template:
+  base: "This defines the template which is used for creating the pods."
+  children:
+    metadata:
+      base: "This defines the metadata for this deployment."
+      children:
+        name:
+          base: "This defines the name of a deployment."
+        labels:
+          base: "This defines any set labels for this deployment. Labels can be used during deployment to select a specific deployment."
+        annotations:
+          base: "Annotations are used to describe what a deployment does. Unlike a label, these are normally used within in-cluster tools and not used to select a deployment."
+          children:
+            "service.alpha.kubernetes.io/tolerate-unready-endpoints":
+              base: "This is for legacy Kubernetes installations to tell it that un-ready pods can still be published."
+        kind:
+          base: "This defines the kind of this deployment."
+    spec:
+      base: "This defines the specification for the template of each pod."
+      children:
+        serviceAccountName:
+          base: "This defines the service account name which is used for the deployment."
+        containers:
+          base: "This defines all of the specifications for the pods."
+        volumes:
+          base: "This is used to expose secrets as volumes."
+volumeClaimTemplates:
+  base: "This defines the volume claim which will be used for each pod."
