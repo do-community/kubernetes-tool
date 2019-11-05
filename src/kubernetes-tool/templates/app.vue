@@ -74,9 +74,9 @@ limitations under the License.
                         break
                     } 
                 }
-                delete keys[note[0]]
+                if (note) delete keys[note[0]]
                 keys.sort()
-                keys.unshift(note[1])
+                if (note) keys.unshift(note[1])
                 const newObj = {}
                 for (const k of keys) newObj[k] = this.$data.toBeRendered[k]
                 return newObj
