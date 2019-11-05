@@ -32,7 +32,7 @@ limitations under the License.
 
             <div class="main container">
                 <div v-for="(v, k) in sort()" :key="k">
-                    <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
                 </div>
             </div>
 
@@ -48,6 +48,8 @@ limitations under the License.
     import Header from "do-vue/src/templates/header"
     import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
+    import Categorisation from "../utils/categorisation"
+    import { safeLoad } from "js-yaml"
 
     export default {
         name: "App",
@@ -72,7 +74,7 @@ limitations under the License.
                     if (keys[keyIndex].includes("NOTES.txt")) {
                         note = [keyIndex, keys[keyIndex]]
                         break
-                    } 
+                    }
                 }
                 if (note) keys.splice(note[0], 1)
                 keys.sort()
@@ -84,11 +86,23 @@ limitations under the License.
             resultSet(obj) {
                 this.$set(this.$data, "toBeRendered", obj)
             },
-            kubeParse(v) {
-                return KubernetesParser(v)
+            kubeParse(filename, v) {
+                // Defines the parsed data.
+                let parsedData
+                try {
+                    parsedData = safeLoad(v)
+                    if (!parsedData || parsedData.constructor !== Object) throw new Error()
+                } catch (_) {
+                    // Returns nothing.
+                    return
+                }
+
+                Categorisation.insert(parsedData.kind, filename)
+                return KubernetesParser(parsedData)
             },
             mainMenu() {
                 this.$data.toBeRendered = {}
+                Categorisation.clear()
             },
         },
     }
