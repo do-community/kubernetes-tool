@@ -31,7 +31,6 @@ class KVRecursiveRecord {
 }
 
 // Parses the Kubernetes data.
-
 const p = (parsedData: Record<string, any>, keys?: string[], kind?: string): KVRecursiveRecord[] | undefined => {
     // If not keys, make the keys array.
     if (!keys) keys = []
