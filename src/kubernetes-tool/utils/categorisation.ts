@@ -57,6 +57,8 @@ class Categorisation {
             }
             cat2arr.get(kind2cat[i.kind])!.push(i.fp)
         }
+
+        return cat2arr
     }
 }
 
