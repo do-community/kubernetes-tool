@@ -16,7 +16,6 @@ limitations under the License.
 
 // Imports the needed stuff.
 import k8sData from "./k8s_data"
-import { safeLoad } from "js-yaml"
 
 // Defines the data structure.
 class KVRecursiveRecord {
@@ -59,22 +58,9 @@ const parseSpec = (layer: string, obj: Record<string, any>, label?: boolean): KV
 }
 
 // Parses the Kubernetes data.
-export default (data: string | undefined): KVRecursiveRecord[] | undefined => {
-    // Return here.
-    if (!data) return
-
-    // Defines the parsed data.
-    let parsedData: Record<string, any>
-    try {
-        parsedData = safeLoad(data)
-        if (!parsedData || parsedData.constructor !== Object) throw new Error()
-    } catch (_) {
-        // Returns nothing.
-        return
-    }
-
+export default (data: Record<string, any>): KVRecursiveRecord[] | undefined => {
     // Parse all the things.
-    const kv = parseSpec("base", parsedData)
+    const kv = parseSpec("base", data)
 
     // Returns all the KV bits.
     if (kv.length === 0) return

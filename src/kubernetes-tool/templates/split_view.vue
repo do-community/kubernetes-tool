@@ -24,7 +24,7 @@ limitations under the License.
                 <prism :language="lang" :code="yaml" />
             </div>
             <div v-if="properties" :class="`column${properties ? ' is-half' : ''}`">
-                <Properties :padding="0" :arr="properties" />
+                <Properties :padding="0" :arr="properties" :filename="title" />
             </div>
         </div>
     </div>
