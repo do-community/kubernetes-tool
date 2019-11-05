@@ -31,7 +31,7 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <div v-for="(v, k) in toBeRendered" :key="k">
+                <div v-for="(v, k) in sort()" :key="k">
                     <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
                 </div>
             </div>
@@ -64,6 +64,23 @@ limitations under the License.
             }
         },
         methods: {
+            sort() {
+                const keys = []
+                for (const index in this.$data.toBeRendered) keys.push(index)
+                let note
+                for (const keyIndex in keys) {
+                    if (keys[keyIndex].includes("NOTES.txt")) {
+                        note = [keyIndex, keys[keyIndex]]
+                        break
+                    } 
+                }
+                delete keys[note[0]]
+                keys.sort()
+                keys.unshift(note[1])
+                const newObj = {}
+                for (const k of keys) newObj[k] = this.$data.toBeRendered[k]
+                return newObj
+            },
             resultSet(obj) {
                 this.$set(this.$data, "toBeRendered", obj)
             },
