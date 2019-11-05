@@ -50,6 +50,7 @@ limitations under the License.
     import KubernetesParser from "../utils/kubernetes"
     import Categorisation from "../utils/categorisation"
     import { safeLoad } from "js-yaml"
+    window.c = Categorisation
 
     export default {
         name: "App",

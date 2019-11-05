@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { textDescriptions } from "../descriptions"
+
 // Defines the item.
 class Item {
     public kind: string
@@ -25,11 +27,6 @@ class Item {
     }
 }
 
-// TODO: Make this neater, in another file.
-const descriptions = {
-    Service: "description here",
-} as Record<string, string>
-
 // Defines a category.
 export class Category {
     public name: string
@@ -37,7 +34,7 @@ export class Category {
 
     public constructor(name: string) {
         this.name = name
-        this.description = descriptions[name]
+        this.description = textDescriptions[name]
     }
 }
 
