@@ -80,7 +80,7 @@ limitations under the License.
                     return
                 }
 
-                Categorisation.insert(parsedData.kind, filename)
+                Categorisation.insert(parsedData.kind, filename, parsedData)
                 return KubernetesParser(parsedData)
             },
             mainMenu() {
