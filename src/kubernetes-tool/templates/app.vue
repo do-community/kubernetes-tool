@@ -31,8 +31,8 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <CategorisationView></CategorisationView>
-                <div v-for="(v, k) in toBeRendered" :key="k">
+                <CategorisationView @fp-select="handleFp"></CategorisationView>
+                <div v-for="(v, k) in toBeRendered" :key="k" :ref="k">
                     <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
                 </div>
             </div>
@@ -69,6 +69,9 @@ limitations under the License.
             }
         },
         methods: {
+            handleFp(fp) {
+                this.$refs[fp][0].scrollIntoView()
+            },
             resultSet(obj) {
                 this.$set(this.$data, "toBeRendered", obj)
             },
