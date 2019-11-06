@@ -31,6 +31,7 @@ limitations under the License.
             </Header>
 
             <div class="main container">
+                <CategorisationView></CategorisationView>
                 <div v-for="(v, k) in sort()" :key="k">
                     <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
                 </div>
@@ -45,6 +46,7 @@ limitations under the License.
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
+    import CategorisationView from "./categorisation_view"
     import Header from "do-vue/src/templates/header"
     import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
@@ -58,6 +60,7 @@ limitations under the License.
             SplitView,
             Header,
             Footer,
+            CategorisationView,
         },
         data() {
             return {
