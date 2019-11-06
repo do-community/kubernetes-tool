@@ -1,5 +1,7 @@
 <template>
     <div>
+        <p>When the chart is deployed, it should cost you an extra ${{ cost }} in additional resources such as block storage or load balancers.</p>
+        <hr :style="{marginTop: '10px'}">
         <div v-for="(key, index) in all.keys()">
             <h1>{{ key.name }}</h1>
             <p v-if="key.description">
@@ -23,10 +25,12 @@
         data() {
             return {
                 all: Categorisation.getAll(),
+                cost: Categorisation.getCost(),
             }
         },
         updated() {
             this.$data.all = Categorisation.getAll()
+            this.$data.cost = Categorisation.getCost()
         },
         methods: {
             emitFp(fp) {
