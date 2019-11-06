@@ -74,7 +74,7 @@ limitations under the License.
                         break
                     } 
                 }
-                if (note) delete keys[note[0]]
+                if (note) keys.splice(note[0], 1)
                 keys.sort()
                 if (note) keys.unshift(note[1])
                 const newObj = {}
