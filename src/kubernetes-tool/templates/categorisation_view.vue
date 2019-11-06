@@ -2,9 +2,11 @@
     <div>
         <div v-for="(key, index) in all.keys()">
             <h1>{{ key.name }}</h1>
-            <p v-if="key.description">{{ key.description }}</p>
+            <p v-if="key.description">
+                {{ key.description }}
+            </p>
             <p>
-                <a v-for="item in all.get(key)" href="#" class="button is-small" :key="item.fp" :style="{marginRight: '10px', marginBottom: '10px'}">
+                <a v-for="item in all.get(key)" :key="item.fp" class="button is-small" :style="{marginRight: '10px', marginBottom: '10px'}" @click="emitFp(item.fp)">
                     {{ item.fp }}
                 </a>
             </p>
@@ -25,6 +27,11 @@
         },
         updated() {
             this.$data.all = Categorisation.getAll()
-        }
+        },
+        methods: {
+            emitFp(fp) {
+                this.$emit("fp-select", fp)
+            },
+        },
     }
 </script>
