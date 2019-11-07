@@ -31,9 +31,9 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <CategorisationView @fp-select="handleFp"></CategorisationView>
-                <div v-for="(v, k) in sort()" :key="k" :ref="k">
-                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
+                <CategorisationView :style="{display}" @fp-select="handleFp"></CategorisationView>
+                <div v-for="(v, k) in sort()" :key="k" :ref="k" :style="{display: fpDisplay[k] || 'none'}">
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" @back-event="backToCats" />
                 </div>
             </div>
 
@@ -66,11 +66,18 @@ limitations under the License.
             return {
                 i18n,
                 toBeRendered: {},
+                fpDisplay: {},
+                display: "initial",
             }
         },
         methods: {
+            backToCats(fp) {
+                this.$set(this.$data.fpDisplay, fp, "none")
+                this.$data.display = "initial"
+            },
             handleFp(fp) {
-                this.$refs[fp][0].scrollIntoView()
+                this.$set(this.$data.fpDisplay, fp, "initial")
+                this.$data.display = "none"
             },
             sort() {
                 const keys = []

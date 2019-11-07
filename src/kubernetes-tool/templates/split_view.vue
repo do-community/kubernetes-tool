@@ -17,7 +17,7 @@ limitations under the License.
 <template>
     <div>
         <hr>
-        <p><b>{{ title }}</b></p>
+        <p><b>{{ title }}</b> | <a @click="emit">{{ i18n.templates.splitView.back }}</a></p>
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
@@ -36,6 +36,7 @@ limitations under the License.
     import "prismjs/components/prism-markdown"
     import * as path from "path"
     import Properties from "./properties"
+    import i18n from "../i18n"
 
     export default {
         name: "SplitView",
@@ -56,8 +57,14 @@ limitations under the License.
         data() {
             return {
                 ext: path.extname(this.$props.title).toLowerCase(),
-                lang: this.$props.properties ? 'yaml' : this.ext === 'md' ? 'markdown' : undefined
+                lang: this.$props.properties ? 'yaml' : this.ext === 'md' ? 'markdown' : undefined,
+                i18n,
             }
+        },
+        methods: {
+            emit() {
+                this.$emit("back-event", this.$props.title)
+            },
         },
     }
 </script>
