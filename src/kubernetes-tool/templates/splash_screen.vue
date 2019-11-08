@@ -38,6 +38,7 @@ limitations under the License.
                            class="input"
                            type="text"
                            :placeholder="i18n.templates.splashScreen.helmTitle"
+                           @input="inputChange"
                     />
                     <button id="submitHelm" class="button is-primary" :click="submitHelm">
                         {{ i18n.templates.splashScreen.submit }}
@@ -84,6 +85,7 @@ limitations under the License.
     import PrismEditor from "vue-prism-editor"
     import { safeLoad } from "js-yaml"
     import i18n from "../i18n"
+    import { fs } from "../utils/helm"
     import { HelmCoreParser } from "../utils/helm"
     import svgTop from "../../../build/svg/top.svg"
     import svgBottom from "../../../build/svg/bottom.svg"
@@ -130,6 +132,15 @@ limitations under the License.
             }
         },
         methods: {
+            async inputChange() {
+                const helmId = this.$data.helmId
+                if (helmId.includes("/")) {
+                    const split = helmId.split("/")
+                    const start = split.shift()
+                    const query = await fs.queryStart(start, split.join("/"))
+                    console.log(query)
+                }
+            },
             setScreen(type) {
                 this.$data.screen = type
                 this.$data.helmId = ""
