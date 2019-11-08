@@ -52,4 +52,12 @@ export default class GitHubFS {
         if (!res.ok) return undefined
         return await res.text()
     }
+
+    // Queries the start of the name.
+    public async queryStart(fp: string, start: string): Promise<string | undefined> {
+        const ls = await this.ls(fp)
+        for (const f of ls) {
+            if (f.name.startsWith(start)) return f.path
+        }
+    }
 }
