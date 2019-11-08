@@ -37,7 +37,6 @@ limitations under the License.
                            v-model="helmId"
                            class="input"
                            type="text"
-                           :placeholder="i18n.templates.splashScreen.helmTitle"
                            @input="inputChange"
                     />
                     <button id="submitHelm" class="button is-primary" :click="submitHelm">
@@ -127,6 +126,7 @@ limitations under the License.
                 k8s: "",
                 title: titlesAndDescriptions.splash.title,
                 description: titlesAndDescriptions.splash.description,
+                helmPlaceholder: i18n.templates.splashScreen.helmTitle,
                 svgTop,
                 svgBottom,
             }
@@ -134,11 +134,20 @@ limitations under the License.
         methods: {
             async inputChange() {
                 const helmId = this.$data.helmId
+
+                if (helmId === "") {
+                    // Reset the placeholder.
+                    this.$data.helmPlaceholder = i18n.templates.splashScreen.helmTitle
+                    return
+                }
+
                 if (helmId.includes("/")) {
                     const split = helmId.split("/")
                     const start = split.shift()
-                    const query = await fs.queryStart(start, split.join("/"))
-                    console.log(query)
+                    const res = await fs.queryStart(start, split.join("/")) || ""
+                    this.$data.helmPlaceholder = res
+                } else {
+                    this.$data.helmPlaceholder = ""
                 }
             },
             setScreen(type) {
