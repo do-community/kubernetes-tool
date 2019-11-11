@@ -32,13 +32,20 @@ limitations under the License.
             <form ref="formHelm" autocomplete="on" @submit.prevent="execHelm">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
-                    <i class="fas fa-dharmachakra"></i>
-                    <input id="helmInput"
-                           v-model="helmId"
-                           class="input"
-                           type="text"
-                           @input="inputChange"
-                    />
+                    <div>
+                        <i class="fas fa-dharmachakra"></i>
+                        <vue-autosuggest
+                            :suggestions="helmSuggestions"
+                            :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, width: '100%'}"
+                            v-model="helmId"
+                            @input="inputChange"
+                            @selected="inputSelect"
+                        >
+                            <template slot-scope="{suggestion}">
+                                <span class="my-suggestion-item">{{suggestion.item}}</span>
+                            </template>
+                        </vue-autosuggest>
+                    </div>
                     <button id="submitHelm" class="button is-primary" :click="submitHelm">
                         {{ i18n.templates.splashScreen.submit }}
                     </button>
@@ -83,6 +90,7 @@ limitations under the License.
     import "vue-prism-editor/dist/VuePrismEditor.css"
     import PrismEditor from "vue-prism-editor"
     import { safeLoad } from "js-yaml"
+    import { VueAutosuggest } from "vue-autosuggest"
     import i18n from "../i18n"
     import { fs } from "../utils/helm"
     import { HelmCoreParser } from "../utils/helm"
@@ -117,6 +125,7 @@ limitations under the License.
         components: {
             Landing,
             PrismEditor,
+            VueAutosuggest,
         },
         data() {
             return {
@@ -126,7 +135,7 @@ limitations under the License.
                 k8s: "",
                 title: titlesAndDescriptions.splash.title,
                 description: titlesAndDescriptions.splash.description,
-                helmPlaceholder: i18n.templates.splashScreen.helmTitle,
+                helmSuggestions: [],
                 svgTop,
                 svgBottom,
             }
@@ -135,27 +144,29 @@ limitations under the License.
             async inputChange() {
                 const helmId = this.$data.helmId
 
-                if (helmId === "") {
-                    // Reset the placeholder.
-                    this.$data.helmPlaceholder = i18n.templates.splashScreen.helmTitle
-                    return
-                }
-
                 if (helmId.includes("/")) {
                     const split = helmId.split("/")
                     const start = split.shift()
-                    const res = await fs.queryStart(start, split.join("/")) || ""
-                    this.$data.helmPlaceholder = res
+                    this.$data.helmSuggestions = [
+                        {
+                            data: await fs.queryStartAll(start, split.join("/")),
+                        },
+                    ]
                 } else {
-                    this.$data.helmPlaceholder = ""
+                    this.$data.helmSuggestions = []
                 }
             },
             setScreen(type) {
                 this.$data.screen = type
                 this.$data.helmId = ""
+                this.$data.helmSuggestions = []
                 this.$data.k8s = "\n"
                 this.$data.title = titlesAndDescriptions[type].title
                 this.$data.description = titlesAndDescriptions[type].description
+            },
+            inputSelect(suggestion) {
+                if (suggestion) this.$data.helmId = suggestion.item
+                this.execHelm()
             },
             submitK8s() {
                 this.$refs.formK8s.submit()

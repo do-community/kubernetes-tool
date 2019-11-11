@@ -45,6 +45,7 @@
     "prismjs": "^1.17.1",
     "semver": "^6.3.0",
     "vue": "^2.6.10",
+    "vue-autosuggest": "^2.0.4",
     "vue-hot-reload-api": "^2.3.3",
     "vue-prism-component": "^1.1.1",
     "vue-prism-editor": "^0.3.0",
