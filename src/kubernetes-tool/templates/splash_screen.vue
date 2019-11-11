@@ -32,20 +32,22 @@ limitations under the License.
             <form ref="formHelm" autocomplete="on" @submit.prevent="execHelm">
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
-                    <div>
-                        <i class="fas fa-dharmachakra"></i>
-                        <vue-autosuggest
-                            :suggestions="helmSuggestions"
-                            :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, width: '100%'}"
-                            v-model="helmId"
-                            @input="inputChange"
-                            @selected="inputSelect"
-                        >
-                            <template slot-scope="{suggestion}">
-                                <span class="my-suggestion-item">{{suggestion.item}}</span>
-                            </template>
-                        </vue-autosuggest>
-                    </div>
+                    <i class="fas fa-dharmachakra"></i>
+                    <vue-autosuggest
+                        :suggestions="helmSuggestions"
+                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '100%', textIndent: '30px'}}"
+                        v-model="helmId"
+                        @input="inputChange"
+                        @selected="inputSelect"
+                        :style="{width: '100%'}"
+                    >
+                        <template slot-scope="{suggestion}">
+                            <span class="my-suggestion-item">{{suggestion.item}}</span>
+                        </template>
+                    </vue-autosuggest>
+                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                        {{ i18n.templates.splashScreen.submit }}
+                    </button>
                 </div>
             </form>
 
@@ -162,6 +164,7 @@ limitations under the License.
                 this.$data.description = titlesAndDescriptions[type].description
             },
             inputSelect(suggestion) {
+                console.log(suggestion)
                 if (suggestion) this.$data.helmId = suggestion.item
                 this.execHelm()
             },
