@@ -62,11 +62,14 @@ export default class GitHubFS {
     }
 
     // Queries all with a certian start of their name.
-    public async queryStartAll(fp: string, start: string): Promise<string[]> {
+    public async queryStartAll(fp: string, start: string, limit: number): Promise<string[]> {
         const items = []
         const ls = await this.ls(fp)
         for (const f of ls) {
-            if (f.name.startsWith(start)) items.push(f.path)
+            if (f.name.startsWith(start)) {
+                items.push(f.path)
+                if (items.length === limit && limit !== 0) return items
+            }
         }
         return items
     }

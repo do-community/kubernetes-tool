@@ -42,7 +42,8 @@ limitations under the License.
                         :style="{width: '100%'}"
                     >
                         <template slot-scope="{suggestion}">
-                            <span class="my-suggestion-item">{{suggestion.item}}</span>
+                            <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
+                            <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
                         </template>
                     </vue-autosuggest>
                     <button id="submitHelm" class="button is-primary" :click="submitHelm">
@@ -148,7 +149,7 @@ limitations under the License.
                     const start = split.shift()
                     this.$data.helmSuggestions = [
                         {
-                            data: await fs.queryStartAll(start, split.join("/")),
+                            data: await fs.queryStartAll(start, split.join("/"), 10),
                         },
                     ]
                 } else {
