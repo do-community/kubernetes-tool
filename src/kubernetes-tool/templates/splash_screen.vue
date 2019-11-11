@@ -34,19 +34,19 @@ limitations under the License.
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
                     <i class="fas fa-dharmachakra"></i>
                     <vue-autosuggest
+                        v-model="helmId"
                         :suggestions="helmSuggestions"
                         :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '100%', textIndent: '30px'}}"
-                        v-model="helmId"
+                        :style="{width: '100%'}"
                         @input="inputChange"
                         @selected="inputSelect"
-                        :style="{width: '100%'}"
                     >
                         <template slot-scope="{suggestion}">
                             <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
                             <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
                         </template>
                     </vue-autosuggest>
-                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                    <button id="submitHelm" class="button is-primary" :click="submitHelm" :style="{marginTop: '20px', marginBottom: '20px'}">
                         {{ i18n.templates.splashScreen.submit }}
                     </button>
                 </div>
