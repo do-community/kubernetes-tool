@@ -46,9 +46,6 @@ limitations under the License.
                             </template>
                         </vue-autosuggest>
                     </div>
-                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
-                        {{ i18n.templates.splashScreen.submit }}
-                    </button>
                 </div>
             </form>
 
