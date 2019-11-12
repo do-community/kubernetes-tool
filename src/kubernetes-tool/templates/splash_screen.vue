@@ -42,8 +42,10 @@ limitations under the License.
                         @selected="inputSelect"
                     >
                         <template slot-scope="{suggestion}">
-                            <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
-                            <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
+                            <div :style="{backgroundColor: 'white'}">
+                                <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
+                                <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
+                            </div>
                         </template>
 
                         <template slot="after-input">
