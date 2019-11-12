@@ -43,7 +43,11 @@ limitations under the License.
                     >
                         <template slot-scope="{suggestion}">
                             <div :style="{backgroundColor: 'white'}">
-                                <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
+                                <p :style="{margin: '0', textAlign: 'left', fontSize: '17px'}">
+                                    <a @click="inputSelect(suggestion)">
+                                        {{ suggestion.item }}
+                                    </a>
+                                </p>
                                 <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
                             </div>
                         </template>
