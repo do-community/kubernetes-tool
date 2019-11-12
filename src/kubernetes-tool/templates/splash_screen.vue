@@ -44,7 +44,7 @@ limitations under the License.
                         <template slot-scope="{suggestion}">
                             <div :style="{backgroundColor: 'white'}">
                                 <p :style="{margin: '0', textAlign: 'left', fontSize: '17px'}">
-                                    <a @click="inputSelect(suggestion)" href="javascript:void(0)" tabindex="0">
+                                    <a href="javascript:void(0)" tabindex="0" @click="inputSelect(suggestion)">
                                         {{ suggestion.item }}
                                     </a>
                                 </p>
