@@ -36,7 +36,7 @@ limitations under the License.
                     <vue-autosuggest
                         v-model="helmId"
                         :suggestions="helmSuggestions"
-                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '100%', textIndent: '30px'}}"
+                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '80%', textIndent: '30px'}}"
                         :style="{width: '100%'}"
                         @input="inputChange"
                         @selected="inputSelect"
@@ -45,10 +45,13 @@ limitations under the License.
                             <span :style="{cursor: 'default'}">{{ suggestion.item }}</span>
                             <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
                         </template>
+
+                        <template slot="after-input">
+                            <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                                {{ i18n.templates.splashScreen.submit }}
+                            </button>
+                        </template>
                     </vue-autosuggest>
-                    <button id="submitHelm" class="button is-primary" :click="submitHelm" :style="{marginTop: '20px', marginBottom: '20px'}">
-                        {{ i18n.templates.splashScreen.submit }}
-                    </button>
                 </div>
             </form>
 
