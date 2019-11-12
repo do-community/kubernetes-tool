@@ -7,18 +7,22 @@ class CompatibiltiyTest {
     public async test() {
         let errors = ""
         let passed = ""
+        let total = 0
+        let works = 0
         const promises = []
         for (const item of await fs.ls("stable")) {
             if (!item.file) {
+                total++
                 promises.push(new HelmCoreParser({}, item.path).promise.then(() => {
                     passed += item.path + "\n"
+                    works++
                 }).catch(err => {
                     errors += `${item.path}: ${err}\n`
                 }))
             }
         }
         await Promise.all(promises)
-        console.log(`Failed\n---\n${errors}\nPassed\n---\n${passed}`)
+        console.log(`${works}/${total}\n---\nFailed\n---\n${errors}\nPassed\n---\n${passed}`)
     }
 }
 

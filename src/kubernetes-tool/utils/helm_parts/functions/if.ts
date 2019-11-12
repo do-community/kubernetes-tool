@@ -96,7 +96,8 @@ const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boo
                 // This *should* be the condition.
                 return Boolean(parser.helmdef2object(operator))
             } else {
-                throw new Error(`"${operator}" - Invalid operator!`)
+                // Returns false if it doesn't understand.
+                return false
             }
         }
     }
