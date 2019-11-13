@@ -1,5 +1,7 @@
 # Kubernetes Descriptions
 
+## YAML Descriptions
+
 Each YAML file in here accounts for descriptions which will show up on Kubernetes deployments. We welcome pull requests for custom resource definitions!
 
 The base file (`base.yml`) follows a slightly different format since it is the parent of every other deployment. This is because it contains all of the base level descriptions before the spec.
@@ -24,3 +26,7 @@ From here, you can add it to the exported dictionary:
 ```js
 export default { ..., Filename }
 ```
+
+## Kind Descriptions
+
+Descriptions of the kinds of deployments belong in `text_descriptions.ts`. These are used during categorisation.
