@@ -17,7 +17,7 @@ limitations under the License.
 <template>
     <div>
         <hr>
-        <p><b>{{ title }}</b> | <a @click="emit">{{ i18n.templates.splitView.back }}</a></p>
+        <p><b>{{ title }}</b><span v-if="properties"> | <a @click="emit">{{ i18n.templates.splitView.back }}</a></span></p>
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">

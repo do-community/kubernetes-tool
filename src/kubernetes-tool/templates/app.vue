@@ -31,10 +31,14 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <CategorisationView :style="{display}" @fp-select="handleFp"></CategorisationView>
-                <div v-for="(v, k) in sort()" :key="k" :ref="k" :style="{display: fpDisplay[k] || 'none'}">
+                <div
+                    v-for="(v, k) in sort()"
+                    :key="k" :ref="k"
+                    :style="{display: k.endsWith('NOTES.txt') ? (showReadme ? 'initial' : 'none') : (fpDisplay[k] || 'none')}"
+                >
                     <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" @back-event="backToCats" />
                 </div>
+                <CategorisationView :style="{display}" @fp-select="handleFp"></CategorisationView>
             </div>
 
             <Footer :text="i18n.templates.app.oss" />
@@ -68,16 +72,19 @@ limitations under the License.
                 toBeRendered: {},
                 fpDisplay: {},
                 display: "initial",
+                showReadme: true,
             }
         },
         methods: {
             backToCats(fp) {
                 this.$set(this.$data.fpDisplay, fp, "none")
                 this.$data.display = "initial"
+                this.$data.showReadme = true
             },
             handleFp(fp) {
                 this.$set(this.$data.fpDisplay, fp, "initial")
                 this.$data.display = "none"
+                this.$data.showReadme = false
             },
             sort() {
                 const keys = []

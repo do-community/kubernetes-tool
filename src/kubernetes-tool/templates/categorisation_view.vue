@@ -1,5 +1,6 @@
 <template>
     <div>
+        <hr :style="{marginTop: '10px'}">
         <p>When the chart is deployed, it should cost you an extra ${{ cost }} in additional resources such as block storage or load balancers.</p>
         <hr :style="{marginTop: '10px'}">
         <div v-for="(key, index) in all.keys()">
