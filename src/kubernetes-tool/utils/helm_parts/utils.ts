@@ -14,8 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Defines the mirror hostname.
+let mirrorHostname: string | null = "http://localhost:8001"
+
 // Imports needed stuff.
 import GitHubFS from "../githubFs"
+import GitHTTPMirrorFS from "../gitHttpMirrorFs"
 
 // The operator manager. Allows for operations to safely be evaled between 2 objects.
 export class OperatorManager {
@@ -46,4 +50,4 @@ export class Quote {
 export const helmStatement = /{{[ -]*([^}]+)[ -]*}}/g
 
 // Defines the filesystem for the Helm Charts official repository.
-export const fs = new GitHubFS("helm/charts")
+export const fs = mirrorHostname ? new GitHTTPMirrorFS("helm", mirrorHostname) : new GitHubFS("helm/charts")
