@@ -39,15 +39,14 @@ export default class GitHTTPMirrorFS {
         const res = await fetch(`${this.hostname}/${this.alias}/${folder}`, {headers: {
             Accept: "application/json",
         }})
-        if (res.headers.get("Is-Dir-Listing") === "false") {
+        if (res.headers.get("is-dir-listing") === "false") {
             return []
         }
         const json = await res.json()
         for (const item of json) {
+            const itemResult = await fetch(`${this.hostname}/${this.alias}/${folder}/${item}`)
             items.push({
-                file: (await fetch(`${this.hostname}/${this.alias}/${folder}/${item}`, {headers: {
-                    Accept: "application/json",
-                }})).headers.get("Is-Dir-Listing") === "false",
+                file: itemResult.headers.get("is-dir-listing") !== "true",
                 name: item,
                 path: `${folder}/${item}`,
             })
