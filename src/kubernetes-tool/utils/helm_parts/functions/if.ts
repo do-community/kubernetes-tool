@@ -17,7 +17,6 @@ limitations under the License.
 import DocumentParser from "../document_parser"
 import { Quote, OperatorManager } from "../utils"
 import { Token } from "../tokeniser"
-import * as semver from "semver"
 
 // Processes a condition. Is it true?
 const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boolean => {
@@ -35,9 +34,6 @@ const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boo
 
     // Does one string contain another?
     let contain = true
-
-    // Is this a semver check?
-    let semverFlag = false
 
     // Is this a empty check?
     let empty = false
@@ -80,8 +76,7 @@ const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boo
             break
         }
         case "semverCompare": {
-            semverFlag = true
-            break
+            return false
         }
         case "empty": {
             empty = true
@@ -110,9 +105,6 @@ const processCondition = (parser: DocumentParser, args: (string | Quote)[]): boo
 
     // Handles include.
     if (include) return dataParts[0]
-
-    // Handles semver.
-    if (semverFlag) return semver.eq(dataParts[0], dataParts[1])
 
     // If this is a not statement, we only need to worry about the first arg.
     if (not) return !Boolean(dataParts[0])
