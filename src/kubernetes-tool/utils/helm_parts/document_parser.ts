@@ -84,12 +84,17 @@ export default class DocumentParser {
         for (const q of additionalQuotes) args.push(q)
 
         // Gets the function.
-        const func: string = args.shift()! as string
+        let func = args.shift()! as string
+        if (((func as unknown) as Quote).text) {
+            func = ((func as unknown) as Quote).text
+        }
 
         // Runs the function.
         if (functions[func] === undefined) {
             if (func.startsWith(".")) return String(this.helmdef2object(func))
-            throw new Error(`${func} - Unknown command!`)
+
+            // We should return here because even though this may not be fully accurate, it allows for an as accurate as possible result.
+            return func
         }
         const exec = functions[func](this, args, token)
         return exec
