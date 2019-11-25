@@ -10,7 +10,7 @@
     "build:template": "do-vue template",
     "build:static": "copyfiles --up 2 ./src/static/{*,**/*} dist",
     "build:tool": "do-vue tool src/kubernetes-tool dist",
-    "deploy:spaces:comment": "do-vue comment kubernetes-tool:dist",
+    "deploy:spaces:comment": "do-vue comment kubernetes-tool",
     "dev:prep": "npm run build:svg && npm run build:template && npm run dev:static",
     "dev:static": "copyfiles --up 2 ./src/static/{*,**/*} dev",
     "dev": "npm run dev:prep && parcel ./src/kubernetes-tool/index.html --out-dir ./dev/kubernetes-tool --port 8000",

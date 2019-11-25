@@ -31,9 +31,14 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <div v-for="(v, k) in sort()" :key="k">
-                    <SplitView :title="k" :yaml="v" :properties="kubeParse(v)" />
+                <div
+                    v-for="(v, k) in sort()"
+                    :key="k" :ref="k"
+                    :style="{display: k.endsWith('NOTES.txt') ? (showReadme ? 'initial' : 'none') : (fpDisplay[k] || 'none')}"
+                >
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" @back-event="backToCats" />
                 </div>
+                <CategorisationView :style="{display}" @fp-select="handleFp"></CategorisationView>
             </div>
 
             <Footer :text="i18n.templates.app.oss" />
@@ -45,9 +50,12 @@ limitations under the License.
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
     import SplitView from "./split_view"
+    import CategorisationView from "./categorisation_view"
     import Header from "do-vue/src/templates/header"
     import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
+    import Categorisation from "../utils/categorisation"
+    import { safeLoad } from "js-yaml"
 
     export default {
         name: "App",
@@ -56,14 +64,28 @@ limitations under the License.
             SplitView,
             Header,
             Footer,
+            CategorisationView,
         },
         data() {
             return {
                 i18n,
                 toBeRendered: {},
+                fpDisplay: {},
+                display: "initial",
+                showReadme: true,
             }
         },
         methods: {
+            backToCats(fp) {
+                this.$set(this.$data.fpDisplay, fp, "none")
+                this.$data.display = "initial"
+                this.$data.showReadme = true
+            },
+            handleFp(fp) {
+                this.$set(this.$data.fpDisplay, fp, "initial")
+                this.$data.display = "none"
+                this.$data.showReadme = false
+            },
             sort() {
                 const keys = []
                 for (const index in this.$data.toBeRendered) keys.push(index)
@@ -72,7 +94,7 @@ limitations under the License.
                     if (keys[keyIndex].includes("NOTES.txt")) {
                         note = [keyIndex, keys[keyIndex]]
                         break
-                    } 
+                    }
                 }
                 if (note) keys.splice(note[0], 1)
                 keys.sort()
@@ -84,11 +106,23 @@ limitations under the License.
             resultSet(obj) {
                 this.$set(this.$data, "toBeRendered", obj)
             },
-            kubeParse(v) {
-                return KubernetesParser(v)
+            kubeParse(filename, v) {
+                // Defines the parsed data.
+                let parsedData
+                try {
+                    parsedData = safeLoad(v)
+                    if (!parsedData || parsedData.constructor !== Object) throw new Error()
+                } catch (_) {
+                    // Returns nothing.
+                    return
+                }
+
+                Categorisation.insert(parsedData.kind, filename, parsedData)
+                return KubernetesParser(parsedData)
             },
             mainMenu() {
                 this.$data.toBeRendered = {}
+                Categorisation.clear()
             },
         },
     }
