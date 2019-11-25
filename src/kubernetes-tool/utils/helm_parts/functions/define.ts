@@ -20,6 +20,8 @@ import { Token } from "../tokeniser"
 
 export default (parser: DocumentParser, args: (string | Quote)[], token: Token): string => {
     const full = parser.processArg(args[0])
-    parser.templateContext[full] = parser.handleTokens(token.inner!).trim()
+    const p = parser.handleTokens(token.inner!).trim()
+    if (/^.*\/\*/.exec(p)) parser.templateContext[full] = `<define: ${full}>`
+    else parser.templateContext[full] = p
     return ""
 }
