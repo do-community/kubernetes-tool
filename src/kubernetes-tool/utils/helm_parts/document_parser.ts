@@ -66,12 +66,8 @@ export default class DocumentParser {
 
         // Splits the data properly.
         for (const d of dSplit) {
-            if (typeof d === "string") {
-                const split = d.split(" ")
-                args.push(...d.split(" "))
-            } else {
-                args.push(d)
-            }
+            if (typeof d === "string") args.push(...d.split(" "))
+            else args.push(d)
         }
 
         // Handles quotes.
