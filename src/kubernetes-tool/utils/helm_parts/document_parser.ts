@@ -55,14 +55,10 @@ export default class DocumentParser {
                     newdSplit.push(d)
                     continue
                 }
-                if (m) {
-                    const remainingData = d.split(m[0])
-                    const before = remainingData[0]
-                    const after = remainingData[1]
-                    const middle = new Quote(this._handleToken(new Token(m[1]), []))
-                    newdSplit.push(before, middle, after)
-                    results.push(false)
-                }
+                const remainingData = d.split(m[0])
+                const middle = new Quote(this._handleToken(new Token(m[1]), []))
+                newdSplit.push(remainingData[0], middle, remainingData[1])
+                results.push(false)
             }
             dSplit = newdSplit
             if (results.every(x => x)) break
