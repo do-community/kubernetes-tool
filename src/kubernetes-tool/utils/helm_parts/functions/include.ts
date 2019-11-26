@@ -17,4 +17,4 @@ limitations under the License.
 import DocumentParser from "../document_parser"
 import { Quote } from "../utils"
 
-export default (parser: DocumentParser, args: (string | Quote)[]): string => String(parser.processArg(args[0]))
+export default (parser: DocumentParser, args: (string | Quote)[]): string => String(typeof args[0] === "string" ? parser.templateContext[args[0]] : parser.templateContext[args[0].text])

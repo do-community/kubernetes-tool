@@ -94,7 +94,7 @@ export default class DocumentParser {
             if (func.startsWith(".")) return String(this.helmdef2object(func))
 
             // We should return here because even though this may not be fully accurate, it allows for an as accurate as possible result.
-            return func
+            return ""
         }
         const exec = functions[func](this, args, token)
         return exec
