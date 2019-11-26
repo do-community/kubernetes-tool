@@ -72,7 +72,7 @@ export default class DocumentParser {
         for (const d of dSplit) {
             if (typeof d === "string") {
                 const split = d.split(" ")
-                for (const s of split) args.push(s)
+                args.push(...d.split(" "))
             } else {
                 args.push(d)
             }
