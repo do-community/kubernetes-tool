@@ -4,3 +4,7 @@ import StatefulSet from "./StatefulSet.yml"
 import Deployment from "./Deployment.yml"
 
 export default { base, Deployment, Service, StatefulSet }
+
+// Ignore this if you're just editing YAML descriptions. This is to do with text descriptions.
+import textDescriptions from "./text_descriptions"
+export { textDescriptions }
