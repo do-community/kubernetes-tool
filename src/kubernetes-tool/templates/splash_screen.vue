@@ -36,7 +36,7 @@ limitations under the License.
                     <vue-autosuggest
                         v-model="helmId"
                         :suggestions="helmSuggestions"
-                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '80%', textIndent: '30px'}}"
+                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '80%', textIndent: '30px'}, readonly: readonly}"
                         :style="{width: '100%'}"
                         @input="inputChange"
                         @selected="inputSelect"
@@ -146,6 +146,7 @@ limitations under the License.
                 helmSuggestions: [],
                 svgTop,
                 svgBottom,
+                readonly: false,
             }
         },
         methods: {
@@ -178,7 +179,6 @@ limitations under the License.
                 this.$data.description = titlesAndDescriptions[type].description
             },
             inputSelect(suggestion) {
-                console.log(suggestion)
                 if (suggestion) this.$data.helmId = suggestion.item
                 this.execHelm()
             },
@@ -213,7 +213,9 @@ limitations under the License.
             },
             async execHelm() {
                 const el = document.getElementById("submitHelm")
+                this.$data.readonly = true
                 el.classList.add("is-loading")
+                this.$data.helmSuggestions = []
 
                 const coreParser = new HelmCoreParser({}, this.$data.helmId)
                 let res
@@ -221,6 +223,7 @@ limitations under the License.
                     res = await coreParser.promise
                 } catch (e) {
                     el.classList.remove("is-loading")
+                    this.$data.readonly = false
                     this.setScreen("helmErr")
                     this.$data.description += String(e)
                     return
@@ -228,12 +231,14 @@ limitations under the License.
 
                 if (!res) {
                     el.classList.remove("is-loading")
+                    this.$data.readonly = false
                     this.setScreen("helmErr")
                     this.$data.description += i18n.templates.splashScreen.helmDoesntExist
                     return
                 }
 
                 el.classList.remove("is-loading")
+                this.$data.readonly = false
                 this.setScreen("splash")
                 this.$emit("result", res)
             },
