@@ -48,7 +48,6 @@ limitations under the License.
                                         {{ suggestion.item }}
                                     </a>
                                 </p>
-                                <hr :style="{marginTop: '5px', marginBottom: '5px'}" />
                             </div>
                         </template>
 
@@ -162,7 +161,12 @@ limitations under the License.
                         },
                     ]
                 } else {
-                    this.$data.helmSuggestions = []
+                    if (helmId === "") this.$data.helmSuggestions = []
+                    else this.$data.helmSuggestions = [
+                        {
+                            data: await fs.queryStartAll("stable", helmId, 10),
+                        },
+                    ]
                 }
             },
             setScreen(type) {
