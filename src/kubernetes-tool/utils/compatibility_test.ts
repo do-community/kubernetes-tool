@@ -21,7 +21,7 @@ async function test() {
         }
     }
     await Promise.all(promises)
-    console.log(`${works}/${total}\n---\nFailed\n---\n${errors === "" ?  "No errors found!" : errors}\nPassed\n---\n${passed}`)
+    console.log(`${works}/${total}\n---\nFailed\n---\n${errors === "" ?  "No errors found!\n" : errors}\nPassed\n---\n${passed}`)
 }
 
 // @ts-ignore
