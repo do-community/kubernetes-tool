@@ -64,7 +64,7 @@ export default class HelmCoreParser {
         this.context.context.Values = valuesYaml
 
         // Fixes for potential bufs.
-        valuesYaml.cluster.readinessProbe = ""
+        valuesYaml.cluster = valuesYaml.cluster ? valuesYaml.cluster.readinessProbe : {readinessProbe: ""}
         valuesYaml.global = true
 
         // Sets the release context.

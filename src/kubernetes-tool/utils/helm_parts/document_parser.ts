@@ -35,15 +35,48 @@ export default class DocumentParser {
     // Handles each specific token.
     private _handleToken(token: Token, additionalQuotes: Quote[]): string {
         // Some initialisation to get the function and arguments.
-        const tokens: Token[] = []
         let data = token.data.trim()
+        const args: (string | Quote)[] = []
+
+        // Handles brackets in the tool.
+        let dSplit: (string | Quote)[] = [data]
         for (;;) {
-            const m = data.match(/\((.+?)\)/)
-            if (!m) break
-            tokens.push(new Token(m[1]))
-            data = data.replace(m[0], "__TOKEN")
+            const results: boolean[] = []
+            const newdSplit: (string | Quote)[] = []
+            for (const d of dSplit) {
+                if (typeof d !== "string") {
+                    results.push(true)
+                    newdSplit.push(d)
+                    continue
+                }
+                const m = d.match(/\((.+?)\)/)
+                if (!m) {
+                    results.push(true)
+                    newdSplit.push(d)
+                    continue
+                }
+                if (m) {
+                    const remainingData = d.split(m[0])
+                    const before = remainingData[0]
+                    const after = remainingData[1]
+                    const middle = new Quote(this._handleToken(new Token(m[1]), []))
+                    newdSplit.push(before, middle, after)
+                    results.push(false)
+                }
+            }
+            dSplit = newdSplit
+            if (results.every(x => x)) break
         }
-        const args: (string | Quote)[] = data.split(" ")
+
+        // Splits the data properly.
+        for (const d of dSplit) {
+            if (typeof d === "string") {
+                const split = d.split(" ")
+                for (const s of split) args.push(s)
+            } else {
+                args.push(d)
+            }
+        }
 
         // Handles quotes.
         let quoteParts: {
@@ -56,9 +89,7 @@ export default class DocumentParser {
             toAdd: Quote;
         }[] = []
         for (const a in args) {
-            if (args[a] === "__TOKEN") {
-                args[a] = new Quote(this._handleToken(tokens.shift()!, []))
-            } else if (typeof args[a] === "string") {
+            if (typeof args[a] === "string") {
                 const strArg = args[a] as string
                 if (strArg.startsWith("\"")) {
                     quoteParts.push({
