@@ -36,7 +36,12 @@ limitations under the License.
                     <vue-autosuggest
                         v-model="helmId"
                         :suggestions="helmSuggestions"
-                        :input-props="{id: 'helmInput', class: 'input', type: 'text', placeholder: i18n.templates.splashScreen.helmTitle, style: {width: '80%', textIndent: '30px'}, readonly: readonly}"
+                        :input-props="{
+                            id: 'helmInput', class: 'input', type: 'text',
+                            placeholder: i18n.templates.splashScreen.helmTitle,
+                            style: {width: '80%', textIndent: '30px'},
+                            readonly: readonly
+                        }"
                         :style="{width: '100%'}"
                         @input="inputChange"
                         @selected="inputSelect"
@@ -100,8 +105,7 @@ limitations under the License.
     import { safeLoad } from "js-yaml"
     import { VueAutosuggest } from "vue-autosuggest"
     import i18n from "../i18n"
-    import { fs } from "../utils/helm"
-    import { HelmCoreParser } from "../utils/helm"
+    import { fs, HelmCoreParser } from "../utils/helm"
     import svgTop from "../../../build/svg/top.svg"
     import svgBottom from "../../../build/svg/bottom.svg"
 
