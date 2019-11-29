@@ -15,7 +15,9 @@ limitations under the License.
 */
 
 // Defines the mirror hostname.
-let mirrorHostname = process.env.NODE_ENV === "development" ? "http://localhost:8001" : null
+// If you wish to use git-http-mirror-fs, set this value to "http://localhost:8001".
+// DO NOT FORGET TO CHANGE THIS BEFORE COMMITING!
+let mirrorHostname = null
 
 // Imports needed stuff.
 import GitHubFS from "../githubFs"
