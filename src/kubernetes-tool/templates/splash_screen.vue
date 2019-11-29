@@ -40,15 +40,15 @@ limitations under the License.
                             id: 'helmInput', class: 'input', type: 'text',
                             placeholder: i18n.templates.splashScreen.helmTitle,
                             style: {width: '80%', textIndent: '30px'},
-                            readonly: readonly
+                            readonly: readonly,
                         }"
-                        :style="{width: '100%'}"
+                        style="width: 100%"
                         @input="inputChange"
                         @selected="inputSelect"
                     >
                         <template slot-scope="{suggestion}">
-                            <div :style="{backgroundColor: 'white'}">
-                                <p :style="{margin: '0', textAlign: 'left', fontSize: '17px'}">
+                            <div style="background-color: white">
+                                <p style="margin: 0; text-align: left; font-size: 17px;">
                                     <a tabindex="0" @click="inputSelect(suggestion)">
                                         {{ suggestion.item }}
                                     </a>
