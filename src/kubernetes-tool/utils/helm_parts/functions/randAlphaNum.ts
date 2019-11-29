@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import DocumentParser from "../document_parser"
-import { Quote } from "../utils"
-
-export default (parser: DocumentParser, args: (string | Quote)[]): string => String(typeof args[0] === "string" ? parser.templateContext[args[0]] : parser.templateContext[args[0].text])
+export const randAlphaNum = (): string => "<random char (alphabet/number)>"
+export const randAlpha = (): string => "<random char (alphabet)>"
+export const randNum = (): string => "<random char (number)>"

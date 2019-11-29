@@ -17,6 +17,7 @@ limitations under the License.
 import "babel-polyfill"
 import "abortcontroller-polyfill/dist/polyfill-patch-fetch"
 
+import "./utils/compatibility_test"
 import Vue from "vue"
 import App from "./templates/app.vue"
 import i18n from "./i18n"

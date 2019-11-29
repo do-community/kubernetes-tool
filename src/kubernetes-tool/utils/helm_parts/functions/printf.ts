@@ -22,5 +22,11 @@ export default (parser: DocumentParser, args: (string | Quote)[]): string => {
     const formatter = parser.processArg(args.shift()!)
     const transformedArgs: any[] = []
     for (const a of args) transformedArgs.push(parser.processArg(a))
-    return printj.sprintf(formatter, ...transformedArgs)
+    try {
+        // You can't inline try and catch on JS, I tried (no pun intended!)
+        return printj.sprintf(formatter, ...transformedArgs)
+    } catch (_) {
+        // Something is wrong with the formatter, this is not our issue.
+        return ""
+    }
 }

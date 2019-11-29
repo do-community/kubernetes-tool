@@ -20,6 +20,15 @@ import { Token } from "../tokeniser"
 
 export default (parser: DocumentParser, args: (string | Quote)[], token: Token): string => {
     const full = parser.processArg(args[0])
-    parser.templateContext[full] = parser.handleTokens(token.inner!).trim()
+    const numbers: string[] = []
+    for (const ti in token.inner!) {
+        const t = token.inner![ti]
+        if (typeof t === "string" && t.trim().startsWith("{{/*")) numbers.push(ti)
+    }
+    const newTokens: (string | Token)[] = []
+    for (const ti in token.inner!) {
+        if (!numbers.includes(ti)) newTokens.push(token.inner![Number(ti)])
+    }
+    parser.templateContext[full] = parser.handleTokens(newTokens).trim()
     return ""
 }
