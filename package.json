@@ -43,7 +43,6 @@
     "parcel-bundler": "1.12.3",
     "printj": "^1.2.2",
     "prismjs": "^1.17.1",
-    "semver": "^6.3.0",
     "vue": "^2.6.10",
     "vue-autosuggest": "^2.0.4",
     "vue-hot-reload-api": "^2.3.3",

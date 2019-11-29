@@ -61,8 +61,8 @@ export class Tokeniser {
 
     // Finds the end statement.
     private _manageEnd(matches: RegExpMatchArray[]): RegExpMatchArray[] | undefined {
-        // Tells the parser to skip the next end.
-        let skip = false
+        // Tells the parser the level.
+        let level = 1
 
         // Contains either 1 end, or else's and a end.
         const returned: RegExpMatchArray[] = []
@@ -73,16 +73,15 @@ export class Tokeniser {
             if (!m) break
             const t = m[1].split(/ +/g)[0].toLowerCase()
             if (requireEnd.includes(t)) {
-                skip = true
+                level++
             } else if (t === "else") {
-                if (!skip) returned.push(m)
+                if (level === 1) returned.push(m)
             } else if (t === "end") {
-                if (skip) {
-                    skip = false
-                } else {
+                if (level === 1) {
                     returned.push(m)
                     return returned
-                } 
+                }
+                level--
             }
         }
     }

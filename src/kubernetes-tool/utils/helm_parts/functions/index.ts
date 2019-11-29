@@ -34,8 +34,10 @@ import printf from "./printf"
 import include from "./include"
 import replace from "./replace"
 import b64enc from "./b64enc"
+import { randAlphaNum, randNum, randAlpha } from "./randAlphaNum"
 
 export default {
     env, uuidv4, trimSuffix, if: if_, range, default: default_, quote, define,
-    template, trunc, indent, toYaml, printf, include, replace, b64enc,
+    template, trunc, indent, toYaml, printf, include, replace, b64enc, randAlphaNum,
+    randNum, randAlpha,
 } as Record<string, (parser: DocumentParser, args: (string | Quote)[], token: Token) => string>
