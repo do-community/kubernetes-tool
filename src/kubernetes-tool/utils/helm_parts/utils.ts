@@ -15,9 +15,8 @@ limitations under the License.
 */
 
 // Defines the mirror hostname.
-// If you wish to use git-http-mirror-fs, set this value to "http://localhost:8001".
-// DO NOT FORGET TO CHANGE THIS BEFORE COMMITING!
-let mirrorHostname = null
+const useGitHttpMirrorFs = process.env.USE_GIT_HTTP_MIRROR_FS
+const mirrorHostname = useGitHttpMirrorFs === "true" ? "http://localhost:8001" : null
 
 // Imports needed stuff.
 import GitHubFS from "../githubFs"
