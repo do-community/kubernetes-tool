@@ -18,11 +18,13 @@ limitations under the License.
 export default class GitHTTPMirrorFS {
     public alias: string
     public hostname: string
+    private itemCache: Record<string, Response>
 
     // Constructs the class.
     public constructor(alias: string, hostname: string) {
         this.alias = alias
         this.hostname = hostname
+        this.itemCache = {}
     }
 
     // Lists the folder specified.
@@ -44,7 +46,12 @@ export default class GitHTTPMirrorFS {
         }
         const json = await res.json()
         for (const item of json) {
-            const itemResult = await fetch(`${this.hostname}/${this.alias}/${folder}/${item}`)
+            const path = `${this.hostname}/${this.alias}/${folder}/${item}`
+            let itemResult = this.itemCache[path]
+            if (!this.itemCache[path]) {
+                itemResult = await fetch(path)
+                this.itemCache[path] = itemResult
+            }
             items.push({
                 file: itemResult.headers.get("is-dir-listing") !== "true",
                 name: item,
@@ -59,5 +66,26 @@ export default class GitHTTPMirrorFS {
         const res = await fetch(`${this.hostname}/${this.alias}/${fp}`)
         if (!res.ok) return undefined
         return await res.text()
+    }
+
+    // Queries the start of the name.
+    public async queryStart(fp: string, start: string): Promise<string | undefined> {
+        const ls = await this.ls(fp)
+        for (const f of ls) {
+            if (f.name.startsWith(start)) return f.path
+        }
+    }
+
+    // Queries all with a certian start of their name.
+    public async queryStartAll(fp: string, start: string, limit: number): Promise<string[]> {
+        const items = []
+        const ls = await this.ls(fp)
+        for (const f of ls) {
+            if (f.name.startsWith(start)) {
+                items.push(f.path)
+                if (items.length === limit && limit !== 0) return items
+            }
+        }
+        return items
     }
 }

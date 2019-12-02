@@ -33,15 +33,35 @@ limitations under the License.
                 <div class="input-container">
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.helmTitle }}</label>
                     <i class="fas fa-dharmachakra"></i>
-                    <input id="helmInput"
-                           v-model="helmId"
-                           class="input"
-                           type="text"
-                           :placeholder="i18n.templates.splashScreen.helmTitle"
-                    />
-                    <button id="submitHelm" class="button is-primary" :click="submitHelm">
-                        {{ i18n.templates.splashScreen.submit }}
-                    </button>
+                    <vue-autosuggest
+                        v-model="helmId"
+                        :suggestions="helmSuggestions"
+                        :input-props="{
+                            id: 'helmInput', class: 'input', type: 'text',
+                            placeholder: i18n.templates.splashScreen.helmTitle,
+                            style: {width: '80%', textIndent: '30px'},
+                            readonly: readonly,
+                        }"
+                        style="width: 100%"
+                        @input="inputChange"
+                        @selected="inputSelect"
+                    >
+                        <template slot-scope="{suggestion}">
+                            <div style="background-color: white">
+                                <p style="margin: 0; text-align: left; font-size: 17px;">
+                                    <a tabindex="0" @click="inputSelect(suggestion)">
+                                        {{ suggestion.item }}
+                                    </a>
+                                </p>
+                            </div>
+                        </template>
+
+                        <template slot="after-input">
+                            <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                                {{ i18n.templates.splashScreen.submit }}
+                            </button>
+                        </template>
+                    </vue-autosuggest>
                 </div>
             </form>
 
@@ -83,8 +103,9 @@ limitations under the License.
     import "vue-prism-editor/dist/VuePrismEditor.css"
     import PrismEditor from "vue-prism-editor"
     import { safeLoad } from "js-yaml"
+    import { VueAutosuggest } from "vue-autosuggest"
     import i18n from "../i18n"
-    import { HelmCoreParser } from "../utils/helm"
+    import { fs, HelmCoreParser } from "../utils/helm"
     import svgTop from "../../../build/svg/top.svg"
     import svgBottom from "../../../build/svg/bottom.svg"
 
@@ -116,6 +137,7 @@ limitations under the License.
         components: {
             Landing,
             PrismEditor,
+            VueAutosuggest,
         },
         data() {
             return {
@@ -125,17 +147,44 @@ limitations under the License.
                 k8s: "",
                 title: titlesAndDescriptions.splash.title,
                 description: titlesAndDescriptions.splash.description,
+                helmSuggestions: [],
                 svgTop,
                 svgBottom,
+                readonly: false,
             }
         },
         methods: {
+            async inputChange() {
+                const helmId = this.$data.helmId
+
+                if (helmId.includes("/")) {
+                    const split = helmId.split("/")
+                    const start = split.shift()
+                    this.$data.helmSuggestions = [
+                        {
+                            data: await fs.queryStartAll(start, split.join("/"), 10),
+                        },
+                    ]
+                } else {
+                    if (helmId === "") this.$data.helmSuggestions = []
+                    else this.$data.helmSuggestions = [
+                        {
+                            data: await fs.queryStartAll("stable", helmId, 10),
+                        },
+                    ]
+                }
+            },
             setScreen(type) {
                 this.$data.screen = type
                 this.$data.helmId = ""
+                this.$data.helmSuggestions = []
                 this.$data.k8s = "\n"
                 this.$data.title = titlesAndDescriptions[type].title
                 this.$data.description = titlesAndDescriptions[type].description
+            },
+            inputSelect(suggestion) {
+                if (suggestion) this.$data.helmId = suggestion.item
+                this.execHelm()
             },
             submitK8s() {
                 this.$refs.formK8s.submit()
@@ -168,7 +217,9 @@ limitations under the License.
             },
             async execHelm() {
                 const el = document.getElementById("submitHelm")
+                this.$data.readonly = true
                 el.classList.add("is-loading")
+                this.$data.helmSuggestions = []
 
                 const coreParser = new HelmCoreParser({}, this.$data.helmId)
                 let res
@@ -176,6 +227,7 @@ limitations under the License.
                     res = await coreParser.promise
                 } catch (e) {
                     el.classList.remove("is-loading")
+                    this.$data.readonly = false
                     this.setScreen("helmErr")
                     this.$data.description += String(e)
                     return
@@ -183,12 +235,14 @@ limitations under the License.
 
                 if (!res) {
                     el.classList.remove("is-loading")
+                    this.$data.readonly = false
                     this.setScreen("helmErr")
                     this.$data.description += i18n.templates.splashScreen.helmDoesntExist
                     return
                 }
 
                 el.classList.remove("is-loading")
+                this.$data.readonly = false
                 this.setScreen("splash")
                 this.$emit("result", res)
             },
