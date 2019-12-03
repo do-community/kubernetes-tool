@@ -31,14 +31,14 @@ limitations under the License.
             </Header>
 
             <div class="main container">
+                <CategorisationView @change-visibility="changeVisibility"></CategorisationView>
                 <div
                     v-for="(v, k) in sort()"
                     :key="k" :ref="k"
-                    :style="{display: k.endsWith('NOTES.txt') ? (showReadme ? 'initial' : 'none') : (fpDisplay[k] || 'none')}"
+                    style="display: none"
                 >
-                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" @back-event="backToCats" />
+                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
                 </div>
-                <CategorisationView :style="{display}" @fp-select="handleFp"></CategorisationView>
             </div>
 
             <Footer :text="i18n.templates.app.oss" />
@@ -73,18 +73,26 @@ limitations under the License.
                 fpDisplay: {},
                 display: "initial",
                 showReadme: true,
+                lastItem: null,
             }
         },
         methods: {
-            backToCats(fp) {
-                this.$set(this.$data.fpDisplay, fp, "none")
-                this.$data.display = "initial"
-                this.$data.showReadme = true
-            },
-            handleFp(fp) {
-                this.$set(this.$data.fpDisplay, fp, "initial")
-                this.$data.display = "none"
-                this.$data.showReadme = false
+            changeVisibility(item) {
+                // Checks if was a item clicked before this that we should close.
+                if (this.$data.lastItem) {
+                    // This if statement is used to fix bugs with hot reloading.
+                    if (this.$refs[this.$data.lastItem]) this.$refs[this.$data.lastItem][0].style = "display: none"
+                }
+
+                // Gets the element.
+                const el = this.$refs[item][0]
+
+                // Sets the elements visibility.
+                el.style = "display: initial"
+                this.$data.lastItem = item
+
+                // Jump to the element.
+                el.scrollIntoView()
             },
             sort() {
                 const keys = []

@@ -17,7 +17,7 @@ limitations under the License.
 <template>
     <div>
         <hr>
-        <p><b>{{ title }}</b><span v-if="properties"> | <a @click="emit">{{ i18n.templates.splitView.back }}</a></span></p>
+        <p><b>{{ title }}</b></p>
         <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
@@ -60,11 +60,6 @@ limitations under the License.
                 lang: this.$props.properties ? 'yaml' : this.ext === 'md' ? 'markdown' : undefined,
                 i18n,
             }
-        },
-        methods: {
-            emit() {
-                this.$emit("back-event", this.$props.title)
-            },
         },
     }
 </script>

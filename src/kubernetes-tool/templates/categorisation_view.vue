@@ -3,13 +3,13 @@
         <hr :style="{marginTop: '10px'}">
         <p>When the chart is deployed, it should cost you an extra ${{ cost }} in additional resources such as block storage or load balancers.</p>
         <hr :style="{marginTop: '10px'}">
-        <div v-for="(key, index) in all.keys()">
+        <div v-for="(key, index) in all.keys()" :key="key.name">
             <h2>{{ key.name }}</h2>
             <p v-if="key.description">
                 {{ key.description }}
             </p>
             <p>
-                <a v-for="item in all.get(key)" :key="item.fp" class="button is-small" :style="{marginRight: '10px', marginBottom: '10px'}" @click="emitFp(item.fp)">
+                <a v-for="item in all.get(key)" :key="item.fp" class="button is-small" :style="{marginRight: '10px', marginBottom: '10px'}" @click="emitFp(item)">
                     {{ item.fp }}
                 </a>
             </p>
@@ -34,8 +34,8 @@
             this.$data.cost = Categorisation.getCost()
         },
         methods: {
-            emitFp(fp) {
-                this.$emit("fp-select", fp)
+            emitFp(item) {
+                this.$emit("change-visibility", item.fp)
             },
         },
     }
