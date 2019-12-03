@@ -15,7 +15,8 @@ limitations under the License.
 */
 
 // Defines the mirror hostname.
-let mirrorHostname = process.env.NODE_ENV === "development" ? "http://localhost:8001" : null
+const useGitHttpMirrorFs = process.env.USE_GIT_HTTP_MIRROR_FS
+const mirrorHostname = useGitHttpMirrorFs === "true" ? "http://localhost:8001" : null
 
 // Imports needed stuff.
 import GitHubFS from "../githubFs"
