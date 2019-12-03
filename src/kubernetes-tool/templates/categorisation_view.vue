@@ -4,7 +4,7 @@
         <p>When the chart is deployed, it should cost you an extra ${{ cost }} in additional resources such as block storage or load balancers.</p>
         <hr :style="{marginTop: '10px'}">
         <div v-for="(key, index) in all.keys()">
-            <h1>{{ key.name }}</h1>
+            <h2>{{ key.name }}</h2>
             <p v-if="key.description">
                 {{ key.description }}
             </p>
