@@ -16,9 +16,6 @@ limitations under the License.
 
 <template>
     <div>
-        <hr>
-        <p><b>{{ title }}</b></p>
-        <hr>
         <div class="columns">
             <div :class="`column${properties ? ' is-half' : ''}`">
                 <prism :language="lang" :code="yaml" />

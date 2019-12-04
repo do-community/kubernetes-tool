@@ -31,14 +31,7 @@ limitations under the License.
             </Header>
 
             <div class="main container">
-                <CategorisationView @change-visibility="changeVisibility"></CategorisationView>
-                <div
-                    v-for="(v, k) in sort()"
-                    :key="k" :ref="k"
-                    style="display: none"
-                >
-                    <SplitView :title="k" :yaml="v" :properties="kubeParse(k, v)" />
-                </div>
+                <CategorisationView :to-be-rendered="toBeRendered" :parsed="parsed"></CategorisationView>
             </div>
 
             <Footer :text="i18n.templates.app.oss" />
@@ -49,7 +42,6 @@ limitations under the License.
 <script>
     import i18n from "../i18n"
     import SplashScreen from "./splash_screen"
-    import SplitView from "./split_view"
     import CategorisationView from "./categorisation_view"
     import Header from "do-vue/src/templates/header"
     import Footer from "do-vue/src/templates/footer"
@@ -61,7 +53,6 @@ limitations under the License.
         name: "App",
         components: {
             SplashScreen,
-            SplitView,
             Header,
             Footer,
             CategorisationView,
@@ -71,29 +62,18 @@ limitations under the License.
                 i18n,
                 toBeRendered: {},
                 fpDisplay: {},
+                parsed: {},
                 display: "initial",
                 showReadme: true,
                 lastItem: null,
             }
         },
-        methods: {
-            changeVisibility(item) {
-                // Checks if was a item clicked before this that we should close.
-                if (this.$data.lastItem) {
-                    // This if statement is used to fix bugs with hot reloading.
-                    if (this.$refs[this.$data.lastItem]) this.$refs[this.$data.lastItem][0].style = "display: none"
-                }
-
-                // Gets the element.
-                const el = this.$refs[item][0]
-
-                // Sets the elements visibility.
-                el.style = "display: initial"
-                this.$data.lastItem = item
-
-                // Jump to the element.
-                el.scrollIntoView()
+        watch: {
+            toBeRendered() {
+                this.sort()
             },
+        },
+        methods: {
             sort() {
                 const keys = []
                 for (const index in this.$data.toBeRendered) keys.push(index)
@@ -108,8 +88,13 @@ limitations under the License.
                 keys.sort()
                 if (note) keys.unshift(note[1])
                 const newObj = {}
-                for (const k of keys) newObj[k] = this.$data.toBeRendered[k]
-                return newObj
+                for (const k of keys) {
+                    const value = this.$data.toBeRendered[k]
+                    newObj[k] = value
+                    this.$data.parsed[k] = this.kubeParse(k, value)
+                    delete this.$data.toBeRendered[k]
+                }
+                for (const k in newObj) this.$data.toBeRendered[k] = newObj[k]
             },
             resultSet(obj) {
                 this.$set(this.$data, "toBeRendered", obj)
