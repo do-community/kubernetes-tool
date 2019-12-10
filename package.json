@@ -40,7 +40,7 @@
     "do-vue": "git+https://github.com/do-community/do-vue.git",
     "escape-string-regexp": "^2.0.0",
     "js-yaml": "^3.13.1",
-    "parcel-bundler": "1.12.3",
+    "parcel-bundler": "^1.12.4",
     "printj": "^1.2.2",
     "prismjs": "^1.17.1",
     "vue": "^2.6.10",
