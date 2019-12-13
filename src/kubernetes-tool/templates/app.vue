@@ -15,7 +15,7 @@ limitations under the License.
 -->
 
 <template>
-    <div class="all do-bulma">
+    <div :class="`all do-bulma${Object.keys(toBeRendered).length === 0 ? ' landing' : ''}`">
         <div v-if="Object.keys(toBeRendered).length === 0">
             <SplashScreen @result="resultSet" />
         </div>
