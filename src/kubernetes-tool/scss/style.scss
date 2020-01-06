@@ -36,6 +36,12 @@ $header: #0071fe;
 @import "~do-bulma/src/style";
 
 .do-bulma {
+  &.landing {
+    + .helpfulness-cont {
+      display: none;
+    }
+  }
+
   .landing {
     .container {
       .container {
