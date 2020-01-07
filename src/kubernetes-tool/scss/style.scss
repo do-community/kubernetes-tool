@@ -57,7 +57,7 @@ $header: #0071fe;
       width: auto;
 
       pre {
-        @include disabled-focus;
+        //@include disabled-focus;
 
         background: $background;
         border: $border-size solid $dark-grey;

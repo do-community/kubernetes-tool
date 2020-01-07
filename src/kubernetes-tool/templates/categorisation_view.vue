@@ -9,16 +9,15 @@
                 <p v-if="key.description">
                     {{ key.description }}
                 </p>
-                <p>
-                    <a v-for="item in allCats.get(key)" :key="item.fp" class="button is-small" :style="{marginRight: '10px', marginBottom: '10px'}" @click="handleItem(item.fp, key.name)">
-                        {{ item.fp }}
-                    </a>
-                </p>
-                <div v-if="visible === key.name">
+                <div v-for="item in allCats.get(key)" :key="item.fp">
                     <hr>
-                    <p><b>{{ splitViewTitle }}</b></p>
-                    <hr>
-                    <SplitView :title="splitViewTitle" :yaml="splitViewYaml" :properties="splitViewParsed"></SplitView>
+                    <p>
+                        <a @click="handleItem(key, item)" style="text-decoration: none;">
+                            {{ item.fp }}
+                        </a>
+                    </p>
+                    <hr v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]">
+                    <SplitView :title="item.fp" :yaml="toBeRendered[item.fp]" :properties="parsed[item.fp]" v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]"></SplitView>
                 </div>
                 <hr v-if="index !== Array.from(allCats.keys()).length - 1">
             </div>
@@ -42,23 +41,20 @@
         data() {
             return {
                 Categorisation,
-                visible: null,
-                splitViewTitle: null,
-                splitViewYaml: null,
-                splitViewParsed: null,
+                showing: {},
             }
         },
         methods: {
-            handleItem(fp, catKey) {
-                if (this.$data.splitViewTitle === fp) {
-                    this.$data.visible = null
-                    this.$data.splitViewTitle = null
-                    return
+            handleItem(key, item) {
+                const exists = this.$data.showing[key.name] !== undefined
+                const m = this.$data.showing[key.name] || {}
+                this.$data.showing[key.name] = m
+                if (!exists) {
+                    // This starts off as true.
+                    m[item.fp] = true
                 }
-                this.$data.splitViewTitle = fp
-                this.$data.splitViewYaml = this.$props.toBeRendered[fp]
-                this.$data.splitViewParsed = this.$props.parsed[fp]
-                this.$data.visible = catKey
+                m[item.fp] = !m[item.fp]
+                this.$forceUpdate() // Vue doesn't see the update above natively. We can nudge it.
             },
         },
     }
