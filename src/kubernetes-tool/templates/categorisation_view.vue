@@ -12,12 +12,12 @@
                 <div v-for="item in allCats.get(key)" :key="item.fp">
                     <hr>
                     <p>
-                        <a @click="handleItem(key, item)" style="text-decoration: none;">
+                        <a style="text-decoration: none;" @click="handleItem(key, item)">
                             {{ item.fp }}
                         </a>
                     </p>
                     <hr v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]">
-                    <SplitView :title="item.fp" :yaml="toBeRendered[item.fp]" :properties="parsed[item.fp]" v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]"></SplitView>
+                    <SplitView v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]" :title="item.fp" :yaml="toBeRendered[item.fp]" :properties="parsed[item.fp]"></SplitView>
                 </div>
                 <hr v-if="index !== Array.from(allCats.keys()).length - 1">
             </div>
