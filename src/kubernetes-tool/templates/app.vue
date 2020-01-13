@@ -49,6 +49,19 @@ limitations under the License.
     import Categorisation from "../utils/categorisation"
     import { safeLoad } from "js-yaml"
 
+    // A simple hack to handle the back/forward button.
+    // This is fine since the site only consists of 3 files which will be cached anyway.
+    // Reloading just ensures that it's a clean slate everytime (this could be why the user is going back - to try and solve a bug).
+    const getUrlQuery = () => new URLSearchParams(window.location.search)
+    const query = getUrlQuery()
+    let helmQuery = query.has("helm") ? query.get("helm") : undefined
+    let k8sQuery = query.has("k8s") ? query.get("k8s") : undefined
+    window.addEventListener("popstate", () => {
+        const urlQuery = getUrlQuery()
+        if (helmQuery === urlQuery.get("helm") && k8sQuery === getUrlQuery.get("k8s")) return
+        window.location.reload()
+    })
+
     export default {
         name: "App",
         components: {

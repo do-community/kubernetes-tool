@@ -156,7 +156,7 @@ limitations under the License.
             }
         },
         mounted() {
-            if (shown) return
+            if (shown) this.setUrl()
             shown = true
             const url = new URL(window.location.href)
             const params = new URLSearchParams(url.search)
@@ -176,15 +176,19 @@ limitations under the License.
                     this.$data.k8s = atob(k8s)
                     this.execK8s()
                 })
+            } else {
+                // Set the URL if these are not set.
+                this.setUrl()
             }
         },
         methods: {
             setUrl(k, v) {
                 const url = new URL(window.location.href)
                 const params = new URLSearchParams("")
-                params.set(k, v)
+                if (k && v) params.set(k, v)
                 url.search = params.toString()
-                window.history.pushState({}, "", url.toString())
+                const u = url.toString()
+                if (u !== window.location.href) window.history.pushState({}, "", u)
             },
             async inputChange() {
                 const helmId = this.$data.helmId
