@@ -1,5 +1,5 @@
 export default {
-    description: "A tool to allow you to search for Helm charts (or insert in a Kuberentes file) and get descriptions of how they work.",
+    description: "A tool to allow you to search for Helm charts (or insert in a Kubernetes file) and get descriptions of how they work.",
     selectionPrompt: "Do you want to load a Kubernetes file or a Helm chart?",
     helmTitle: "Helm Chart",
     helmDescription: "Enter the name of the helm chart:",
