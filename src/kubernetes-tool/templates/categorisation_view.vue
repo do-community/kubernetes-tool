@@ -7,7 +7,7 @@
             <div v-for="(key, index) in allCats.keys()" :key="key.name">
                 <h2>{{ key.name }}</h2>
                 <p v-if="key.description">
-                    {{ key.description }}
+                    {{ key.description }} <a v-if="key.learnMore" :href="key.learnMore">Learn more...</a>
                 </p>
                 <div v-for="item in allCats.get(key)" :key="item.fp" :ref="item.fp">
                     <hr>

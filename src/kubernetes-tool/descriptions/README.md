@@ -29,4 +29,4 @@ export default { ..., Filename }
 
 ## Kind Descriptions
 
-Descriptions of the kinds of deployments belong in `text_descriptions.ts`. These are used during categorisation.
+Descriptions of the kinds of deployments belong in `text_descriptions.ts`. These are used during categorisation. Additionally, the "Learn more..." lnks can be found in `learn_more.ts`.

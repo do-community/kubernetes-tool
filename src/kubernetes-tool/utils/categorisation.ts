@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { textDescriptions } from "../descriptions"
+import { textDescriptions, learnMore } from "../descriptions"
 
 // Defines the item.
 class Item {
@@ -32,11 +32,13 @@ class Item {
 // Defines a category.
 export class Category {
     public name: string
-    public description: string
+    public learnMore: string | undefined
+    public description: string | undefined
 
     public constructor(name: string) {
         this.name = name
         this.description = textDescriptions[name]
+        this.learnMore = learnMore[name]
     }
 }
 
