@@ -47,11 +47,12 @@ limitations under the License.
                         </template>
                         <template v-slot:buttons>
                             <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
+                            <a class="button" @click="collapseHook">{{ i18n.templates.app.collapseAll }}</a>
                         </template>
                     </Header>
 
                     <div class="main container">
-                        <CategorisationView :to-be-rendered="toBeRendered" :parsed="parsed" :handle-hook="handleHook"></CategorisationView>
+                        <CategorisationView :to-be-rendered="toBeRendered" :parsed="parsed" :handle-hooks="handleHooks"></CategorisationView>
                     </div>
                 </div>
             </div>
@@ -103,6 +104,7 @@ limitations under the License.
                 showReadme: true,
                 lastItem: null,
                 navbarHook: () => {},
+                collapseHook: () => {},
             }
         },
         watch: {
@@ -154,8 +156,9 @@ limitations under the License.
                 this.$data.toBeRendered = {}
                 Categorisation.clear()
             },
-            handleHook(func) {
-                this.$data.navbarHook = func
+            handleHooks(func0, func1) {
+                this.$data.navbarHook = func0
+                this.$data.collapseHook = func1
             },
         },
     }
