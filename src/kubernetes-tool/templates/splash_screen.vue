@@ -22,6 +22,9 @@ limitations under the License.
              github="https://github.com/do-community/kubernetes-tool"
     >
         <div v-if="screen === 'splash'" class="container">
+            <p style="margin-bottom: 20px">
+                {{ i18n.templates.splashScreen.selectionPrompt }}
+            </p>
             <p>
                 <a class="button is-primary" @click="setScreen('helm')">{{ i18n.templates.splashScreen.helmTitle }}</a>
                 <a class="button is-primary" @click="setScreen('k8s')">{{ i18n.templates.splashScreen.k8sTitle }}</a>
@@ -112,7 +115,7 @@ limitations under the License.
     const titlesAndDescriptions = {
         splash: {
             title: i18n.templates.app.title,
-            description: i18n.templates.splashScreen.whereDoYouWantToGoToday,
+            description: i18n.templates.splashScreen.description,
         },
         helm: {
             title: i18n.templates.splashScreen.helmTitle,
