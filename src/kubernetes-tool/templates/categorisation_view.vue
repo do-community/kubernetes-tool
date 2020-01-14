@@ -11,7 +11,7 @@
                 </p>
                 <div v-for="item in allCats.get(key)" :key="item.fp" :ref="item.fp">
                     <hr style="margin-top: 0">
-                    <div class="columns is-gapless" style="margin: 0">
+                    <div class="columns is-gapless" style="margin: 0; user-select: none;">
                         <div class="column is-half">
                             <p>
                                 <a style="text-decoration: none; color: black;" @click="handleItem(key, item)">
@@ -20,7 +20,7 @@
                             </p>
                         </div>
                         <div class="column is-half">
-                            <p style="text-align: right">
+                            <p style="text-align: right;">
                                 <span v-if="(showing[key.name] || {})[item.fp] === undefined ? true : showing[key.name][item.fp]">
                                     -
                                 </span>
