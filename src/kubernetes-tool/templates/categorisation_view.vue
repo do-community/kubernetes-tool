@@ -9,7 +9,7 @@
                 <p v-if="key.description">
                     {{ key.description }}
                 </p>
-                <div v-for="item in allCats.get(key)" :key="item.fp">
+                <div v-for="item in allCats.get(key)" :key="item.fp" :ref="item.fp">
                     <hr>
                     <p>
                         <a style="text-decoration: none;" @click="handleItem(key, item)">
@@ -37,12 +37,17 @@
         props: {
             toBeRendered: Object,
             parsed: Object,
+            handleHook: Function,
         },
         data() {
             return {
                 Categorisation,
                 showing: {},
             }
+        },
+        mounted() {
+            const vm = this
+            this.$props.handleHook(fp => vm.$refs[fp][0].scrollIntoView())
         },
         methods: {
             handleItem(key, item) {

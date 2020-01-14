@@ -20,18 +20,40 @@ limitations under the License.
             <SplashScreen @result="resultSet" />
         </div>
         <div v-else>
-            <Header :title="i18n.templates.app.title">
-                <template v-slot:description>
-                </template>
-                <template v-slot:header>
-                </template>
-                <template v-slot:buttons>
-                    <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
-                </template>
-            </Header>
+            <div class="columns">
+                <div class="column is-2" style="height: 100%; top: 0; position: sticky;">
+                    <div v-for="allCats in [Categorisation.getAll()]">
+                        <aside class="menu" style="margin-left: 20px; margin-top: 20px;">
+                            <span v-for="key in allCats.keys()" :key="key.name">
+                                <p class="menu-label">
+                                    {{ key.name }}
+                                </p>
+                                <ul class="menu-list">
+                                    <li v-for="item in allCats.get(key)" :key="item.fp" style="font-size: 15px">
+                                        <a @click="navbarHook(item.fp)">
+                                            {{ item.fp }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </span>
+                        </aside>
+                    </div>
+                </div>
+                <div class="column">
+                    <Header :title="i18n.templates.app.title">
+                        <template v-slot:description>
+                        </template>
+                        <template v-slot:header>
+                        </template>
+                        <template v-slot:buttons>
+                            <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
+                        </template>
+                    </Header>
 
-            <div class="main container">
-                <CategorisationView :to-be-rendered="toBeRendered" :parsed="parsed"></CategorisationView>
+                    <div class="main container">
+                        <CategorisationView :to-be-rendered="toBeRendered" :parsed="parsed" :handle-hook="handleHook"></CategorisationView>
+                    </div>
+                </div>
             </div>
 
             <Footer :text="i18n.templates.app.oss" />
@@ -72,6 +94,7 @@ limitations under the License.
         },
         data() {
             return {
+                Categorisation,
                 i18n,
                 toBeRendered: {},
                 fpDisplay: {},
@@ -79,6 +102,7 @@ limitations under the License.
                 display: "initial",
                 showReadme: true,
                 lastItem: null,
+                navbarHook: () => {},
             }
         },
         watch: {
@@ -129,6 +153,9 @@ limitations under the License.
             mainMenu() {
                 this.$data.toBeRendered = {}
                 Categorisation.clear()
+            },
+            handleHook(func) {
+                this.$data.navbarHook = func
             },
         },
     }
