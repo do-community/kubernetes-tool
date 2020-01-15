@@ -31,7 +31,7 @@ limitations under the License.
                                 <ul class="menu-list">
                                     <li v-for="item in allCats.get(key)" :key="item.fp" style="font-size: 15px">
                                         <a @click="navbarHook(item.fp)">
-                                            {{ item.fp }}
+                                            {{ item.fp.split("/").pop() }}
                                         </a>
                                     </li>
                                 </ul>
