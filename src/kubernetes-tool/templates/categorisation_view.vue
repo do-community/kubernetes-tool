@@ -23,7 +23,7 @@ limitations under the License.
             <div v-for="(key, index) in allCats.keys()" :key="key.name">
                 <h2>{{ key.name }}</h2>
                 <p v-if="key.description">
-                    {{ key.description }} <a v-if="key.learnMore" :href="key.learnMore">Learn more...</a>
+                    {{ key.description }} <ExternalLink v-if="key.learnMore" :link="key.learnMore" :text="i18n.templates.categorisationView.learnMore"></ExternalLink>
                 </p>
                 <div v-for="item in allCats.get(key)" :key="item.fp" :ref="item.fp">
                     <hr style="margin-top: 0">
@@ -58,11 +58,14 @@ limitations under the License.
 <script>
     import Categorisation from "../utils/categorisation"
     import SplitView from "./split_view"
+    import ExternalLink from "do-vue/src/templates/external_link"
+    import i18n from "../i18n"
 
     export default {
         name: "CategorisationView",
         components: {
             SplitView,
+            ExternalLink,
         },
         props: {
             toBeRendered: Object,
@@ -71,6 +74,7 @@ limitations under the License.
         },
         data() {
             return {
+                i18n,
                 Categorisation,
                 showing: {},
             }
