@@ -47,7 +47,7 @@ limitations under the License.
                         </template>
                         <template v-slot:buttons>
                             <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
-                            <a class="button" @click="collapseHook">{{ i18n.templates.app.collapseAll }}</a>
+                            <a class="button" @click="collapseHook">{{ globalState ? i18n.templates.app.uncollapseAll : i18n.templates.app.collapseAll }}</a>
                         </template>
                     </Header>
 
@@ -102,6 +102,7 @@ limitations under the License.
                 parsed: {},
                 display: "initial",
                 showReadme: true,
+                globalState: true,
                 lastItem: null,
                 navbarHook: () => {},
                 collapseHook: () => {},
@@ -158,7 +159,8 @@ limitations under the License.
             },
             handleHooks(func0, func1) {
                 this.$data.navbarHook = func0
-                this.$data.collapseHook = func1
+                const vm = this
+                this.$data.collapseHook = () => vm.$data.globalState = func1()
             },
         },
     }

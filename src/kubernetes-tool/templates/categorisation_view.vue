@@ -77,6 +77,7 @@ limitations under the License.
                 i18n,
                 Categorisation,
                 showing: {},
+                globalState: true,
             }
         },
         mounted() {
@@ -86,12 +87,19 @@ limitations under the License.
         methods: {
             hideAll() {
                 const catmap = Categorisation.getAll()
+                this.$data.globalState = !this.$data.globalState
                 for (const cat of catmap.keys()) {
-                    for (const item of catmap.get(cat)) this.handleItem(item)
+                    for (const item of catmap.get(cat)) this.handleItem(item, true)
                 }
+                return this.$data.globalState
             },
-            handleItem(item) {
+            handleItem(item, globalState) {
                 const exists = this.$data.showing[item.fp] !== undefined
+                if (globalState) {
+                    // Set it based off the global state.
+                    this.$set(this.$data.showing, item.fp, this.$data.globalState)
+                    return
+                }
                 if (!exists) {
                     // This starts off as true.
                     this.$set(this.$data.showing, item.fp, false)
