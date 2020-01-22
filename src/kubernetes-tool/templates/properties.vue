@@ -29,6 +29,12 @@ limitations under the License.
     import LineGenerator from "../utils/line_generation/line_generator"
 
     let visibleLine
+    document.body.onresize = () => {
+        if (visibleLine) {
+            visibleLine.destroy()
+            visibleLine = undefined
+        }
+    }
 
     export default {
         name: "Properties",

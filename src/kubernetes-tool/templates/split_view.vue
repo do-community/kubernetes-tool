@@ -168,7 +168,7 @@ limitations under the License.
                 }
 
                 // Process the final thing.
-                if (currentText === "") processText()
+                if (currentText !== "") processText()
 
                 // Return the array.
                 return arr

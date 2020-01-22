@@ -72,6 +72,11 @@ export default class LineGenerator {
     public constructor(a: HTMLElement, b: HTMLElement) {
         this.a = a
         this.b = b
+        if (!a || !b) {
+            this.visible = true
+            this.destroyed = true
+            return
+        }
         this.downX = Math.floor(window.innerWidth * lineMultiplier)
         this.destroyed = false
         this.visible = false
