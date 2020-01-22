@@ -47,7 +47,7 @@ limitations under the License.
                         </div>
                     </div>
                     <hr v-if="showing[item.fp] === undefined ? true : showing[item.fp]" style="margin-top: 0">
-                    <SplitView v-if="showing[item.fp] === undefined ? true : showing[item.fp]" :title="item.fp" :yaml="toBeRendered[item.fp]" :properties="parsed[item.fp]"></SplitView>
+                    <SplitView v-if="showing[item.fp] === undefined ? true : showing[item.fp]" :title="item.fp" :type="key.name" :yaml="toBeRendered[item.fp]" :properties="parsed[item.fp]"></SplitView>
                 </div>
                 <hr v-if="index !== Array.from(allCats.keys()).length - 1">
             </div>
