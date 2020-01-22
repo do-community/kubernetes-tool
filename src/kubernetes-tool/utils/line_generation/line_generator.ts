@@ -76,7 +76,6 @@ export default class LineGenerator {
         this.destroyed = false
         this.visible = false
         const f = () => {
-            console.log("a")
             if (!lock) this.setup()
             else setTimeout(f, 5)
         }
