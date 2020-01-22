@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2019-2020 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -47,13 +47,18 @@ const addOffset = (y: number) => {
 // |  (line is height of object)
 // |
 // |-- (line 20px)
-const drawClaw = (x: number, top: number, bottom: number, generator: LineGenerator, svg: SVGSVGElement) => {
+const drawClaw = (x: number, top: number, bottom: number, generator: LineGenerator, svg: SVGSVGElement, flip: boolean) => {
     // Draw the core middle line.
     generator.drawLine(svg, lineColor, x, x, top, bottom)
 
     // Draw the claws.
-    generator.drawLine(svg, lineColor, x, x + 20, top, top)
-    generator.drawLine(svg, lineColor, x, x + 20, bottom, bottom)
+    if (flip) {
+        generator.drawLine(svg, lineColor, x - 20, x, top, top)
+        generator.drawLine(svg, lineColor, x - 20, x, bottom, bottom)
+    } else {
+        generator.drawLine(svg, lineColor, x, x + 20, top, top)
+        generator.drawLine(svg, lineColor, x, x + 20, bottom, bottom)
+    }
 }
 
 // A lock. Only one line generator can run at once.
@@ -140,6 +145,20 @@ export default class LineGenerator {
             // If bLeft is less than 0, return.
             if (0 > bLeft) return
 
+            // Handle the right hand side.
+            const rightSide = within(100, aRect.right, bRect.left)
+            if (rightSide) {
+                // Draws the definition claw.
+                drawClaw(bLeft, bRect.top - mainGapSize, bRect.bottom + mainGapSize, this, svg, false)
+
+                // Draw the YAML claw.
+                const aLen = this.a.textContent!.length * 11
+                drawClaw(aRect.left + aLen, aRect.top - 3, aRect.bottom + 3, this, svg, true)
+
+                // Return here.
+                return
+            }
+
             // Gets the best pathway to point A.
             const aParentRect = this.a.parentElement!.getBoundingClientRect() as DOMRect
             let aBestY = aTop - 4
@@ -161,7 +180,7 @@ export default class LineGenerator {
             this.drawLine(svg, lineColor, this.downX!, aBestX, aBestY, aBestY)
 
             // Draws the claw.
-            drawClaw(bLeft, bRect.top - mainGapSize, bRect.bottom + mainGapSize, this, svg)
+            drawClaw(bLeft, bRect.top - mainGapSize, bRect.bottom + mainGapSize, this, svg, false)
 
             // bLeft being greater than bTop means there isn't enough room. Return and destroy.
             if (this.downX! > bLeft) return this.destroy()
