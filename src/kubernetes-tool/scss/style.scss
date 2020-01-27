@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2019-2020 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -57,8 +57,6 @@ $header: #0071fe;
       width: auto;
 
       pre {
-        @include disabled-focus;
-
         background: $background;
         border: $border-size solid $dark-grey;
         border-radius: $border-radius;

@@ -1,5 +1,5 @@
 <!--
-Copyright 2019 DigitalOcean
+Copyright 2019-2020 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ limitations under the License.
              github="https://github.com/do-community/kubernetes-tool"
     >
         <div v-if="screen === 'splash'" class="container">
+            <p style="margin-bottom: 20px">
+                {{ i18n.templates.splashScreen.selectionPrompt }}
+            </p>
             <p>
                 <a class="button is-primary" @click="setScreen('helm')">{{ i18n.templates.splashScreen.helmTitle }}</a>
                 <a class="button is-primary" @click="setScreen('k8s')">{{ i18n.templates.splashScreen.k8sTitle }}</a>
@@ -57,7 +60,7 @@ limitations under the License.
                         </template>
 
                         <template slot="after-input">
-                            <button id="submitHelm" class="button is-primary" :click="submitHelm">
+                            <button ref="submitHelm" class="button is-primary" :click="submitHelm">
                                 {{ i18n.templates.splashScreen.submit }}
                             </button>
                         </template>
@@ -74,7 +77,7 @@ limitations under the License.
                     <label for="helmInput" class="hidden">{{ i18n.templates.splashScreen.k8sTitle }}</label>
                     <prism-editor v-model="k8s" language="yaml"></prism-editor>
                     <input type="hidden" />
-                    <button id="submitK8s" class="button is-primary" :click="submitK8s" style="align-self:flex-end">
+                    <button ref="submitK8s" class="button is-primary" :click="submitK8s" style="align-self:flex-end">
                         {{ i18n.templates.splashScreen.submit }}
                     </button>
                 </div>
@@ -112,7 +115,7 @@ limitations under the License.
     const titlesAndDescriptions = {
         splash: {
             title: i18n.templates.app.title,
-            description: i18n.templates.splashScreen.whereDoYouWantToGoToday,
+            description: i18n.templates.splashScreen.description,
         },
         helm: {
             title: i18n.templates.splashScreen.helmTitle,
@@ -131,6 +134,8 @@ limitations under the License.
             description: "",
         },
     }
+
+    let shown = false
 
     export default {
         name: "SplashScreen",
@@ -153,7 +158,41 @@ limitations under the License.
                 readonly: false,
             }
         },
+        mounted() {
+            if (shown) this.setUrl()
+            shown = true
+            const url = new URL(window.location.href)
+            const params = new URLSearchParams(url.search)
+            const helm = params.get("helm")
+            const k8s = params.get("k8s")
+            if (helm) {
+                // This is a Helm chart.
+                this.setScreen("helm")
+                this.$nextTick(() => {
+                    this.$data.helmId = helm
+                    this.execHelm()
+                })
+            } else if (k8s) {
+                // This is a Kubernetes deployment.
+                this.setScreen("k8s")
+                this.$nextTick(() => {
+                    this.$data.k8s = atob(k8s)
+                    this.execK8s()
+                })
+            } else {
+                // Set the URL if these are not set.
+                this.setUrl()
+            }
+        },
         methods: {
+            setUrl(k, v) {
+                const url = new URL(window.location.href)
+                const params = new URLSearchParams("")
+                if (k && v) params.set(k, v)
+                url.search = params.toString()
+                const u = url.toString()
+                if (u !== window.location.href) window.history.pushState({}, "", u)
+            },
             async inputChange() {
                 const helmId = this.$data.helmId
 
@@ -190,7 +229,7 @@ limitations under the License.
                 this.$refs.formK8s.submit()
             },
             execK8s() {
-                const el = document.getElementById("submitK8s")
+                const el = this.$refs.submitK8s
                 el.classList.add("is-loading")
 
                 const d = this.$data.k8s
@@ -211,17 +250,19 @@ limitations under the License.
                 el.classList.remove("is-loading")
                 this.setScreen("splash")
                 this.$emit("result", { "Kubernetes File": d })
+                this.setUrl("k8s", btoa(d))
             },
             submitHelm() {
                 this.$refs.formHelm.submit()
             },
             async execHelm() {
-                const el = document.getElementById("submitHelm")
+                const el = this.$refs.submitHelm
                 this.$data.readonly = true
                 el.classList.add("is-loading")
                 this.$data.helmSuggestions = []
 
-                const coreParser = new HelmCoreParser({}, this.$data.helmId)
+                const helmId = this.$data.helmId
+                const coreParser = new HelmCoreParser({}, helmId)
                 let res
                 try {
                     res = await coreParser.promise
@@ -245,6 +286,7 @@ limitations under the License.
                 this.$data.readonly = false
                 this.setScreen("splash")
                 this.$emit("result", res)
+                this.setUrl("helm", helmId)
             },
         },
     }
