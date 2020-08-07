@@ -42,7 +42,7 @@
     "js-yaml": "^3.13.1",
     "parcel-bundler": "^1.12.4",
     "printj": "^1.2.2",
-    "prismjs": "^1.18.0",
+    "prismjs": "^1.21.0",
     "vue": "^2.6.11",
     "vue-autosuggest": "^2.0.4",
     "vue-hot-reload-api": "^2.3.3",
