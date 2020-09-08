@@ -43,7 +43,7 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[], kind
     let parsedData: Record<string, any>
     if (typeof data === "string") {
         try {
-            parsedData = safeLoad(data)
+            parsedData = safeLoad(data) as Record<string, any>
             if (!parsedData || parsedData.constructor !== Object) throw new Error()
         } catch (_) {
             // Returns nothing.
