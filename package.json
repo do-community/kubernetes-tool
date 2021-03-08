@@ -34,7 +34,7 @@
   "dependencies": {
     "async-lock": "^1.2.4",
     "do-bulma": "git+https://github.com/do-community/do-bulma.git",
-    "do-vue": "git+https://github.com/do-community/do-vue.git#869ac289fb02195a90ee70402ed97bd3a008905b",
+    "do-vue": "git+https://github.com/do-community/do-vue.git#7ba6df2241e36635a6137b873620f026ba45fe93",
     "escape-string-regexp": "^4.0.0",
     "js-yaml": "^3.14.0",
     "printj": "^1.2.2",
