@@ -13,7 +13,7 @@
     "deploy:spaces:comment": "do-vue comment kubernetes-tool",
     "dev:prep": "npm run build:svg && npm run build:template && npm run dev:static",
     "dev:static": "copyfiles --up 2 ./src/static/{*,**/*} dev",
-    "dev": "npm run dev:prep && do-vue dev ./src/kubernetes-tool/index.html ./dev/kubernetes-tool 8000",
+    "dev": "npm run dev:prep && do-vue dev ./src/kubernetes-tool ./dev/kubernetes-tool 8000",
     "test": "npm run test:ts-vue && npm run test:scss",
     "test:ts-vue": "tsc -noEmit && eslint './src/**/*.{vue,ts}'",
     "test:scss": "sass-lint ./src/**/*.scss --verbose --no-exit --config .sasslintrc",
