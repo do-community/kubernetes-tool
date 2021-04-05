@@ -38,7 +38,7 @@
     "escape-string-regexp": "^4.0.0",
     "js-yaml": "^3.14.0",
     "printj": "^1.2.2",
-    "prismjs": "^1.21.0",
+    "prismjs": "^1.23.0",
     "vue": "^2.6.12",
     "vue-autosuggest": "^2.2.0",
     "vue-hot-reload-api": "^2.3.3",
