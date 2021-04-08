@@ -1,5 +1,5 @@
 <!--
-Copyright 2019-2020 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ limitations under the License.
     import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
     import Categorisation from "../utils/categorisation"
-    import { safeLoad } from "js-yaml"
+    import { load } from "js-yaml"
 
     // A simple hack to handle the back/forward button.
     // This is fine since the site only consists of 3 files which will be cached anyway.
@@ -143,7 +143,7 @@ limitations under the License.
                 // Defines the parsed data.
                 let parsedData
                 try {
-                    parsedData = safeLoad(v)
+                    parsedData = load(v)
                     if (!parsedData || parsedData.constructor !== Object) throw new Error()
                 } catch (_) {
                     // Returns nothing.

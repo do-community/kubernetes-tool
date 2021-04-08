@@ -1,5 +1,5 @@
 <!--
-Copyright 2019-2020 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ limitations under the License.
     import "prismjs"
     import "vue-prism-editor/dist/VuePrismEditor.css"
     import PrismEditor from "vue-prism-editor"
-    import { safeLoad } from "js-yaml"
+    import { load } from "js-yaml"
     import { VueAutosuggest } from "vue-autosuggest"
     import i18n from "../i18n"
     import { fs, HelmCoreParser } from "../utils/helm"
@@ -234,7 +234,7 @@ limitations under the License.
 
                 const d = this.$data.k8s
                 try {
-                    const x = safeLoad(d)
+                    const x = load(d)
                     if (!x || x.constructor !== Object) {
                         this.setScreen("k8sErr")
                         this.$data.description += "Expected an object."
