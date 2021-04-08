@@ -41,11 +41,11 @@ limitations under the License.
                 </div>
                 <div class="column">
                     <Header :title="i18n.templates.app.title">
-                        <template v-slot:description>
+                        <template #description>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                         </template>
-                        <template v-slot:buttons>
+                        <template #buttons>
                             <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
                             <a class="button" @click="collapseHook">{{ globalState ? i18n.templates.app.uncollapseAll : i18n.templates.app.collapseAll }}</a>
                         </template>
@@ -159,8 +159,7 @@ limitations under the License.
             },
             handleHooks(func0, func1) {
                 this.$data.navbarHook = func0
-                const vm = this
-                this.$data.collapseHook = () => vm.$data.globalState = func1()
+                this.$data.collapseHook = () => this.$data.globalState = func1()
             },
         },
     }

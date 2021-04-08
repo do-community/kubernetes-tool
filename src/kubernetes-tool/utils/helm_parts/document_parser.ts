@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ export default class DocumentParser {
     // Handles each specific token.
     private _handleToken(token: Token, additionalQuotes: Quote[]): string {
         // Some initialisation to get the function and arguments.
-        let data = token.data.trim()
+        const data = token.data.trim()
         const args: (string | Quote)[] = []
 
         // Handles brackets in the tool.
@@ -75,7 +75,7 @@ export default class DocumentParser {
             index: number;
             part: string;
         }[] = []
-        let toQuote: {
+        const toQuote: {
             index: number;
             count: number;
             toAdd: Quote;
@@ -138,7 +138,7 @@ export default class DocumentParser {
 
                 // Handles variables.
                 let variable: string | undefined
-                let s = p.data.split(" ")
+                const s = p.data.split(" ")
                 let a = 0
                 for (;;) {
                     if (!s[a]) break

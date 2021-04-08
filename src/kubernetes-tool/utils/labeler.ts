@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ export default class Labeler {
     }
 
     // Imports any children.
-    public importChildren(object: LabelValue, path?: string[]) {
+    public importChildren(object: LabelValue, path?: string[]): void {
         // If path does not exist, make the path array.
         if (!path) path = []
 
