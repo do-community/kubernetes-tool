@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 // Imports needed stuff.
 import HelmDocumentParser from "./document_parser"
 import { fs } from "./utils"
-import { safeLoad } from "js-yaml"
+import { load } from "js-yaml"
 import helmCache from "./helm_cache"
 import asyncLock from "async-lock"
 const lock = new asyncLock()
@@ -52,7 +52,7 @@ export default class HelmCoreParser {
         if (!unparsedChartInformation) throw new Error("No Chart.yaml found!")
 
         // Defines the parsed chart file and load in the chart.
-        const chartYaml = safeLoad(unparsedChartInformation) as Record<string, any>
+        const chartYaml = load(unparsedChartInformation) as Record<string, any>
         this.context.context.Chart = this._capAll(chartYaml)
 
         // Defines the unparsed values.yaml (if it exists).
@@ -60,7 +60,7 @@ export default class HelmCoreParser {
         if (!unparsedValuesYaml) throw new Error("No values.yaml found!")
 
         // Loads the values.yaml.
-        const valuesYaml = safeLoad(unparsedValuesYaml) as Record<string, any>
+        const valuesYaml = load(unparsedValuesYaml) as Record<string, any>
         this.context.context.Values = valuesYaml
 
         // Fixes for potential bufs.

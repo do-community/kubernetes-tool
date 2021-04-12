@@ -1,5 +1,5 @@
 <!--
-Copyright 2019-2020 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -81,8 +81,7 @@ limitations under the License.
             }
         },
         mounted() {
-            const vm = this
-            this.$props.handleHooks(fp => vm.$refs[fp][0].scrollIntoView(), () => vm.hideAll())
+            this.$props.handleHooks(fp => this.$refs[fp][0].scrollIntoView(), () => this.hideAll())
         },
         methods: {
             hideAll() {

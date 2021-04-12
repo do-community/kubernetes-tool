@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 // Imports the needed stuff.
 import k8sData from "../descriptions"
 import Labeler from "./labeler"
-import { safeLoad } from "js-yaml"
+import { load } from "js-yaml"
 
 // Defines the data structure.
 class KVRecursiveRecord {
@@ -43,7 +43,7 @@ const p = (data: string | Record<string, any> | undefined, keys?: string[], kind
     let parsedData: Record<string, any>
     if (typeof data === "string") {
         try {
-            parsedData = safeLoad(data) as Record<string, any>
+            parsedData = load(data) as Record<string, any>
             if (!parsedData || parsedData.constructor !== Object) throw new Error()
         } catch (_) {
             // Returns nothing.

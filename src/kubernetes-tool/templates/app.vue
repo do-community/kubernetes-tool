@@ -1,5 +1,5 @@
 <!--
-Copyright 2019-2020 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,11 +41,11 @@ limitations under the License.
                 </div>
                 <div class="column">
                     <Header :title="i18n.templates.app.title">
-                        <template v-slot:description>
+                        <template #description>
                         </template>
-                        <template v-slot:header>
+                        <template #header>
                         </template>
-                        <template v-slot:buttons>
+                        <template #buttons>
                             <a class="button" @click="mainMenu">{{ i18n.templates.shared.mainMenu }}</a>
                             <a class="button" @click="collapseHook">{{ globalState ? i18n.templates.app.uncollapseAll : i18n.templates.app.collapseAll }}</a>
                         </template>
@@ -70,7 +70,7 @@ limitations under the License.
     import Footer from "do-vue/src/templates/footer"
     import KubernetesParser from "../utils/kubernetes"
     import Categorisation from "../utils/categorisation"
-    import { safeLoad } from "js-yaml"
+    import { load } from "js-yaml"
 
     // A simple hack to handle the back/forward button.
     // This is fine since the site only consists of 3 files which will be cached anyway.
@@ -143,7 +143,7 @@ limitations under the License.
                 // Defines the parsed data.
                 let parsedData
                 try {
-                    parsedData = safeLoad(v)
+                    parsedData = load(v)
                     if (!parsedData || parsedData.constructor !== Object) throw new Error()
                 } catch (_) {
                     // Returns nothing.
@@ -159,8 +159,7 @@ limitations under the License.
             },
             handleHooks(func0, func1) {
                 this.$data.navbarHook = func0
-                const vm = this
-                this.$data.collapseHook = () => vm.$data.globalState = func1()
+                this.$data.collapseHook = () => this.$data.globalState = func1()
             },
         },
     }

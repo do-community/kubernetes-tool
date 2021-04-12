@@ -1,5 +1,5 @@
 /*
-Copyright 2019 DigitalOcean
+Copyright 2021 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,25 +16,25 @@ limitations under the License.
 
 import DocumentParser from "../document_parser"
 import { Quote } from "../utils"
-import { safeDump } from "js-yaml"
+import { dump } from "js-yaml"
 
 export default (parser: DocumentParser, args: (string | Quote)[]): string => {
     const a = parser.processArg(args[0])
     if (a === "") return ""
-    if (typeof a === "string") return safeDump(a)
+    if (typeof a === "string") return dump(a)
     if (typeof a === "boolean") return String(a)
     if (!a) return "null"
     let d = ""
     if (Array.isArray(a)) {
         for (const x of a) {
-            d += `- ${safeDump(x)}\n`
+            d += `- ${dump(x)}\n`
         }
         return d
     }
     for (const x in a) {
-        let dump = safeDump(a[x]).trim()
-        if (a[x] instanceof Object) dump = `\n${dump.match(/ +/) ? dump.match(/ +/)![0] : ""}${dump}`
-        d += `${safeDump(x).trim()}: ${dump}\n`
+        let yamlDump = dump(a[x]).trim()
+        if (a[x] instanceof Object) yamlDump = `\n${yamlDump.match(/ +/) ? yamlDump.match(/ +/)![0] : ""}${yamlDump}`
+        d += `${dump(x).trim()}: ${yamlDump}\n`
     }
     return d
 }
