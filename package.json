@@ -41,7 +41,6 @@
     "prismjs": "^1.23.0",
     "vue": "^2.6.12",
     "vue-autosuggest": "^2.2.0",
-    "vue-hot-reload-api": "^2.3.3",
     "vue-prism-component": "^1.2.0",
     "vue-prism-editor": "0.3.0",
     "vue-tippy": "^4.10.0"
