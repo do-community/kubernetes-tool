@@ -1,5 +1,5 @@
 <!--
-Copyright 2021 DigitalOcean
+Copyright 2022 DigitalOcean
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@ limitations under the License.
 -->
 
 <template>
-    <Landing :background-top="svgTop"
-             :background-bottom="svgBottom"
-             :title="title"
-             :description="description"
-             github="https://github.com/do-community/kubernetes-tool"
+    <Landing
+        :background-top="svgTop"
+        :background-bottom="svgBottom"
+        :title="title"
+        :description="description"
+        github="https://github.com/do-community/kubernetes-tool"
     >
         <div v-if="screen === 'splash'" class="container">
             <p style="margin-bottom: 20px">
